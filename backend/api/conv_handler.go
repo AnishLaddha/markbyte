@@ -92,6 +92,23 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	url := fmt.Sprintf("/static/%s", outputFilename)
+
+	keyname := fmt.Sprintf("%s_%s_%d.html", username, baseFilename, newVersion)
+
+	cred, err := LoadCredentials()
+	if err != nil {
+		fmt.Println("AWS CREDENTIALS NOT SET UP")
+	}
+	if err == nil {
+		s3URL, err := UploadHTMLFile(r.Context(), htmlContent, keyname, cred)
+		if err != nil {
+			http.Error(w, "Failed to upload file to s3", http.StatusInternalServerError)
+			fmt.Println(err)
+			return
+		}
+		url = s3URL
+	}
 
 	newBlogPostData := db.BlogPostData{
 		User:         username,
@@ -99,6 +116,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		DateUploaded: time.Now(),
 		Version:      fmt.Sprintf("%d", newVersion),
 		IsActive:     true,
+		Link:         &url,
 	}
 
 	_, err = blogPostDataDB.CreateBlogPost(r.Context(), &newBlogPostData)
@@ -109,5 +127,5 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	// header + response
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message": "File processed successfully", "url": "/static/%s"}`, outputFilename)
+	fmt.Fprintf(w, `{"message": "File processed successfully", "localURL": "/static/%s", "s3URL": "%s"}`, outputFilename, url)
 }

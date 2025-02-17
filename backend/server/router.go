@@ -47,6 +47,7 @@ func SetupRouter() *chi.Mux {
 	})
 
 	r.Get("/static/*", api.HandleStatic)
+	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
 
 	return r
 }
