@@ -63,24 +63,20 @@ function BloggerHome() {
   };
 
   const handleRemoveFile = () => {
-    setFileName(""); // Clear file name state
-    fileInputRef.current.value = ""; // Clear file input
+    setFileName("");
+    fileInputRef.current.value = "";
   };
 
   const handleUploadFile = () => {
     setIsLoading(true);
     const file = fileInputRef.current.files[0];
     const formData = new FormData();
-    const token = localStorage.getItem("token");
     formData.append("file", file);
 
     axios
-      .post("http://localhost:8080/upload", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .post("http://localhost:8080/upload", formData, {withCredentials: true})
       .then(() => {
         setIsOpen(false);
-        // wait for a second
         setTimeout(() => {
           toast({
             title: (
@@ -134,7 +130,7 @@ function BloggerHome() {
           />
           {!isSmallScreen && (
             <span className={styles.logoText2}>
-              arkByte <span className="text-3xl transform scale-y-150">|</span>{" "}
+              arkByte <span className="text-3xl transform scale-y-150">|</span>
               Dashboard
             </span>
           )}

@@ -88,7 +88,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Expires:  exp_time,
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 	})
 
@@ -106,7 +106,7 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(-1 * time.Hour),
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 	})
 	w.WriteHeader(http.StatusOK)

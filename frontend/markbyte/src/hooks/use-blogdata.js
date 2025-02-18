@@ -10,12 +10,18 @@ function useBlogData() {
       const versions = newData[i].versions;
       const versionNumbers = versions.map((version) => version.version);
       const activeVersion = versions.find((version) => version.is_active);
+      // find version that is active and get its link
+      let link = activeVersion?.link || null;
+      // if link contains /static then append http://localhost:8080 to it
+      // otherwise it is the link of the blog on S3
+      if (link && link.includes("/static")) {
+        link = `http://localhost:8080${link}`;
+      }
       const date = activeVersion?.date_uploaded || null;
-
       transformedData.push({
         title: newData[i].title,
         date: date,
-        link: `http://localhost:8080/static/${newData[i].title}.html`,
+        link: link,
         latestVersion: newData[i].active_version || null,
         version: versionNumbers,
       });
@@ -28,18 +34,15 @@ function useBlogData() {
   }, []);
 
   const fetchData = useCallback(() => {
-    axios.get("http://localhost:8080/user/blog_posts", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((response) => {
-      handleData(response.data);
-    })
-    .catch((error) => {
-      console.error("Error fetching blogger's blog posts:", error);
-    });
-  }, [handleData]);
+    axios
+      .get("http://localhost:8080/user/blog_posts", { withCredentials: true })
+      .then((response) => {
+        handleData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching blogger's blog posts:", error);
+      });
+  }, [handleData]);  
 
   return { data, handleData, fetchData };
 }

@@ -11,7 +11,6 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
-  const error = false;
   const handleSignUp = () => {
     axios
       .post(
@@ -24,10 +23,10 @@ function SignUp() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       )
       .then(function (response) {
-        console.log("Response:", response);
         axios
           .post(
             "http://localhost:8080/login",
@@ -39,18 +38,19 @@ function SignUp() {
               headers: {
                 "Content-Type": "application/json",
               },
+              withCredentials: true,
             }
           )
           .then(function (response) {
-            login(response.data.token, { name: username });
+            login({ name: username });
             navigate("/");
           })
           .catch(function (error) {
-            console.log(error);
+            console.error("Error:", error);
           });
       })
       .catch(function (error) {
-        console.log("Error:", error);
+        console.error("Error:", error);
       });
   };
   const handleSubmit = (event) => {
