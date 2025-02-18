@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
-import { Modal, Box, Typography, useMediaQuery, duration } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import {
   FaFileUpload,
-  FaPenAlt,
-  FaExternalLinkAlt,
   FaUpload,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -30,8 +28,6 @@ import {
   PaginationNext,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 

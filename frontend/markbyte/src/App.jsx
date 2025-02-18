@@ -5,7 +5,7 @@ import Login from "./components/pages/Login/Login";
 import SignUp from "./components/pages/SignUp/SignUp";
 import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
 import { useAuth } from "./contexts/AuthContext";
-import { Toaster } from "./components/ui/Toaster";
+import { Toaster } from "./components/ui/toaster";
 import "./App.css";
 
 // function Footer() {
