@@ -23,7 +23,6 @@ function App() {
           <div className="content">
             <Routes>
               <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
-              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
             </Routes>
