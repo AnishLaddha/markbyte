@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -43,13 +44,16 @@ func VerifyPassword(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func GenerateJWT(username string) (string, error) {
+func GenerateJWT(username string) (string, time.Time, error) {
+	exp_time := time.Now().Add(time.Hour * 72)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour * 72).Unix(),
+		"exp":      exp_time.Unix(),
 	})
 
-	return token.SignedString(jwtSecret)
+	t, err := token.SignedString(jwtSecret)
+
+	return t, exp_time, err
 }
 
 func ValidateJWT(tokenStr string) (*jwt.Token, error) {
@@ -67,12 +71,12 @@ func ValidateJWT(tokenStr string) (*jwt.Token, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, errors.New("Invalid token claims")
+		return nil, errors.New("invalid token claims")
 	}
 
 	if exp, ok := claims["exp"].(float64); ok {
 		if int64(exp) < time.Now().Unix() {
-			return nil, errors.New("Token expired")
+			return nil, errors.New("token expired")
 		}
 	}
 
@@ -81,23 +85,35 @@ func ValidateJWT(tokenStr string) (*jwt.Token, error) {
 
 func JWTAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
+		var tokenStr string
+		cookie, err := r.Cookie("markbyte_login_token")
+		if err == nil {
+			tokenStr = cookie.Value
+		} else {
+			authHeader := r.Header.Get("Authorization")
+			if authHeader != "" {
+				tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
+
+			}
+		}
+		if tokenStr == "" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := ValidateJWT(tokenStr)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok || claims["username"] == nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		fmt.Println(claims["username"].(string))
 
 		ctx := context.WithValue(r.Context(), UsernameKey, claims["username"].(string))
 

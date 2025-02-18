@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
 )
@@ -75,13 +76,41 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := GenerateJWT(user.Username)
+	token, exp_time, err := GenerateJWT(user.Username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "markbyte_login_token",
+		Value:    token,
+		Expires:  exp_time,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+
 	err = json.NewEncoder(w).Encode(map[string]string{"token": token})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandleLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "markbyte_login_token",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(map[string]string{"message": "Logged out successfully"})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
