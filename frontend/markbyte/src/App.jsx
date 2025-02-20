@@ -17,6 +17,11 @@ import "./App.css";
 // }
 function App() {
   const { isAuthenticated } = useAuth();
+
+  // useEffect(() => {
+  //   document.documentElement.classList.add("dark");
+  // }
+  // , []);
   return (
       <Router>
         <div className="app-container">
