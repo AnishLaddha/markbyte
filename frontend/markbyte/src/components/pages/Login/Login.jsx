@@ -23,10 +23,11 @@ function Login() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+          withCredentials: true,
+        },
       )
       .then(function (response) {
-        login(response.data.token, { name: username });
+        login({ name: username });
         navigate("/");
       })
       .catch(function (error) {

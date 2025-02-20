@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -7,31 +8,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    // ideally need to move this to cookies
 
-    if (storedToken && storedUser) {
+    if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setIsAuthenticated(true);
         setUser(parsedUser);
       } catch (error) {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
   }, []);
 
-  const login = (token, userInfo) => {
-    localStorage.setItem('token', token);
+  const login = (userInfo) => {
     localStorage.setItem('user', JSON.stringify(userInfo));
     setIsAuthenticated(true);
     setUser(userInfo);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    axios.post('http://localhost:8080/logout', {}, {withCredentials: true});
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUser(null);

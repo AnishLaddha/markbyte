@@ -13,6 +13,8 @@
 .BloggerHome {
   position: relative;
   min-height: 100vh;
+  background: #f6f8fa;
+  overflow-x: hidden;
 }
 
 body {
@@ -34,49 +36,36 @@ body {
   left: 0;
   height: auto;
   z-index: 1000;
+  background-color: var(--primary-color);
   opacity: 1;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background: var(--primary-color);
   width: 100vw;
-}
-
-.logoContainer {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-left: -1rem;
+  height: 70px;
+  box-shadow: 0 4px 15px rgba(0, 59, 92, 0.2);
 }
 
 .logoText2 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: white;
 }
 
 .pageLogo2 {
-  width: 80px;
+  width: 60px;
   height: auto;
   padding: 0;
   margin: 0;
 }
 
 .loginButton{
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius);
+  padding: 0.5rem 0.5rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
   font: inherit;
   cursor: pointer;
   background: white;
+  height: 40px;
   color: var(--text-color);
   font-weight: bold;
   box-shadow: 0 4px 15px rgba(0, 59, 92, 0.2);
-}
-
-.loginButton:hover{
-  background: var(--secondary-color);
-  color: white;
 }
 
 @keyframes spin {

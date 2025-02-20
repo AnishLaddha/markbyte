@@ -17,13 +17,17 @@ import "./App.css";
 // }
 function App() {
   const { isAuthenticated } = useAuth();
+
+  // useEffect(() => {
+  //   document.documentElement.classList.add("dark");
+  // }
+  // , []);
   return (
       <Router>
         <div className="app-container">
           <div className="content">
             <Routes>
               <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
-              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
             </Routes>

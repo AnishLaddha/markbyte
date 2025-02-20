@@ -5,12 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { useMediaQuery } from "@mui/material";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import {
-  FaFileUpload,
-  FaUpload,
-  FaCheckCircle,
-} from "react-icons/fa";
+import { FaFileUpload, FaUpload, FaCheckCircle } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { Card, CardContent } from "@/components/ui/card";
+import { BookOpen, Home, Pen } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
 import { blogTablecols } from "@/constants/blogTablecols";
@@ -63,24 +61,20 @@ function BloggerHome() {
   };
 
   const handleRemoveFile = () => {
-    setFileName(""); // Clear file name state
-    fileInputRef.current.value = ""; // Clear file input
+    setFileName("");
+    fileInputRef.current.value = "";
   };
 
   const handleUploadFile = () => {
     setIsLoading(true);
     const file = fileInputRef.current.files[0];
     const formData = new FormData();
-    const token = localStorage.getItem("token");
     formData.append("file", file);
 
     axios
-      .post("http://localhost:8080/upload", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .post("http://localhost:8080/upload", formData, { withCredentials: true })
       .then(() => {
         setIsOpen(false);
-        // wait for a second
         setTimeout(() => {
           toast({
             title: (
@@ -114,133 +108,188 @@ function BloggerHome() {
         pageIndex: 0,
         pageSize: 5,
       },
-    }
-
+    },
   });
 
   useEffect(() => {
     table.setPageIndex(0);
   }, [data]);
 
-
   return (
     <div className={styles.BloggerHome}>
       <header className={styles.header2}>
-        <div className={styles.logoContainer} onClick={() => navigate("/")}>
+        <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
           <img
             src="src/assets/markbytealt.png"
             alt="MarkByte Logo"
             className={styles.pageLogo2}
           />
-          {!isSmallScreen && (
-            <span className={styles.logoText2}>
-              arkByte <span className="text-3xl transform scale-y-150">|</span>{" "}
-              Dashboard
-            </span>
-          )}
+          {!isSmallScreen && <span className={styles.logoText2}>arkByte</span>}
         </div>
-        <div style={{ display: "flex" }}>
-          <button className={`${styles.loginButton} relative`} onClick={logout}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button className={`${styles.loginButton} relative px-4 py-2 rounded-md hover:bg-gray-100 transition-all`} onClick={logout}>
             Logout &nbsp;
             <CiLogout />
           </button>
         </div>
       </header>
-      <div className="welcome-card bg-white p-6 rounded-lg shadow-lg max-w-sm ml-8 mt-12">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">
-          Hello, {user.name}.
-        </h2>
-        <p className="text-lg text-gray-600">Ready to start writing? ✍️</p>
-        <button
-          className="bg-[#084464] text-white px-6 py-3 rounded-lg mt-4 hover:bg-[#0a5a7c] transition-all duration-300 ease-in-out shadow-lg transform hover:scale-105"
-          onClick={() => setIsOpen(true)}
-        >
-          <span className="flex items-center space-x-2">
-            <FaRegPenToSquare />
-            <span>Start Writing</span>
-          </span>
-        </button>
-      </div>
-      <h1 className="text-2xl font-semibold text-[#003b5c] ml-8 mt-12">
-        My Blogs
-      </h1>
-      <hr className="mt-2 mx-8 border-t border-gray-300" />
-      <div className="mt-8 mx-8">
-        <table className="table-auto w-full border-collapse border rounded-lg shadow-lg">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border border-gray-300 px-4 py-2 bg-[#003b5c] text-white font-semibold"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="border border-gray-300 hover:bg-gray-100"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="border border-gray-300 px-4 py-2"
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex justify-center items-center mt-4 gap-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => {
-                    if (table.getCanPreviousPage()) {
-                      return table.previousPage()
-                    } 
-                  }}
-                  className={`cursor-pointer ${!table.getCanPreviousPage() ? 'cursor-not-allowed opacity-50' : ''}`}
-                />
-              </PaginationItem>
-              {Array.from({ length: table.getPageCount() }, (_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    onClick={() => table.setPageIndex(i)}
-                    isActive={table.getState().pagination.pageIndex === i}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => {
-                    if (table.getCanNextPage()) {
-                      return table.nextPage()
-                    }
-                  }}
-                  className={`cursor-pointer ${!table.getCanNextPage() ? 'cursor-not-allowed opacity-50' : ''}`}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+
+      <main className="container mx-4">
+        <div className="mt-8 ml-12">
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+            <Home className="h-8 w-8 text-[#084464]" />
+            Welcome back, {user.name}!
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Manage your blog posts and start writing new ones
+          </p>
         </div>
-      </div>
+
+        <div className="flex gap-6 ml-12 mt-10">
+          <Card className="w-[240px] bg-white relative pt-8 shadow-lg h-[200px] flex flex-col hover:shadow-xl transition-shadow">
+            <div className="absolute -top-5 left-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+                <Pen className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <CardContent className="px-6 pb-6 mt-auto flex flex-col justify-end">
+              <div>
+                <p className="text-sm text-gray-600">
+                  Ready to start writing?
+                </p>
+                <button
+                  className="bg-[#084464] text-white px-6 py-3 rounded-lg mt-4 hover:bg-[#0a5a7c] transition-all duration-300 ease-in-out shadow-lg transform hover:scale-105"
+                  onClick={() => setIsOpen(true)}
+                >
+                  <span className="flex items-center space-x-2">
+                    <FaRegPenToSquare />
+                    <span>Start Writing</span>
+                  </span>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="w-[240px] bg-white relative pt-8 shadow-lg h-[200px] flex flex-col hover:shadow-xl transition-shadow">
+            <div className="absolute -top-5 left-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <CardContent className="px-6 pb-6 mt-auto flex flex-col justify-end">
+              <h2 className="text-base font-medium text-gray-500 mb-1">
+                Total Posts
+              </h2>
+              <p className="text-3xl font-semibold text-[#003b5c]">
+                {data.length}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="bg-white shadow-lg rounded-lg p-6 ml-12 mt-12 h-auto w-auto overflow-x-auto mb-12 hover:shadow-xl transition-shadow">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-[#003b5c] flex items-center gap-2 border-b-2 border-[#003b5c] pb-2 w-fit">
+              My Blogs
+            </h1>
+            <div className="flex justify-end">
+              Showing {table.getRowModel().rows.length} of {data.length} blogs
+            </div>
+          </div>
+
+          <div className="mt-6 overflow-x-auto">
+            <table className="table-auto w-full border-collapse border-gray-500 rounded-md shadow-sm overflow-hidden">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="border border-gray-300 px-4 py-2 bg-[#003b5c] text-white font-semibold"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border border-gray-300 hover:bg-gray-100"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="border border-gray-300 px-4 py-2"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Section */}
+          <div className="flex justify-center items-center mt-6 gap-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => {
+                      if (table.getCanPreviousPage()) {
+                        return table.previousPage();
+                      }
+                    }}
+                    className={`cursor-pointer ${
+                      !table.getCanPreviousPage()
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
+                  />
+                </PaginationItem>
+                {Array.from({ length: table.getPageCount() }, (_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      onClick={() => table.setPageIndex(i)}
+                      isActive={table.getState().pagination.pageIndex === i}
+                      className="cursor-pointer bg-[#003b5c] text-white px-4 py-2 rounded-md"
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => {
+                      if (table.getCanNextPage()) {
+                        return table.nextPage();
+                      }
+                    }}
+                    className={`cursor-pointer ${
+                      !table.getCanNextPage()
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      </main>
+
       <Dialog
         open={isOpen}
         onOpenChange={(open) => {

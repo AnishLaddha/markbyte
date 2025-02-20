@@ -61,14 +61,15 @@ export const blogTablecols = [
   },
   {
     accessorKey: "publishStatus",
-    header: "Publish? (Needs to Be Configured)",
+    header: "Publish Status",
     cell: ({ row }) => (
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center">
         <button
-          className="w-[200px] px-2 py-1 border rounded-lg bg-[#084464] text-white hover:bg-[#0a5a7c] transition-all duration-300 ease-in-out"
-          onClick={() => {
-            console.log("Publishing version", selectedVersion);
-          }}
+          className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md 
+                   hover:bg-[#0a5a7c] active:bg-[#063850] 
+                   transition-all duration-200 ease-in-out
+                   shadow-sm hover:shadow-md
+                   transform hover:-translate-y-0.5"
         >
           Publish
         </button>
