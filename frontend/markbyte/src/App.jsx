@@ -1,5 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import Home from "./components/pages/Home/Home";
 import Login from "./components/pages/Login/Login";
 import SignUp from "./components/pages/SignUp/SignUp";
@@ -15,6 +17,27 @@ import "./App.css";
 //     </footer>
 //   );
 // }
+
+function DynamicBlogPost() {
+  const { user, post } = useParams();
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/${user}/${post}`)
+      .then((response) => {
+        console.log("Fetched blogger's post page:", response);
+        document.open();  // Open document stream
+        document.write(response.data); // Write full new document
+        document.close(); // Close document stream
+      })
+      .catch((error) => {
+        console.error("Error fetching blogger's post page:", error);
+      });
+  }, [user, post]);
+
+  return null; // This component does not render anything in React
+}
+
+
 function App() {
   const { isAuthenticated } = useAuth();
 
@@ -24,15 +47,12 @@ function App() {
   // , []);
   return (
       <Router>
-        <div className="app-container">
-          <div className="content">
-            <Routes>
-              <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-            </Routes>
-          </div>
-        </div>
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
+            <Route path="/:user/:post" element={<DynamicBlogPost/>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+          </Routes>
         <Toaster />
       </Router>
   );
