@@ -20,21 +20,23 @@ import "./App.css";
 
 function DynamicBlogPost() {
   const { user, post } = useParams();
-  const [htmlContent, setHtmlContent] = useState(""); // Use state for reactivity
+
   useEffect(() => {
     axios.get(`http://localhost:8080/${user}/${post}`)
       .then((response) => {
-        setHtmlContent(response.data); // Update state
+        console.log("Fetched blogger's post page:", response);
+        document.open();  // Open document stream
+        document.write(response.data); // Write full new document
+        document.close(); // Close document stream
       })
       .catch((error) => {
         console.error("Error fetching blogger's post page:", error);
       });
   }, [user, post]);
 
-  return (
-    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-  );
+  return null; // This component does not render anything in React
 }
+
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -45,16 +47,12 @@ function App() {
   // , []);
   return (
       <Router>
-        <div className="app-container">
-          <div className="content">
-            <Routes>
-              <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
-              <Route path="/:user/:post" element={<DynamicBlogPost/>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-            </Routes>
-          </div>
-        </div>
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <BloggerHome /> : <Home />} />
+            <Route path="/:user/:post" element={<DynamicBlogPost/>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+          </Routes>
         <Toaster />
       </Router>
   );

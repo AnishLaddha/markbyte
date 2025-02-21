@@ -1,5 +1,4 @@
-:root {
-    /* Design Tokens */
+/* :root {
     --primary-color: #003B5C;
     --secondary-color: #005A7A;
     --text-color: #003B5C;
@@ -10,7 +9,6 @@
     --transition-speed: 0.3s;
 }
 
-/* Make sure the root container fills the full viewport height */
 html, body, #root {
     height: 100%;
     margin: 0;
@@ -19,19 +17,17 @@ html, body, #root {
     flex-direction: column;
   }
   
-  /* The outermost container */
   .app-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensures it takes the full viewport height */
+    min-height: 100vh; 
   }
   
-  /* Ensures that the content section expands while pushing the footer down */
   .content {
     flex: 1;
   }
   
-  /* Footer styling */
+
   .footer {
   width: 100%;
   height: 3rem;
@@ -52,4 +48,4 @@ html, body, #root {
   align-items: center;
 }
 
-  
+   */
