@@ -34,3 +34,55 @@ func HandleFetchAllBlogPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// struct for publish post version that contains a username title and version
+type PublishPostVersion struct {
+	Username string `json:"username"`
+	Title    string `json:"title"`
+	Version  string `json:"version"`
+}
+
+func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(auth.UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var postVersionReq PublishPostVersion
+	err := json.NewDecoder(r.Body).Decode(&postVersionReq)
+	if err != nil {
+		http.Error(w, "Failed to decode request", http.StatusBadRequest)
+		return
+	}
+
+	if postVersionReq.Username != username {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var postVersions db.BlogPostVersionsData
+	postVersions, err = blogPostDataDB.FetchAllPostVersions(r.Context(), postVersionReq.Username, postVersionReq.Title)
+	if err != nil {
+		http.Error(w, "Failed to fetch post versions", http.StatusInternalServerError)
+		return
+	}
+
+	for _, post := range postVersions.Versions {
+		if post.IsActive {
+			err = blogPostDataDB.UpdateActiveStatus(r.Context(), postVersionReq.Username, postVersionReq.Title, post.Version, false)
+			if err != nil {
+				http.Error(w, "Failed to update active status", http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	err = blogPostDataDB.UpdateActiveStatus(r.Context(), postVersionReq.Username, postVersionReq.Title, postVersionReq.Version, true)
+	if err != nil {
+		http.Error(w, "Failed to update active status", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
