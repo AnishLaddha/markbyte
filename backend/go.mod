@@ -12,6 +12,7 @@ require (
 	github.com/go-chi/jwtauth/v5 v5.3.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1
+	github.com/redis/go-redis/v9 v9.7.1
 	github.com/yuin/goldmark v1.7.8
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	go.mongodb.org/mongo-driver/v2 v2.0.0
@@ -46,7 +47,6 @@ require (
 	github.com/lestrrat-go/iter v1.0.2 // indirect
 	github.com/lestrrat-go/jwx/v2 v2.1.3 // indirect
 	github.com/lestrrat-go/option v1.0.1 // indirect
-	github.com/redis/go-redis/v9 v9.7.1 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
