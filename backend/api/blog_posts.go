@@ -2,10 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
+	"github.com/shrijan-swaminathan/markbyte/backend/db/redisdb"
 )
 
 var blogPostDataDB db.BlogPostDataDB
@@ -82,6 +84,13 @@ func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to update active status", http.StatusInternalServerError)
 		return
+	}
+
+	endpoint := "/" + postVersionReq.Username + "/" + postVersionReq.Title
+
+	err = redisdb.DeleteEndpoint(r.Context(), endpoint)
+	if err != nil {
+		fmt.Printf("Error removing old endpoint from redis")
 	}
 
 	w.WriteHeader(http.StatusOK)

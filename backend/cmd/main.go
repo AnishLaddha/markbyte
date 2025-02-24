@@ -7,6 +7,7 @@ import (
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db/mdb"
+	"github.com/shrijan-swaminathan/markbyte/backend/db/redisdb"
 	"github.com/shrijan-swaminathan/markbyte/backend/server"
 )
 
@@ -23,10 +24,16 @@ func main() {
 	}
 	api.SetBlogPostDataDB(blogPostDataDB)
 
+	err = redisdb.Init()
+	if err != nil {
+		fmt.Printf("Failed to create Redis Instance")
+	}
+
 	port := ":8080"
 	fmt.Printf("Starting server on %s\n", port)
 	err = http.ListenAndServe(port, server.SetupRouter())
 	if err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
 	}
+	fmt.Printf("Server Started.")
 }
