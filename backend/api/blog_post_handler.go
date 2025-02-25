@@ -22,11 +22,8 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 	//try redis
 	if redisdb.RedisActive {
 		htmlContent, err = redisdb.GetEndpoint(r.Context(), endpoint)
-		if err != nil && err != redis.Nil {
-			fmt.Printf("Some error with redis get: handlefetchblogpost")
-		} else if err == redis.Nil || htmlContent == "" {
-			fmt.Printf("Redis cache miss")
-		} else {
+		if err == nil && htmlContent != "" {
+			fmt.Printf("Cache hit\n")
 			w.Header().Set("Content-Type", "text/html")
 			_, err = w.Write([]byte(htmlContent))
 			if err != nil {
@@ -34,6 +31,10 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			return
+		} else if err == redis.Nil || htmlContent == "" {
+			fmt.Printf("Redis cache miss\n")
+		} else {
+			fmt.Printf("Some error with redis get: handlefetchblogpost\n")
 		}
 	}
 

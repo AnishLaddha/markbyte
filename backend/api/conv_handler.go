@@ -11,6 +11,7 @@ import (
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
+	"github.com/shrijan-swaminathan/markbyte/backend/db/redisdb"
 	"github.com/shrijan-swaminathan/markbyte/backend/features/markdown_render"
 )
 
@@ -123,6 +124,14 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to save blog post data", http.StatusInternalServerError)
 		return
+	}
+
+	if redisdb.RedisActive {
+		endpoint := "/" + username + "/" + baseFilename
+		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
+		if err != nil {
+			fmt.Printf("Error removing old endpoint from redis")
+		}
 	}
 
 	// header + response

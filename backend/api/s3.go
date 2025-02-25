@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -98,26 +96,26 @@ func ReadHTMLfromS3(ctx context.Context, key string, cred S3Credentials) (string
 	return buf.String(), nil
 }
 
-func ReadHTMLFromURL(ctx context.Context, url string) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to create HTTP request: %w", err)
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch HTML from URL: %w", err)
-	}
-	defer resp.Body.Close()
+// func ReadHTMLFromURL(ctx context.Context, url string) (string, error) {
+// 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+// 	if err != nil {
+// 		return "", fmt.Errorf("failed to create HTTP request: %w", err)
+// 	}
+// 	resp, err := http.DefaultClient.Do(req)
+// 	if err != nil {
+// 		return "", fmt.Errorf("failed to fetch HTML from URL: %w", err)
+// 	}
+// 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+// 	if resp.StatusCode != http.StatusOK {
+// 		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+// 	}
 
-	htmlBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %w", err)
-	}
+// 	htmlBytes, err := io.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return "", fmt.Errorf("failed to read response body: %w", err)
+// 	}
 
-	return string(htmlBytes), nil
+// 	return string(htmlBytes), nil
 
-}
+// }

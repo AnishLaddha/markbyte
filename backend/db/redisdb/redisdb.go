@@ -29,9 +29,9 @@ func Init() error {
 	return nil
 }
 
-func GetClient() *redis.Client {
-	return client
-}
+// func GetClient() *redis.Client {
+// 	return client
+// }
 
 func SetEndpoint(ctx context.Context, endpoint string, htmlContent *string) error {
 	if htmlContent == nil {

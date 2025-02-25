@@ -26,7 +26,7 @@ func main() {
 
 	err = redisdb.Init()
 	if err != nil {
-		fmt.Printf("Failed to create Redis Instance")
+		fmt.Printf("\nFailed to create Redis Instance\n")
 	}
 
 	port := ":8080"
