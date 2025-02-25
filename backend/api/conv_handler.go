@@ -111,6 +111,8 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		url = s3URL
 	}
 
+	endpoint := "/" + username + "/" + baseFilename
+
 	newBlogPostData := db.BlogPostData{
 		User:         username,
 		Title:        baseFilename,
@@ -118,6 +120,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		Version:      fmt.Sprintf("%d", newVersion),
 		IsActive:     true,
 		Link:         &url,
+		DirectLink:   &endpoint,
 	}
 
 	_, err = blogPostDataDB.CreateBlogPost(r.Context(), &newBlogPostData)
@@ -127,7 +130,6 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if redisdb.RedisActive {
-		endpoint := "/" + username + "/" + baseFilename
 		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
 		if err != nil {
 			fmt.Printf("Error removing old endpoint from redis")

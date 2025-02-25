@@ -9,6 +9,7 @@ import (
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoBlogPostDataRepository struct {
@@ -43,7 +44,7 @@ func (r *MongoBlogPostDataRepository) DeleteBlogPost(ctx context.Context, userna
 		return err
 	}
 	if res.DeletedCount == 0 {
-		return fmt.Errorf("No blog post found with the given details")
+		return fmt.Errorf("no blog post found with the given details")
 	}
 	return nil
 }
@@ -57,7 +58,7 @@ func (r *MongoBlogPostDataRepository) UpdateActiveStatus(ctx context.Context, us
 	}
 
 	if res.ModifiedCount == 0 {
-		return fmt.Errorf("No blog post found with the given details")
+		return fmt.Errorf("no blog post found with the given details")
 	}
 	return nil
 }
@@ -120,4 +121,21 @@ func (r *MongoBlogPostDataRepository) FetchAllPostVersions(ctx context.Context, 
 	}
 
 	return blog_data, nil
+}
+
+func (r *MongoBlogPostDataRepository) FetchAllActiveBlogPosts(ctx context.Context, username string) ([]db.BlogPostData, error) {
+	filter := bson.M{"is_active": true, "user": username}
+	opts := options.Find().SetSort(bson.D{{Key: "date_uploaded", Value: -1}})
+	cursor, err := r.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var blogs []db.BlogPostData
+	if err = cursor.All(ctx, &blogs); err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
 }

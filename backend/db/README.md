@@ -10,3 +10,9 @@ docker run -d \
   -v mongodb_data:/data/db \
   mongodb/mongodb-community-server:latest
 ```
+
+## RUN REDIS WITH DOCKER
+
+```bash
+docker run --name redis-container -p 6379:6379 -d redis
+```

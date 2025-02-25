@@ -24,6 +24,7 @@ type BlogPostData struct {
 	Version      string    `json:"version" bson:"version"`
 	Link         *string   `json:"link,omitempty" bson:"link,omitempty"`
 	IsActive     bool      `json:"is_active" bson:"is_active"`
+	DirectLink   *string   `json:"direct_link,omitempty" bson:"direct_link,omitempty"`
 }
 
 type BlogPostVersionsData struct {
@@ -40,4 +41,5 @@ type BlogPostDataDB interface {
 	UpdateActiveStatus(ctx context.Context, username string, title string, version string, isActive bool) error
 	FetchAllUserBlogPosts(ctx context.Context, username string) ([]BlogPostVersionsData, error)
 	FetchAllPostVersions(ctx context.Context, username string, title string) (BlogPostVersionsData, error)
+	FetchAllActiveBlogPosts(ctx context.Context, username string) ([]BlogPostData, error)
 }
