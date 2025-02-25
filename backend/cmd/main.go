@@ -35,5 +35,4 @@ func main() {
 	if err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
 	}
-	fmt.Printf("Server Started.")
 }

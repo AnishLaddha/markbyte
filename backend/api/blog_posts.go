@@ -97,19 +97,14 @@ func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-type FetchUserActiveReq struct {
-	Username string `json:"username"`
-}
-
 func HandleFetchUserActivePosts(w http.ResponseWriter, r *http.Request) {
-	var req FetchUserActiveReq
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		http.Error(w, "Failed to decode request", http.StatusBadRequest)
+	username := r.URL.Query().Get("user")
+	if username == "" {
+		http.Error(w, "No user provided", http.StatusBadRequest)
 		return
 	}
 
-	blogs, err := blogPostDataDB.FetchAllActiveBlogPosts(r.Context(), req.Username)
+	blogs, err := blogPostDataDB.FetchAllActiveBlogPosts(r.Context(), username)
 	if err != nil {
 		http.Error(w, "Failed to fetch active posts", http.StatusInternalServerError)
 		return
