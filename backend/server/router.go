@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -50,6 +51,8 @@ func SetupRouter() *chi.Mux {
 
 	r.Get("/static/*", api.HandleStatic)
 	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
+
+	fmt.Printf("Server Started.")
 
 	return r
 }
