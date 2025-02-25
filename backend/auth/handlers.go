@@ -24,6 +24,16 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if usrReq.Username == "" || usrReq.Password == "" {
+		http.Error(w, "Username and Password are required", http.StatusBadRequest)
+		return
+	}
+
+	if usrReq.Username == "signup" || usrReq.Username == "login" || usrReq.Username == "logout" || usrReq.Username == "upload" || usrReq.Username == "user" || usrReq.Username == "publish" {
+		http.Error(w, "Username is not allowed", http.StatusBadRequest)
+		return
+	}
+
 	existingUser, err := userDB.GetUser(r.Context(), usrReq.Username)
 	if err == nil && existingUser != nil {
 		http.Error(w, "User already exists", http.StatusBadRequest)
