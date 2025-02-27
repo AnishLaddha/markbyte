@@ -10,15 +10,38 @@
   --transition-speed: 0.3s;
 }
 
-/* Reduced keyframe complexity */
+.tagline {
+  font-family: 'Consolas', monospace;
+  font-weight: 400;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+  animation-delay: 0.5s;
+  position: relative;
+}
+
+.tagline::after {
+  content: '|';
+  position: absolute;
+  animation: blinkCursor 1s step-end infinite;
+  font-size: 1.7rem;
+  cursor: text;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+@keyframes blinkCursor {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
   }
 }
 
@@ -39,15 +62,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.home-container {
-  max-width: 3000px;
-  margin: 0 auto;
-  padding-left: var(--spacing-md);
-  padding-right: var(--spacing-md);
-  animation: fadeIn 0.8s ease-out;
-}
-
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -59,7 +73,6 @@ body {
   height: auto;
   z-index: 1000;
   opacity: 1;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
@@ -75,25 +88,6 @@ body {
   color: white;
 }
 
-.login-button,
-.signup-button {
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font: inherit;
-  cursor: pointer;
-  background: white;
-  color: var(--text-color);
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0, 59, 92, 0.2);
-}
-
-.signup-button {
-  margin-left: 1rem;
-}
-
 .header-links {
   display: flex;
   align-items: center;
@@ -104,12 +98,6 @@ body {
   underline: 1px solid white;
 }
 
-.login-button:hover,
-.signup-button:hover {
-  background: var(--primary-color);
-  color: white;
-}
-
 @media screen and (max-width: 768px) {
   .header {
     padding: 0.5rem var(--spacing-sm);
@@ -118,68 +106,9 @@ body {
   .logo-text {
     font-size: 1.2rem;
   }
-
-  .login-button,
-  .signup-button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-  }
-}
-
-.hero {
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #ffffff;
-  box-shadow: 0 4px 15px rgba(0, 59, 92, 0.2);
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    grey 50%,
-    var(--secondary-color)
-  );
-}
-
-.hero h1 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  margin-bottom: var(--spacing-sm);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  letter-spacing: -1px;
-}
-
-.tagline {
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.5s;
-}
-
-.user-welcome {
-  padding: var(--spacing-md);
-  background: linear-gradient(145deg, #ffffff, #f3f3f3);
-  border-radius: var(--border-radius);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  margin-top: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  transition: all var(--transition-speed) ease;
-  width: 20%;
 }
 
 
-
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
-  .home-container {
-    padding: var(--spacing-sm);
-  }
-
-  .hero h1 {
-    font-size: 2rem;
-  }
-}
-
-/* Performance and accessibility enhancements */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -224,62 +153,5 @@ svg {
   background-color: var(--secondary-color);
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-.loading-icon {
-  font-size: 6rem;
-  animation: spin 3s linear infinite;
-  color: white;
-}
-
-@keyframes fadeIn2 {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 0.9;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.9;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.loading-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: var(--primary-color);
-  color: white;
-  font-size: 1.5rem;
-  z-index: 1000;
-  position: fixed;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  animation: fadeIn2 0.5s ease-out forwards;
-}
-
-.loading-screen.fade-out {
-  animation: fadeOut 0.5s ease-out forwards;
-}
-
-.loading-text {
-  margin-top: 2rem;
-}
 

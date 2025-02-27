@@ -4,7 +4,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 export const blogTablecols = [
   {
     accessorKey: "title",
-    header: "Blog Name",
+    header: "Blog Post Name",
   },
   {
     accessorKey: "date",
@@ -24,7 +24,7 @@ export const blogTablecols = [
         rel="noopener noreferrer"
         className="flex items-center"
       >
-        View Blog <FaExternalLinkAlt className="ml-2" />
+        View Post <FaExternalLinkAlt className="ml-2" />
       </a>
     ),
   },

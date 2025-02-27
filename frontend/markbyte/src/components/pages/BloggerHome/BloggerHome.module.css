@@ -13,7 +13,6 @@
 .BloggerHome {
   position: relative;
   min-height: 100vh;
-  background: #f6f8fa;
   overflow-x: hidden;
 }
 
@@ -24,23 +23,6 @@ body {
   margin: 0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-}
-
-.header2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem var(--spacing-md);
-  position: sticky;
-  top: 0;
-  left: 0;
-  height: auto;
-  z-index: 1000;
-  background-color: var(--primary-color);
-  opacity: 1;
-  width: 100vw;
-  height: 70px;
-  box-shadow: 0 4px 15px rgba(0, 59, 92, 0.2);
 }
 
 .logoText2 {
@@ -56,7 +38,7 @@ body {
   margin: 0;
 }
 
-.loginButton{
+.loginButton {
   padding: 0.5rem 0.5rem;
   display: flex;
   font: inherit;
@@ -86,8 +68,12 @@ body {
 }
 
 @keyframes fadeOut {
-  from { opacity: 0.9; }
-  to { opacity: 0; } /* 0.5s fade-out */
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  } /* 0.5s fade-out */
 }
 
 .loadingIcon {
@@ -95,7 +81,6 @@ body {
   animation: spin 3s linear infinite;
   color: white;
 }
-
 
 .loadingScreen {
   display: flex;
@@ -121,4 +106,21 @@ body {
 
 .loadingText {
   margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card_transition {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+  animation-delay: 0.5s;
 }

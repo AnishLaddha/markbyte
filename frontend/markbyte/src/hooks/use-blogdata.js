@@ -12,10 +12,15 @@ function useBlogData() {
       const activeVersion = versions.find((version) => version.is_active);
       // find version that is active and get its link
       let link = activeVersion?.link || null;
+      let directLink = activeVersion?.direct_link || null;
       // if link contains /static then append http://localhost:8080 to it
       // otherwise it is the link of the blog on S3
-      if (link && link.includes("/static")) {
-        link = `http://localhost:8080${link}`;
+      // will ultimately be changed to be markbyte.xyz/user/blogname
+      if (link && !link.includes("/static")) {
+        link = "http://localhost:5173" + directLink;
+      }
+      else{
+        link = "http://localhost:8080" + link;
       }
       const date = activeVersion?.date_uploaded || null;
       transformedData.push({
