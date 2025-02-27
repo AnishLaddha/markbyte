@@ -222,11 +222,11 @@ function BloggerHome() {
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
               <CardContent className="px-6 pb-6 mt-auto flex flex-col justify-end">
-                <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-100 opacity-80">
-                  <h2 className="text-base font-medium text-gray-500 mb-1">
+                <div className="mt-4 bg-[#003b5c] p-4 rounded-lg opacity-90">
+                  <h2 className="text-base font-medium text-gray-100 mb-1">
                     Total Posts
                   </h2>
-                  <p className="text-4xl font-bold text-[#003b5c]">
+                  <p className="text-4xl font-bold text-white">
                     {data.length}
                   </p>
                 </div>
@@ -275,17 +275,17 @@ function BloggerHome() {
               <h1 className="text-2xl font-bold text-[#003b5c] inline-flex items-center gap-2 whitespace-nowrap">
                 <Notebook className="h-6 w-6" />
                 My Blog Posts
-                <span className="text-sm bg-[#003b5c] text-white px-3 py-1 rounded-full">
+                <span className="text-sm bg-[#003b5c] text-white px-3 py-1 rounded-full ml-1">
                   {data.length}
                 </span>
               </h1>
 
               <div className="relative flex-end">
-                <Search className="h-4 w-4 absolute top-3 left-3 text-gray-400" />
+                <Search className="h-4 w-4 absolute top-2.5 left-3 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search posts..."
-                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-[#003b5c] focus:border-transparent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />

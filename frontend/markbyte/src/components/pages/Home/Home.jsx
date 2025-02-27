@@ -70,7 +70,7 @@ function Home() {
             <div className="flex justify-center">
               <a
                 href="/auth?tab=signup"
-                className="items-center bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-medium py-3 px-6 rounded-lg transition duration-300 shadow-lg cursor-pointer hover:from-blue-800 hover:to-cyan-500"
+                className="items-center bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 shadow-lg cursor-pointer hover:bg-blue-800"
               >
                 Upload Your First Blog &rarr;
               </a>
