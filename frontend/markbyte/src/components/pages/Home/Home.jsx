@@ -20,7 +20,7 @@ function Home() {
             alt="MarkByte Logo"
             className="page-logo-2"
           />
-          {!isSmallScreen && <span className="logo-text">arkByte</span>}
+          {!isSmallScreen && <span className="text-3xl font-bold">arkByte</span>}
         </div>
         <div className="flex gap-6 items-center">
           <a
@@ -42,7 +42,7 @@ function Home() {
             Login <CiLogin className="ml-2 text-lg " />
           </button>
           <button
-            className="bg-white hover:bg-gray-300 text-black font-semibold py-2 px-4 rounded min-w-[100px] transition duration-300 text-lg"
+            className="bg-white hover:bg-gray-300 text-black font-semibold py-2 px-4 rounded min-w-[100px] transition-all duration-300 ease-in-out"
             onClick={() => navigate("/auth?tab=signup")}
           >
             Sign Up
@@ -53,7 +53,7 @@ function Home() {
         <div className="container mx-auto px-4 z-20">
           <div className="max-w-3xl mx-auto text-center z-10">
             <div className="relative">
-              <h1 className="text-5xl font-bold mb-4 leading-tight z-10">
+              <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight tracking-tight">
                 Welcome to MarkByte.
               </h1>
               {isSmallScreen2 && (
@@ -64,13 +64,13 @@ function Home() {
                 />
               )}
             </div>
-            <p className="tagline text-xl mb-8 text-gray-200">
+            <p className="tagline text-xl md:text-2xl mb-8 text-blue-100 font-light">
               The future of blogging is written in Markdown
             </p>
-            <div class="flex justify-center">
+            <div className="flex justify-center">
               <a
                 href="/auth?tab=signup"
-                class="items-center bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-medium py-3 px-6 rounded-lg transition duration-300 shadow-lg cursor-pointer hover:from-blue-800 hover:to-cyan-500"
+                className="items-center bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-medium py-3 px-6 rounded-lg transition duration-300 shadow-lg cursor-pointer hover:from-blue-800 hover:to-cyan-500"
               >
                 Upload Your First Blog &rarr;
               </a>

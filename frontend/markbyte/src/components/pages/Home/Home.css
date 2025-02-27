@@ -82,12 +82,6 @@ body {
   margin-left: -1rem;
 }
 
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-}
-
 .header-links {
   display: flex;
   align-items: center;

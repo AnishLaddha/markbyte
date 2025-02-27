@@ -1,13 +1,13 @@
 import styles from "./BloggerHome.module.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useMediaQuery } from "@mui/material";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { FaFileUpload, FaUpload, FaCheckCircle } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Home, Pen, Notebook } from "lucide-react";
+import { BookOpen, Home, Pen, Notebook, Search } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
 import { blogTablecols } from "@/constants/blogTablecols";
@@ -44,6 +44,7 @@ function BloggerHome() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const fileInputRef = useRef(null);
   const columns = blogTablecols;
@@ -106,8 +107,14 @@ function BloggerHome() {
       });
   };
 
+  const filteredData = useMemo(() => {
+    return data.filter((item) =>
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, searchTerm]);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -121,7 +128,7 @@ function BloggerHome() {
 
   useEffect(() => {
     table.setPageIndex(0);
-  }, [data]);
+  }, [data, searchTerm]);
 
   return (
     <div
@@ -273,8 +280,15 @@ function BloggerHome() {
                 </span>
               </h1>
 
-              <div className="text-sm text-gray-600 bg-gray-100 px-4 py-2 rounded-lg">
-                Showing {table.getRowModel().rows.length} of {data.length} posts
+              <div className="relative flex-end">
+                <Search className="h-4 w-4 absolute top-3 left-3 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search posts..."
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
 
