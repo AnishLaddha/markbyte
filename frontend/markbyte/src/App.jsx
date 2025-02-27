@@ -9,12 +9,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Home from "./components/pages/Home/Home";
 import Auth from "./components/pages/Auth/Auth";
-import Loading from "./components/pages/Loading/Loading";
+// import Loading from "./components/pages/Loading/Loading";
+import About from "./components/pages/About/About";
 import BloggerLandingPage from "./components/pages/BloggerLanding/BloggerLanding";
 import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
-import { motion} from "framer-motion";
 import "./App.css";
 
 // function Footer() {
@@ -51,9 +51,7 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated !== undefined) {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      setIsLoading(false); // will keep loading until isAuthenticated is defined
     }
   }, [isAuthenticated]);
 
@@ -64,22 +62,15 @@ function App() {
           path="/"
           element={
             isLoading ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Loading />
-              </motion.div>
+              console.log("Loading...") // This will simply log "Loading..." to the console
             ) : !isAuthenticated ? (
               <Home />
             ) : (
-              <BloggerHome />
+              <BloggerHome /> 
             )
           }
         />
-        <Route path="/loading" element={<Loading />} />
+        <Route path="/about" element={<About />} />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
         <Route path="/:username" element={<BloggerLandingPage />} />
         <Route

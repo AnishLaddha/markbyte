@@ -1,3 +1,4 @@
+// MarkByte's Official Loading Screen
 import { FaPen } from "react-icons/fa";
 
 function Loading() {

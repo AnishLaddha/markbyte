@@ -38,7 +38,7 @@ function BloggerLandingPage() {
             alt="MarkByte Logo"
             className="h-8 w-auto"
           />
-          {!isSmallScreen && <span className={styles.logoText2}>arkByte</span>}
+          {!isSmallScreen && <span className="text-xl font-semibold">arkByte</span>}
         </div>
         <div className="flex items-center gap-2">
           {isAuthenticated && (
@@ -83,7 +83,7 @@ function BloggerLandingPage() {
             blogList.map((post) => (
               <Card
                 key={post.user + post.title}
-                className="overflow-hidden md:w-[80%] cursor-pointer transition-shadow duration-300 ease-in-out shadow-none hover:shadow-lg"
+                className="overflow-hidden md:w-[80%] md:h-[200px] cursor-pointer transition-shadow duration-300 ease-in-out shadow-none hover:shadow-lg"
                 onClick={() => navigate(post.link)}
               >
                 <div className="flex flex-col md:flex-row">
@@ -92,7 +92,7 @@ function BloggerLandingPage() {
                       <img
                         src="/assets/markbytealt.png"
                         alt="MarkByte Logo"
-                        className="h-[40%] w-[40%] object-contain opacity-50"
+                        className="h-full w-full object-contain opacity-50"
                       />
                     </div>
                   )}

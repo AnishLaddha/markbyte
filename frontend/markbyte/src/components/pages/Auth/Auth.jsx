@@ -7,7 +7,7 @@ import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
-
+import { motion } from "framer-motion";
 function Auth() {
   const [activeTab, setActiveTab] = useState("login");
   const [lusername, setLusername] = useState("");
@@ -69,17 +69,13 @@ function Auth() {
       username: susername,
       password: spassword,
       email: semail || "",
-    }
+    };
     e.preventDefault();
     axios
-      .post(
-        "http://localhost:8080/signup",
-        signup_data,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      )
+      .post("http://localhost:8080/signup", signup_data, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      })
       .then((response) => {
         axios
           .post(
@@ -111,11 +107,7 @@ function Auth() {
       <div className="absolute left-[-15%] top-1/6 h-[450px] w-[350px] -rotate-15 rounded-[120px] bg-blue-500 opacity-10 blur-[130px] z-0"></div>
       <div className="absolute right-[-10%] bottom-1/4 h-[550px] w-[450px] rotate-40 rounded-[130px] bg-blue-500 opacity-10 blur-[140px] z-0"></div>
       <Link to="/">
-        <img
-          src="/assets/markbytealt.png"
-          alt="Logo"
-          className="page-logo"
-        />
+        <img src="/assets/markbytealt.png" alt="Logo" className="page-logo" />
       </Link>
       <div className="login-container">
         <div className="login-box">
@@ -135,10 +127,16 @@ function Auth() {
               </div>
               <h2>Login</h2>
               {errorMsg && (
-                <div className="error-message">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="error-message"
+                >
                   <CiWarning />
                   {errorMsg}
-                </div>
+                </motion.div>
               )}
               <form className="login-form" onSubmit={handleLogin}>
                 <div className="input-container">

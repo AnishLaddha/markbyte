@@ -24,13 +24,7 @@ function Home() {
         </div>
         <div className="flex gap-6 items-center">
           <a
-            href="/"
-            className="text-white font-semibold rounded text-lg transition-all duration-300"
-          >
-            Home
-          </a>
-          <a
-            href="#"
+            href="/about"
             className="text-white font-semibold rounded text-lg transition-all duration-300"
           >
             About
