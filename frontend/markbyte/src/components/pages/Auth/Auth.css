@@ -10,27 +10,26 @@
   --transition-speed: 0.3s;
 }
 
-/* Logo at the top-left of the page */
+/* Logo */
 .page-logo {
   position: absolute;
-  top: 20px; /* Adjust as needed */
-  left: 20px; /* Adjust as needed */
-  width: 80px; /* Adjust the size */
+  top: 20px;
+  left: 20px;
+  width: 80px;
   height: auto;
   border-radius: var(--border-radius);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Center the login box */
-.login-container {
+/* Container (used for both login and signup) */
+.login-container, .signup-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-/* The login box */
-.login-box {
+/* Box (used for both login and signup) */
+.login-box, .signup-box {
   width: 350px;
   padding: 30px;
   background: #fff;
@@ -41,13 +40,14 @@
   position: relative;
 }
 
-/* Login title */
-.login-box h2 {
+/* Title (used for both login and signup) */
+.login-box h2, .signup-box h2 {
   margin-bottom: 20px;
   color: #333;
   font-size: 24px;
 }
-/* Input container styling */
+
+/* Input container */
 .input-container {
   position: relative;
   width: 100%;
@@ -56,18 +56,18 @@
   margin-bottom: 20px;
 }
 
-/* Icon styling */
-.input-icon {
+/* Icon */
+.icon {
   position: absolute;
   left: 12px;
   color: gray;
   font-size: 18px;
 }
 
-/* Consolidated input styling */
+/* Input */
 .input-container input {
   width: 100%;
-  padding: 10px 10px 10px 40px; /* Extra left padding for the icon */
+  padding: 10px 10px 10px 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
@@ -79,8 +79,8 @@
   color: #aaa;
 }
 
-/* Login button */
-.login-form button {
+/* Button (used for both login and signup) */
+.login-form button, .signup-form button {
   width: 100%;
   padding: 12px;
   background: var(--primary-color);
@@ -92,44 +92,46 @@
   transition: background 0.3s ease;
 }
 
-.login-form button:hover {
+.login-form button:hover, .signup-form button:hover {
   background: var(--secondary-color);
 }
 
-/* Sign-up link */
-.signup-link {
+/* Link (used for both login and signup) */
+.signup-link, .login-link {
   margin-top: 15px;
   font-size: 14px;
   color: var(--secondary-color);
 }
 
-.signup-link a {
+.signup-link a, .login-link a {
   color: var(--text-color) !important;
   text-decoration: none;
 }
 
-.signup-link a:hover {
+.signup-link a:hover, .login-link a:hover {
   text-decoration: underline;
 }
 
+/* Error message */
 .error-message {
   background-color: red;
   color: white;
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 15px;
-  margin-top:0px;
+  margin-top: 0px;
   font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
-  align-items: center; /* Aligns icon and text vertically */
-  justify-content: center; /* Optionally center content horizontally */
+  align-items: center;
+  justify-content: center;
 }
 
 .error-message svg {
   margin-right: 8px;
 }
 
+/* Icon container */
 .icon-container {
   position: absolute;
   top: -35px;
@@ -140,6 +142,7 @@
   border-radius: 100%;
 }
 
+/* User icon */
 .user-icon {
   font-size: 60px;
   color: gray;
