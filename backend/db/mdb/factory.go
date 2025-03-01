@@ -41,3 +41,19 @@ func NewBlogPostDataDB(uri, dbName, collectionName string) (db.BlogPostDataDB, e
 
 	return NewMongoBlogPostDataRepository(client, dbName, collectionName), nil
 }
+
+func NewMongoAnalyticsDB(uri, dbName, collectionName string) (db.AnalyticsDB, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(options.Client().ApplyURI(uri))
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)
+	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, fmt.Errorf("failed to ping MongoDB: %w", err)
+	}
+
+	return NewMongoAnalyticsRepository(client, dbName, collectionName), nil
+}
