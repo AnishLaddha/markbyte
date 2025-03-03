@@ -88,9 +88,9 @@ function BloggerLandingPage() {
                 className="overflow-hidden md:w-[80%] md:h-[200px] cursor-pointer transition-shadow duration-300 ease-in-out shadow-none hover:shadow-lg"
                 onClick={() => {
                   if (post.link.includes("static")) {
-                    navigate(post.link);
+                    window.open(post.link, "_blank");
                   } else {
-                    navigate(post.direct_link);
+                    window.open(post.direct_link, "_blank");
                   }
                 }}
               >
