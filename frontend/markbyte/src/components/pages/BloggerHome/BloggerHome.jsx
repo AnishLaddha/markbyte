@@ -138,7 +138,7 @@ function BloggerHome() {
                         title: "Version Published Successfully",
                         description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
                         action: (
-                          <FaCheckCircle size={20} className="text-green-500" />
+                          <FaCheckCircle size={30} className="text-white" />
                         ),
                         className:
                           "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
@@ -197,7 +197,7 @@ function BloggerHome() {
             title: <div className="flex items-center">File Uploaded</div>,
             description: `Your file, "${fileName}", has been uploaded successfully.`,
             variant: "success",
-            action: <FaCheckCircle size={20} className="text-green-500" />,
+            action: <FaCheckCircle size={30} className="text-white" />,
             className:
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
