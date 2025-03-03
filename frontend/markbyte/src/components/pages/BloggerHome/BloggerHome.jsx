@@ -4,13 +4,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useMediaQuery } from "@mui/material";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { FaFileUpload, FaUpload, FaCheckCircle } from "react-icons/fa";
+import {
+  FaFileUpload,
+  FaUpload,
+  FaCheckCircle,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Home, Pen, Notebook, Search } from "lucide-react";
+import { BookOpen, Home, Pen, Notebook, Search, Trash2 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
-import { blogTablecols } from "@/constants/blogTablecols";
+// import { blogTablecols } from "@/constants/blogTablecols";
 import UserDropdown from "@/components/ui/profiledropdown";
 import {
   Dialog,
@@ -47,7 +52,120 @@ function BloggerHome() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const fileInputRef = useRef(null);
-  const columns = blogTablecols;
+  const blogTablecols = [
+    {
+      accessorKey: "title",
+      header: "Blog Post Name",
+    },
+    {
+      accessorKey: "date",
+      header: "Date Published",
+      cell: ({ getValue }) => {
+        const date = new Date(getValue());
+        return isNaN(date) ? "Invalid Date" : date.toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "link",
+      header: "Link",
+      cell: ({ getValue }) => (
+        <a
+          href={getValue()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center"
+        >
+          View Post <FaExternalLinkAlt className="ml-2" />
+        </a>
+      ),
+    },
+    {
+      accessorKey: "versionAndPublish",
+      header: "Version",
+      cell: ({ row }) => {
+        const [selectedVersion, setSelectedVersion] = useState(
+          row.original.latestVersion
+        );
+
+        useEffect(() => {
+          setSelectedVersion(row.original.latestVersion);
+        }, [row.original.latestVersion]);
+
+        const showPublishButton =
+          selectedVersion !== row.original.latestVersion;
+
+        return (
+          <div className="flex items-center gap-4">
+            <select
+              value={selectedVersion}
+              onChange={(e) => setSelectedVersion(e.target.value)}
+              className="w-full px-2 py-1 border rounded-lg"
+            >
+              {Array.isArray(row.original.version) ? (
+                row.original.version.map((version) => (
+                  <option key={version} value={version}>
+                    {version}
+                  </option>
+                ))
+              ) : (
+                <option value={row.original.version}>
+                  {row.original.version}
+                </option>
+              )}
+            </select>
+
+            {showPublishButton ? (
+              <button
+                className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md 
+                         hover:bg-[#0a5a7c] active:bg-[#063850] 
+                         transition-all duration-200 ease-in-out
+                         shadow-sm hover:shadow-md"
+                onClick={() => {
+                  axios
+                    .post(
+                      "http://localhost:8080/publish",
+                      {
+                        username: user.name,
+                        title: row.original.title,
+                        version: selectedVersion,
+                      },
+                      { withCredentials: true }
+                    )
+                    .then(() => {
+                      fetchData();
+                      toast({
+                        variant: "default",
+                        title: "Version Published Successfully",
+                        description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
+                        action: (
+                          <FaCheckCircle size={30} className="text-white" />
+                        ),
+                        className:
+                          "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
+                        duration: 3000,
+                      });
+                    });
+                }}
+              >
+                Publish
+              </button>
+            ) : (
+              <span className="text-gray-500 text-sm">Current Version</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "delete",
+      header: "Delete",
+      cell: ({ row }) => (
+        <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
+          <Trash2 />{" "}
+        </button>
+      ),
+    },
+  ];
 
   const handleIconButtonClick = () => {
     fileInputRef.current.click();
@@ -76,18 +194,13 @@ function BloggerHome() {
         setIsOpen(false);
         setTimeout(() => {
           toast({
-            title: (
-              <div className="flex items-center">
-                <FaCheckCircle size={20} className="mr-2 text-green-500" />
-                File Uploaded
-              </div>
-            ),
-            description: `Your file, ${fileName}, has been uploaded successfully.`,
+            title: <div className="flex items-center">File Uploaded</div>,
+            description: `Your file, "${fileName}", has been uploaded successfully.`,
             variant: "success",
+            action: <FaCheckCircle size={30} className="text-white" />,
             className:
-              "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto",
+              "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
-            closeButtonClassName: "text-white",
           });
         }, 1000);
         fetchData();
@@ -98,7 +211,7 @@ function BloggerHome() {
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           className:
-            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg",
+            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
           description: "File upload failed. Please try again.",
         });
       })
@@ -115,7 +228,7 @@ function BloggerHome() {
 
   const table = useReactTable({
     data: filteredData,
-    columns,
+    columns: blogTablecols,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
@@ -226,9 +339,7 @@ function BloggerHome() {
                   <h2 className="text-base font-medium text-gray-100 mb-1">
                     Total Posts
                   </h2>
-                  <p className="text-4xl font-bold text-white">
-                    {data.length}
-                  </p>
+                  <p className="text-4xl font-bold text-white">{data.length}</p>
                 </div>
               </CardContent>
             </Card>
