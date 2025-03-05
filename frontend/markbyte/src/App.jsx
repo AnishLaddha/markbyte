@@ -32,7 +32,6 @@ function DynamicBlogPost() {
     axios
       .get(`http://localhost:8080/${user}/${post}`)
       .then((response) => {
-        console.log("Fetched blogger's post page:", response);
         document.open();
         document.write(response.data);
         document.close();
