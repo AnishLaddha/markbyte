@@ -24,6 +24,12 @@ func main() {
 	}
 	api.SetBlogPostDataDB(blogPostDataDB)
 
+	analyticsDB, err := mdb.NewMongoAnalyticsDB("mongodb://localhost:27017", "markbyte", "analytics")
+	if err != nil {
+		fmt.Printf("Failed to create analyticsDB: %v\n", err)
+	}
+	api.SetAnalyticsDB(analyticsDB)
+
 	err = redisdb.Init()
 	if err != nil {
 		fmt.Printf("\nFailed to create Redis Instance\n")

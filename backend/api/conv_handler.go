@@ -113,19 +113,35 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	endpoint := "/" + username + "/" + baseFilename
 
+	post_time := time.Now()
+
 	newBlogPostData := db.BlogPostData{
 		User:         username,
 		Title:        baseFilename,
-		DateUploaded: time.Now(),
+		DateUploaded: post_time,
 		Version:      fmt.Sprintf("%d", newVersion),
 		IsActive:     true,
 		Link:         &url,
 		DirectLink:   &endpoint,
 	}
-
 	_, err = blogPostDataDB.CreateBlogPost(r.Context(), &newBlogPostData)
 	if err != nil {
 		http.Error(w, "Failed to save blog post data", http.StatusInternalServerError)
+		return
+	}
+
+	newPostAnalytics := db.PostAnalytics{
+		Username: username,
+		Title:    baseFilename,
+		Version:  fmt.Sprintf("%d", newVersion),
+		Date:     post_time,
+		Views:    0,
+		Likes:    0,
+	}
+
+	_, err = AnalyticsDataDB.CreatePostAnalytics(r.Context(), &newPostAnalytics)
+	if err != nil {
+		http.Error(w, "Failed to save post analytics data", http.StatusInternalServerError)
 		return
 	}
 

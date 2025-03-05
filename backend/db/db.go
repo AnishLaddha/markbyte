@@ -42,6 +42,7 @@ type BlogPostDataDB interface {
 	FetchAllUserBlogPosts(ctx context.Context, username string) ([]BlogPostVersionsData, error)
 	FetchAllPostVersions(ctx context.Context, username string, title string) (BlogPostVersionsData, error)
 	FetchAllActiveBlogPosts(ctx context.Context, username string) ([]BlogPostData, error)
+	FetchActiveBlog(ctx context.Context, username string, title string) (string, error)
 }
 
 type PostAnalytics struct {

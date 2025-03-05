@@ -139,3 +139,14 @@ func (r *MongoBlogPostDataRepository) FetchAllActiveBlogPosts(ctx context.Contex
 
 	return blogs, nil
 }
+
+func (r *MongoBlogPostDataRepository) FetchActiveBlog(ctx context.Context, username string, title string) (string, error) {
+	filter := bson.M{"user": username, "title": title, "is_active": true}
+	var blog db.BlogPostData
+	err := r.collection.FindOne(ctx, filter).Decode(&blog)
+	if err != nil {
+		return "", err
+	}
+
+	return blog.Version, nil
+}
