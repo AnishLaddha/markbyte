@@ -42,4 +42,23 @@ type BlogPostDataDB interface {
 	FetchAllUserBlogPosts(ctx context.Context, username string) ([]BlogPostVersionsData, error)
 	FetchAllPostVersions(ctx context.Context, username string, title string) (BlogPostVersionsData, error)
 	FetchAllActiveBlogPosts(ctx context.Context, username string) ([]BlogPostData, error)
+	FetchActiveBlog(ctx context.Context, username string, title string) (string, error)
+}
+
+type PostAnalytics struct {
+	Username string    `json:"username" bson:"username"`
+	Title    string    `json:"title" bson:"title"`
+	Version  string    `json:"version" bson:"version"`
+	Date     time.Time `json:"date" bson:"date"`
+	Views    int       `json:"views" bson:"views"`
+	Likes    int       `json:"likes" bson:"likes"`
+}
+
+type AnalyticsDB interface {
+	CreatePostAnalytics(ctx context.Context, post *PostAnalytics) (string, error)
+	GetPostAnalytics(ctx context.Context, username string, title string, version string) (*PostAnalytics, error)
+	UpdateViewsAnalytics(ctx context.Context, username string, title string, version string, views int) error
+	UpdateLikesAnalytics(ctx context.Context, username string, title string, version string, likes int) error
+	IncrementViews(ctx context.Context, username string, title string, version string) error
+	IncrementLikes(ctx context.Context, username string, title string, version string) error
 }
