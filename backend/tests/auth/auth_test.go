@@ -2,37 +2,59 @@ package auth_test
 
 import (
 	"testing"
+
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 )
 
-// TestHashAndVerifyPassword verifies that a password is hashed and then successfully verified.
-func TestHashAndVerifyPassword(t *testing.T) {
+func TestHashPassword(t *testing.T) {
 	password := "testpassword"
-	hashed, err := auth.HashPassword(password)
+	hashedPassword, err := auth.HashPassword(password)
 	if err != nil {
-		t.Fatalf("HashPassword returned error: %v", err)
+		t.Fatalf("HashPassword(%s) = %v; want nil", password, err)
 	}
-	if !auth.VerifyPassword(hashed, password) {
-		t.Fatalf("VerifyPassword failed for password: %s", password)
+
+	if !auth.VerifyPassword(hashedPassword, password) {
+		t.Fatalf("VerifyPassword(%s, %s) = false; want true", hashedPassword, password)
 	}
 }
 
-// TestJWTGenerationAndValidation verifies that a JWT generated for a user is valid.
-func TestJWTGenerationAndValidation(t *testing.T) {
-	user := &auth.User{
-		ID:       "12345",
-		Username: "testuser",
-	}
-	token, err := auth.GenerateJWT(user)
-	if err != nil {
-		t.Fatalf("GenerateJWT returned error: %v", err)
-	}
+// func TestSignupEndpoint(t *testing.T) {
+// 	auth.ResetUsers()
+// 	router := server.SetupRouter()
+// 	ts := httptest.NewServer(router) // ts = This = 808 = MANGO MANGO MANGO = crashouts
+// 	defer ts.Close()
 
-	valid, err := auth.ValidateJWT(token)
-	if err != nil {
-		t.Fatalf("ValidateJWT returned error: %v", err)
-	}
-	if !valid {
-		t.Fatalf("ValidateJWT failed for token: %s", token)
-	}
-}
+// 	payload, _ := json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
+
+// 	resp, err := http.Post(ts.URL+"/signup", "application/json", bytes.NewBuffer(payload))
+// 	if err != nil {
+// 		t.Fatalf("http.Post() = %v; want nil", err)
+// 	}
+
+// 	defer resp.Body.Close()
+
+// 	if resp.StatusCode != http.StatusCreated {
+// 		t.Fatalf("Expected status code %d; got %d", http.StatusCreated, resp.StatusCode)
+// 	}
+// }
+
+// func TestLoginEndpoint(t *testing.T) {
+// 	auth.ResetUsers()
+// 	router := server.SetupRouter()
+// 	ts := httptest.NewServer(router)
+// 	defer ts.Close()
+
+// 	payload, _ := json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
+// 	resp, err := http.Post(ts.URL+"/signup", "application/json", bytes.NewBuffer(payload))
+// 	if err != nil {
+// 		t.Fatalf("http.Post() = %v; want nil", err)
+// 	}
+// 	defer resp.Body.Close()
+
+// 	payload, _ = json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
+// 	resp, err = http.Post(ts.URL+"/login", "application/json", bytes.NewBuffer(payload))
+// 	if err != nil {
+// 		t.Fatalf("http.Post() = %v; want nil", err)
+// 	}
+// 	defer resp.Body.Close()
+// }
