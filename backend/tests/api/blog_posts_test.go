@@ -11,6 +11,7 @@ import (
 
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
+	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
