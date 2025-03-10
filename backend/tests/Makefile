@@ -33,3 +33,5 @@ test-files:
 # Clean up any generated test cache or artifacts (optional)
 clean:
 	@go clean -testcache
+
+.PHONY: test test-files clean
