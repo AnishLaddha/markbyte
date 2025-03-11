@@ -13,6 +13,7 @@ import Auth from "./components/pages/Auth/Auth";
 import About from "./components/pages/About/About";
 import BloggerLandingPage from "./components/pages/BloggerLanding/BloggerLanding";
 import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
+import EditorPreview from "./components/pages/LivePreview/EditorPreview";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -70,6 +71,18 @@ function App() {
           }
         />
         <Route path="/about" element={<About />} />
+        <Route
+          path="/preview"
+          element={
+            isLoading ? (
+              console.log("Loading...")
+            ) : !isAuthenticated ? (
+              <Home/>
+            ) : (
+              <EditorPreview />
+            )
+          }
+        />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
         <Route path="/:username" element={<BloggerLandingPage />} />
         <Route
