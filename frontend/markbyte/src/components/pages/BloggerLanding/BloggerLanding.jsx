@@ -38,7 +38,9 @@ function BloggerLandingPage() {
             alt="MarkByte Logo"
             className="h-8 w-auto"
           />
-          {!isSmallScreen && <span className="text-xl font-semibold">arkByte</span>}
+          {!isSmallScreen && (
+            <span className="text-xl font-semibold">arkByte</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {isAuthenticated && (
@@ -84,7 +86,13 @@ function BloggerLandingPage() {
               <Card
                 key={post.user + post.title}
                 className="overflow-hidden md:w-[80%] md:h-[200px] cursor-pointer transition-shadow duration-300 ease-in-out shadow-none hover:shadow-lg"
-                onClick={() => navigate(post.link)}
+                onClick={() => {
+                  if (post.link.includes("static")) {
+                    window.open(post.link, "_blank");
+                  } else {
+                    window.open(post.direct_link, "_blank");
+                  }
+                }}
               >
                 <div className="flex flex-col md:flex-row">
                   {!post.image && (

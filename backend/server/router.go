@@ -46,6 +46,7 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/upload", api.HandleUpload)
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
+		protected.Get("/like", api.HandleLikePost)
 
 	})
 
