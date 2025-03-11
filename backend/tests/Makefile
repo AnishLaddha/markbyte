@@ -31,7 +31,7 @@ test-files:
 	@:
 
 # Clean up any generated test cache or artifacts (optional)
-clean:
+clean-tests:
 	@go clean -testcache
 
-.PHONY: test test-files clean
+.PHONY: test test-files clean-tests

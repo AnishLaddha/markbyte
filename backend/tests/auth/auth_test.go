@@ -2,59 +2,45 @@ package auth_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHashPassword(t *testing.T) {
-	password := "testpassword"
+	password := "testPassword123!"
 	hashedPassword, err := auth.HashPassword(password)
-	if err != nil {
-		t.Fatalf("HashPassword(%s) = %v; want nil", password, err)
-	}
 
-	if !auth.VerifyPassword(hashedPassword, password) {
-		t.Fatalf("VerifyPassword(%s, %s) = false; want true", hashedPassword, password)
-	}
+	assert.NoError(t, err, "HashPassword should not return an error")
+	assert.NotEqual(t, password, hashedPassword, "Hashed password should be different from original")
+	assert.NotEmpty(t, hashedPassword, "Hashed password should not be empty")
 }
 
-// func TestSignupEndpoint(t *testing.T) {
-// 	auth.ResetUsers()
-// 	router := server.SetupRouter()
-// 	ts := httptest.NewServer(router) // ts = This = 808 = MANGO MANGO MANGO = crashouts
-// 	defer ts.Close()
+func TestVerifyPassword(t *testing.T) {
+	password := "testPassword123!"
+	hashedPassword, _ := auth.HashPassword(password)
 
-// 	payload, _ := json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
+	assert.True(t, auth.VerifyPassword(hashedPassword, password), "Password verification should succeed")
+	assert.False(t, auth.VerifyPassword(hashedPassword, "wrongPassword"), "Password verification should fail for incorrect password")
+}
 
-// 	resp, err := http.Post(ts.URL+"/signup", "application/json", bytes.NewBuffer(payload))
-// 	if err != nil {
-// 		t.Fatalf("http.Post() = %v; want nil", err)
-// 	}
+func TestGenerateJWT(t *testing.T) {
+	username := "testuser"
+	token, expirationTime, err := auth.GenerateJWT(username)
 
-// 	defer resp.Body.Close()
+	assert.NoError(t, err, "GenerateJWT should not return an error")
+	assert.NotEmpty(t, token, "Generated token should not be empty")
+	assert.True(t, expirationTime.After(time.Now()), "Expiration time should be in the future")
+}
 
-// 	if resp.StatusCode != http.StatusCreated {
-// 		t.Fatalf("Expected status code %d; got %d", http.StatusCreated, resp.StatusCode)
-// 	}
-// }
-
-// func TestLoginEndpoint(t *testing.T) {
-// 	auth.ResetUsers()
-// 	router := server.SetupRouter()
-// 	ts := httptest.NewServer(router)
-// 	defer ts.Close()
-
-// 	payload, _ := json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
-// 	resp, err := http.Post(ts.URL+"/signup", "application/json", bytes.NewBuffer(payload))
-// 	if err != nil {
-// 		t.Fatalf("http.Post() = %v; want nil", err)
-// 	}
-// 	defer resp.Body.Close()
-
-// 	payload, _ = json.Marshal(map[string]string{"username": "testuser", "password": "testpassword"})
-// 	resp, err = http.Post(ts.URL+"/login", "application/json", bytes.NewBuffer(payload))
-// 	if err != nil {
-// 		t.Fatalf("http.Post() = %v; want nil", err)
-// 	}
-// 	defer resp.Body.Close()
-// }
+func TestValidateJWT(t *testing.T) {
+	username := "testuser"
+	token, _, _ := auth.GenerateJWT(username)
+	print(token, "\n")
+	_, err := auth.ValidateJWT(token)
+	assert.NoError(t, err, "ValidateJWT should not return an error for a valid token")
+	// assert.Equal(t, new_token, token, "Validated token should not be nil")
+	// _, err = auth.ValidateJWT("invalidtoken")
+	// assert.Error(t, err, "ValidateJWT should return an error for an invalid token")
+}
