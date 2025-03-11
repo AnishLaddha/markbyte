@@ -9,6 +9,16 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    const storedUserparsed = JSON.parse(storedUser);
+    const timestamp = storedUserparsed.time_loggedin;
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - timestamp;
+    // if timeDifference > 72 hours, automatically set isAuthenticated to false
+    if (timeDifference > 259200000) {
+      localStorage.removeItem('user');
+      setIsAuthenticated(false);
+      setUser(null);
+    }
 
     if (storedUser) {
       try {
@@ -17,6 +27,7 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
       } catch (error) {
         localStorage.removeItem('user');
+        setIsAuthenticated(false);
       }
     }
   }, []);

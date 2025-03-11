@@ -72,7 +72,7 @@ function App() {
         />
         <Route path="/about" element={<About />} />
         <Route
-          path="/preview"
+          path="/editor"
           element={
             isLoading ? (
               console.log("Loading...")

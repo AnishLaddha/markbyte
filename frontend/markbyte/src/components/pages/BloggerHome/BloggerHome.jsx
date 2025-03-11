@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Home, Pen, Notebook, Search, Trash2 } from "lucide-react";
+import { BookOpen, Home, Pen, Notebook, Search, Trash2, Upload } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
 // import { blogTablecols } from "@/constants/blogTablecols";
@@ -298,6 +298,35 @@ function BloggerHome() {
           >
             <div className="absolute -top-5 left-6 overflow-visible z-10">
               <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+                <Upload className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <Card className="bg-white relative pt-8 shadow-lg h-[200px] hover:shadow-xl transition-shadow duration-300 overflow-hidden ease-in-out border-2 border-[#003b5c] flex flex-col">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
+              <CardContent className="px-6 pb-6 flex flex-col justify-end mt-auto">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Upload a markdown file
+                  </p>
+                  <button
+                    className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
+                    onClick={() => setIsOpen(true)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <FaUpload />
+                      <span>Upload</span>
+                    </span>
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div
+            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
+          >
+            <div className="absolute -top-5 left-6 overflow-visible z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
                 <Pen className="w-8 h-8 text-white" />
               </div>
             </div>
@@ -310,7 +339,7 @@ function BloggerHome() {
                   </p>
                   <button
                     className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
-                    onClick={() => setIsOpen(true)}
+                    onClick={() => navigate("/editor")}
                   >
                     <span className="flex items-center gap-2">
                       <FaRegPenToSquare />
