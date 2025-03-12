@@ -96,6 +96,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("/static/%s", outputFilename)
 
 	keyname := fmt.Sprintf("%s_%s_%d.html", username, baseFilename, newVersion)
+	md_keyname := fmt.Sprintf("%s_%s_%d.md", username, baseFilename, newVersion)
 
 	cred, err := LoadCredentials()
 	if err != nil {
@@ -104,10 +105,18 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		s3URL, err := UploadHTMLFile(r.Context(), htmlContent, keyname, cred)
 		if err != nil {
-			http.Error(w, "Failed to upload file to s3", http.StatusInternalServerError)
+			http.Error(w, "Failed to upload html file to s3", http.StatusInternalServerError)
 			fmt.Println(err)
 			return
 		}
+
+		_, err = UploadMDFile(r.Context(), string(mdContent), md_keyname, cred)
+		if err != nil {
+			http.Error(w, "Failed to upload md file to s3", http.StatusInternalServerError)
+			fmt.Println(err)
+			return
+		}
+
 		url = s3URL
 	}
 
