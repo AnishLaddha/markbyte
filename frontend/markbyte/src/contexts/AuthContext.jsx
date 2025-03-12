@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -8,28 +8,39 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        setIsAuthenticated(true);
-        setUser(parsedUser);
+        const timestamp = parsedUser.time_loggedin;
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - timestamp;
+        // if timeDifference > 72 hours, automatically set isAuthenticated to false
+        if (timeDifference > 259200000) {
+          localStorage.removeItem("user");
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+        else{
+          setIsAuthenticated(true);
+          setUser(parsedUser);
+        }
       } catch (error) {
-        localStorage.removeItem('user');
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
       }
     }
   }, []);
 
   const login = (userInfo) => {
-    localStorage.setItem('user', JSON.stringify(userInfo));
+    localStorage.setItem("user", JSON.stringify(userInfo));
     setIsAuthenticated(true);
     setUser(userInfo);
   };
 
   const logout = () => {
-    axios.post('http://localhost:8080/logout', {}, {withCredentials: true});
-    localStorage.removeItem('user');
+    axios.post("http://localhost:8080/logout", {}, { withCredentials: true });
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
   };

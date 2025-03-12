@@ -12,10 +12,26 @@ import {
 } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Home, Pen, Notebook, Search, Trash2 } from "lucide-react";
+import {
+  BookOpen,
+  Home,
+  Pen,
+  Notebook,
+  Search,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
-// import { blogTablecols } from "@/constants/blogTablecols";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import UserDropdown from "@/components/ui/profiledropdown";
 import {
   Dialog,
@@ -52,6 +68,18 @@ function BloggerHome() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const fileInputRef = useRef(null);
+  const [selectedVersions, setSelectedVersions] = useState({});
+
+  // Initialize selected versions when data is fetched
+  useEffect(() => {
+    setSelectedVersions(
+      data.reduce((acc, row) => {
+        acc[row.id || row.title] = row.latestVersion;
+        return acc;
+      }, {})
+    );
+  }, [data]);
+
   const blogTablecols = [
     {
       accessorKey: "title",
@@ -83,41 +111,60 @@ function BloggerHome() {
       accessorKey: "versionAndPublish",
       header: "Version",
       cell: ({ row }) => {
-        const [selectedVersion, setSelectedVersion] = useState(
-          row.original.latestVersion
-        );
+        const rowId = row.original.id || row.original.title;
 
-        useEffect(() => {
-          setSelectedVersion(row.original.latestVersion);
-        }, [row.original.latestVersion]);
-
-        const showPublishButton =
-          selectedVersion !== row.original.latestVersion;
+        // Get selected version from parent state
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
 
         return (
-          <div className="flex items-center gap-4">
-            <select
+          <div>
+            <Select
               value={selectedVersion}
-              onChange={(e) => setSelectedVersion(e.target.value)}
-              className="w-full px-2 py-1 border rounded-lg"
+              onValueChange={(value) =>
+                setSelectedVersions((prev) => ({
+                  ...prev,
+                  [rowId]: value,
+                }))
+              }
+              className="w-auto px-1 py-1 border rounded-lg"
             >
-              {Array.isArray(row.original.version) ? (
-                row.original.version.map((version) => (
-                  <option key={version} value={version}>
-                    {version}
-                  </option>
-                ))
-              ) : (
-                <option value={row.original.version}>
-                  {row.original.version}
-                </option>
-              )}
-            </select>
-
+              <SelectTrigger>
+                <SelectValue placeholder="Select version" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Version</SelectLabel>
+                  {(Array.isArray(row.original.version)
+                    ? row.original.version
+                    : [row.original.version]
+                  ).map((version) => (
+                    <SelectItem key={version} value={version}>
+                      {version}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      },
+    },
+    {
+      accesorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        const showPublishButton =
+          selectedVersion !== row.original.latestVersion;
+        return (
+          <div>
             {showPublishButton ? (
               <button
-                className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md 
-                         hover:bg-[#0a5a7c] active:bg-[#063850] 
+                className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md
+                         hover:bg-[#0a5a7c] active:bg-[#063850]
                          transition-all duration-200 ease-in-out
                          shadow-sm hover:shadow-md"
                 onClick={() => {
@@ -150,20 +197,44 @@ function BloggerHome() {
                 Publish
               </button>
             ) : (
-              <span className="text-gray-500 text-sm">Current Version</span>
+              <span className="text-gray-500 text-sm ">Current Version</span>
             )}
           </div>
         );
       },
     },
     {
+      accessorKey: "edit",
+      header: "Edit",
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        return (
+          <button
+            className="text-[#084464] hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer text-center"
+            onClick={() => {
+              navigate(`/editor/${row.original.title}/${selectedVersion}`);
+            }}
+          >
+            <Pen />
+          </button>
+        );
+      },
+    },
+    {
       accessorKey: "delete",
       header: "Delete",
-      cell: ({ row }) => (
-        <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
-          <Trash2 />{" "}
-        </button>
-      ),
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        return (
+          <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
+            <Trash2 />
+          </button>
+        );
+      },
     },
   ];
 
@@ -298,6 +369,35 @@ function BloggerHome() {
           >
             <div className="absolute -top-5 left-6 overflow-visible z-10">
               <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+                <Upload className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <Card className="bg-white relative pt-8 shadow-lg h-[200px] hover:shadow-xl transition-shadow duration-300 overflow-hidden ease-in-out border-2 border-[#003b5c] flex flex-col">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
+              <CardContent className="px-6 pb-6 flex flex-col justify-end mt-auto">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Upload a markdown file
+                  </p>
+                  <button
+                    className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
+                    onClick={() => setIsOpen(true)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <FaUpload />
+                      <span>Upload</span>
+                    </span>
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div
+            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
+          >
+            <div className="absolute -top-5 left-6 overflow-visible z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
                 <Pen className="w-8 h-8 text-white" />
               </div>
             </div>
@@ -310,7 +410,7 @@ function BloggerHome() {
                   </p>
                   <button
                     className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
-                    onClick={() => setIsOpen(true)}
+                    onClick={() => navigate("/editor")}
                   >
                     <span className="flex items-center gap-2">
                       <FaRegPenToSquare />

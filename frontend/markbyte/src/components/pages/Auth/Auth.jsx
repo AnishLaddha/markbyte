@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
 function Auth() {
   const [activeTab, setActiveTab] = useState("login");
   const [lusername, setLusername] = useState("");
@@ -53,7 +54,7 @@ function Auth() {
         }
       )
       .then((response) => {
-        login({ name: lusername });
+        login({ name: lusername, time_loggedin: new Date().getTime() });
         navigate("/");
         setLusername("");
         setLpassword("");
@@ -141,7 +142,7 @@ function Auth() {
               <form className="login-form" onSubmit={handleLogin}>
                 <div className="input-container">
                   <FaUser className="icon" />
-                  <input
+                  <Input
                     type="text"
                     value={lusername}
                     onChange={(e) => setLusername(e.target.value)}
@@ -152,7 +153,7 @@ function Auth() {
 
                 <div className="input-container">
                   <FaLock className="icon" />
-                  <input
+                  <Input
                     type="password"
                     value={lpassword}
                     onChange={(e) => setLpassword(e.target.value)}
@@ -173,7 +174,7 @@ function Auth() {
               <form className="signup-form" onSubmit={handleSignUp}>
                 <div className="input-container">
                   <FaEnvelope className="icon" />
-                  <input
+                  <Input
                     type="email"
                     value={semail}
                     onChange={(e) => setSemail(e.target.value)}
@@ -182,7 +183,7 @@ function Auth() {
                 </div>
                 <div className="input-container">
                   <FaUser className="icon" />
-                  <input
+                  <Input
                     type="text"
                     value={susername}
                     onChange={(e) => setSusername(e.target.value)}
@@ -193,7 +194,7 @@ function Auth() {
 
                 <div className="input-container">
                   <FaLock className="icon" />
-                  <input
+                  <Input
                     type="password"
                     value={spassword}
                     onChange={(e) => setSpassword(e.target.value)}
