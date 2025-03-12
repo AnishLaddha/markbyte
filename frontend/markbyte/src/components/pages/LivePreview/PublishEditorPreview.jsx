@@ -9,8 +9,8 @@ import {
   material,
   tokyoNight,
   vscodeDark,
-  materialLight,
   okaidia,
+  bbedit,
 } from "@uiw/codemirror-themes-all";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useNavigate } from "react-router-dom";
@@ -95,11 +95,11 @@ const PublishEditorPreview = () => {
     aura,
     andromeda,
     material,
-    materialLight,
     tokyoNight,
     vscodeDark,
     okaidia,
     oneDark,
+    bbedit,
   };
   const { toast } = useToast();
 
