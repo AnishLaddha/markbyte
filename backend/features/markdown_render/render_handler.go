@@ -31,5 +31,9 @@ func HandleRender(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(output_html))
+	_, err = w.Write([]byte(output_html))
+	if err != nil {
+		http.Error(w, "Failed to write HTML content", http.StatusInternalServerError)
+		return
+	}
 }
