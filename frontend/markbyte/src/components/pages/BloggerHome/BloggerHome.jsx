@@ -23,7 +23,15 @@ import {
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
-// import { blogTablecols } from "@/constants/blogTablecols";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import UserDropdown from "@/components/ui/profiledropdown";
 import {
   Dialog,
@@ -109,30 +117,35 @@ function BloggerHome() {
         const selectedVersion =
           selectedVersions[rowId] || row.original.latestVersion;
 
-        const showPublishButton =
-          selectedVersion !== row.original.latestVersion;
-
         return (
           <div>
-            <select
+            <Select
               value={selectedVersion}
-              onChange={(e) =>
+              onValueChange={(value) =>
                 setSelectedVersions((prev) => ({
                   ...prev,
-                  [rowId]: e.target.value,
+                  [rowId]: value,
                 }))
               }
-              className="w-auto px-2 py-1 border rounded-lg"
+              className="w-auto px-1 py-1 border rounded-lg"
             >
-              {(Array.isArray(row.original.version)
-                ? row.original.version
-                : [row.original.version]
-              ).map((version) => (
-                <option key={version} value={version}>
-                  {version}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select version" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Version</SelectLabel>
+                  {(Array.isArray(row.original.version)
+                    ? row.original.version
+                    : [row.original.version]
+                  ).map((version) => (
+                    <SelectItem key={version} value={version}>
+                      {version}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         );
       },
@@ -144,7 +157,8 @@ function BloggerHome() {
         const rowId = row.original.id || row.original.title;
         const selectedVersion =
           selectedVersions[rowId] || row.original.latestVersion;
-        const showPublishButton = selectedVersion !== row.original.latestVersion;
+        const showPublishButton =
+          selectedVersion !== row.original.latestVersion;
         return (
           <div>
             {showPublishButton ? (
@@ -183,9 +197,7 @@ function BloggerHome() {
                 Publish
               </button>
             ) : (
-              <span className="text-gray-500 text-sm ">
-                Current Version
-              </span>
+              <span className="text-gray-500 text-sm ">Current Version</span>
             )}
           </div>
         );
@@ -199,7 +211,8 @@ function BloggerHome() {
         const selectedVersion =
           selectedVersions[rowId] || row.original.latestVersion;
         return (
-          <button className="text-[#084464] hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer text-center"
+          <button
+            className="text-[#084464] hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer text-center"
             onClick={() => {
               navigate(`/editor/${row.original.title}/${selectedVersion}`);
             }}
@@ -207,7 +220,7 @@ function BloggerHome() {
             <Pen />
           </button>
         );
-      }
+      },
     },
     {
       accessorKey: "delete",
