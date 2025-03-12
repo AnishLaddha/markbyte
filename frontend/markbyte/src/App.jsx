@@ -13,7 +13,8 @@ import Auth from "./components/pages/Auth/Auth";
 import About from "./components/pages/About/About";
 import BloggerLandingPage from "./components/pages/BloggerLanding/BloggerLanding";
 import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
-import EditorPreview from "./components/pages/LivePreview/EditorPreview";
+import EditorPreview from "./components/pages/LivePreview/CreateEditorPreview";
+import PublishEditorPreview from "./components/pages/LivePreview/PublishEditorPreview";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -80,6 +81,18 @@ function App() {
               <Home/>
             ) : (
               <EditorPreview />
+            )
+          }
+        />
+        <Route
+          path="/editor/:title/:version"
+          element={
+            isLoading ? (
+              console.log("Loading...")
+            ) : !isAuthenticated ? (
+              <Home/>
+            ) : (
+              < PublishEditorPreview/>
             )
           }
         />

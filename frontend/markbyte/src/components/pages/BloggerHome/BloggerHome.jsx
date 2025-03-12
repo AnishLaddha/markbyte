@@ -12,7 +12,15 @@ import {
 } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Home, Pen, Notebook, Search, Trash2, Upload } from "lucide-react";
+import {
+  BookOpen,
+  Home,
+  Pen,
+  Notebook,
+  Search,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
 // import { blogTablecols } from "@/constants/blogTablecols";
@@ -52,6 +60,18 @@ function BloggerHome() {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const fileInputRef = useRef(null);
+  const [selectedVersions, setSelectedVersions] = useState({});
+
+  // Initialize selected versions when data is fetched
+  useEffect(() => {
+    setSelectedVersions(
+      data.reduce((acc, row) => {
+        acc[row.id || row.title] = row.latestVersion;
+        return acc;
+      }, {})
+    );
+  }, [data]);
+
   const blogTablecols = [
     {
       accessorKey: "title",
@@ -83,41 +103,54 @@ function BloggerHome() {
       accessorKey: "versionAndPublish",
       header: "Version",
       cell: ({ row }) => {
-        const [selectedVersion, setSelectedVersion] = useState(
-          row.original.latestVersion
-        );
+        const rowId = row.original.id || row.original.title;
 
-        useEffect(() => {
-          setSelectedVersion(row.original.latestVersion);
-        }, [row.original.latestVersion]);
+        // Get selected version from parent state
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
 
         const showPublishButton =
           selectedVersion !== row.original.latestVersion;
 
         return (
-          <div className="flex items-center gap-4">
+          <div>
             <select
               value={selectedVersion}
-              onChange={(e) => setSelectedVersion(e.target.value)}
-              className="w-full px-2 py-1 border rounded-lg"
+              onChange={(e) =>
+                setSelectedVersions((prev) => ({
+                  ...prev,
+                  [rowId]: e.target.value,
+                }))
+              }
+              className="w-auto px-2 py-1 border rounded-lg"
             >
-              {Array.isArray(row.original.version) ? (
-                row.original.version.map((version) => (
-                  <option key={version} value={version}>
-                    {version}
-                  </option>
-                ))
-              ) : (
-                <option value={row.original.version}>
-                  {row.original.version}
+              {(Array.isArray(row.original.version)
+                ? row.original.version
+                : [row.original.version]
+              ).map((version) => (
+                <option key={version} value={version}>
+                  {version}
                 </option>
-              )}
+              ))}
             </select>
-
+          </div>
+        );
+      },
+    },
+    {
+      accesorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        const showPublishButton = selectedVersion !== row.original.latestVersion;
+        return (
+          <div>
             {showPublishButton ? (
               <button
-                className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md 
-                         hover:bg-[#0a5a7c] active:bg-[#063850] 
+                className="px-4 py-1.5 bg-[#084464] text-white text-sm font-medium rounded-md
+                         hover:bg-[#0a5a7c] active:bg-[#063850]
                          transition-all duration-200 ease-in-out
                          shadow-sm hover:shadow-md"
                 onClick={() => {
@@ -150,20 +183,45 @@ function BloggerHome() {
                 Publish
               </button>
             ) : (
-              <span className="text-gray-500 text-sm">Current Version</span>
+              <span className="text-gray-500 text-sm ">
+                Current Version
+              </span>
             )}
           </div>
         );
       },
     },
     {
+      accessorKey: "edit",
+      header: "Edit",
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        return (
+          <button className="text-[#084464] hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer text-center"
+            onClick={() => {
+              navigate(`/editor/${row.original.title}/${selectedVersion}`);
+            }}
+          >
+            <Pen />
+          </button>
+        );
+      }
+    },
+    {
       accessorKey: "delete",
       header: "Delete",
-      cell: ({ row }) => (
-        <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
-          <Trash2 />{" "}
-        </button>
-      ),
+      cell: ({ row }) => {
+        const rowId = row.original.id || row.original.title;
+        const selectedVersion =
+          selectedVersions[rowId] || row.original.latestVersion;
+        return (
+          <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
+            <Trash2 />
+          </button>
+        );
+      },
     },
   ];
 
