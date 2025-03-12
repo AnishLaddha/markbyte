@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
+	"github.com/shrijan-swaminathan/markbyte/backend/features/markdown_render"
 )
 
 func CORS(next http.Handler) http.Handler {
@@ -47,6 +48,8 @@ func SetupRouter() *chi.Mux {
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
 		protected.Get("/like", api.HandleLikePost)
+		protected.Post("/render", markdown_render.HandleRender)
+		protected.Post("/markdown", api.HandleFetchMD)
 
 	})
 

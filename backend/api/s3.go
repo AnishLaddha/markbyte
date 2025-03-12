@@ -70,7 +70,34 @@ func UploadHTMLFile(ctx context.Context, htmlString string, key string, cred S3C
 	return url, nil
 }
 
-func ReadHTMLfromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
+func UploadMDFile(ctx context.Context, mdString string, key string, cred S3Credentials) (string, error) {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return "", fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	mdReader := bytes.NewReader([]byte(mdString))
+
+	_, err = client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      aws.String(cred.Bucket),
+		Key:         aws.String(key),
+		Body:        mdReader,
+		ContentType: aws.String("text/markdown"),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to upload file to s3: %w", err)
+	}
+
+	url := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cred.Bucket, cred.Region, key)
+
+	return url, nil
+}
+
+func ReadFilefromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -119,3 +146,24 @@ func ReadHTMLfromS3(ctx context.Context, key string, cred S3Credentials) (string
 // 	return string(htmlBytes), nil
 
 // }
+
+func DeleteFile(ctx context.Context, key string, cred S3Credentials) error {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	_, err = client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(cred.Bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete file from s3: %w", err)
+	}
+
+	return nil
+}
