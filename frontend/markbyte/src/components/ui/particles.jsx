@@ -2,10 +2,7 @@ import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { useEffect, useMemo, useState } from "react";
 import { loadSlim } from "@tsparticles/slim";
 
-
-
 const ParticlesBackground = (props) => {
-
   const [init, setInit] = useState(false);
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -19,7 +16,6 @@ const ParticlesBackground = (props) => {
     console.log(container);
   };
 
-
   const options = useMemo(
     () => ({
       background: {
@@ -27,11 +23,9 @@ const ParticlesBackground = (props) => {
           value: "#011A29",
         },
       },
-      fpsLimit: 120,
+      fpsLimit: 60,
       interactivity: {
-        events: {
-
-        },
+        events: {},
         modes: {
           push: {
             distance: 200,
@@ -60,17 +54,26 @@ const ParticlesBackground = (props) => {
             default: "bounce",
           },
           random: true,
-          speed: 1,
+          speed: 0.8,
           straight: false,
         },
         number: {
           density: {
             enable: true,
           },
-          value: 150,
+          value: 130,
         },
         opacity: {
-          value: 1.0,
+          value: {
+            min: 0.3,
+            max: 0.8,
+          },
+          animation: {
+            enable: true,
+            speed: 0.5,
+            minimumValue: 0.1,
+            sync: false,
+          },
         },
         shape: {
           type: "circle",
@@ -81,11 +84,10 @@ const ParticlesBackground = (props) => {
       },
       detectRetina: true,
     }),
-    [],
+    []
   );
 
-
-  return <Particles id={props.id} init={particlesLoaded} options={options} />; 
+  return <Particles id={props.id} init={particlesLoaded} options={options} />;
 };
 
 export default ParticlesBackground;
