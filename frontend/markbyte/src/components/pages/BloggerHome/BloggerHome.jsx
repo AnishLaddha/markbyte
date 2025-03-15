@@ -212,7 +212,7 @@ function BloggerHome() {
           selectedVersions[rowId] || row.original.latestVersion;
         return (
           <button
-            className="text-[#084464] hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer text-center"
+            className="text-[#084464] hover:text-[#0a5a7c] hover:bg-blue-50 active:bg-blue-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-blue-200"
             onClick={() => {
               navigate(`/editor/${row.original.title}/${selectedVersion}`);
             }}
@@ -230,7 +230,7 @@ function BloggerHome() {
         const selectedVersion =
           selectedVersions[rowId] || row.original.latestVersion;
         return (
-          <button className="text-red-500 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer text-center">
+          <button className="text-red-500 hover:text-red-700 hover:bg-red-50 active:bg-red-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-red-200">
             <Trash2 />
           </button>
         );
