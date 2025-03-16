@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -164,4 +165,80 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	// header + response
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"message": "File processed successfully", "localURL": "/static/%s", "s3URL": "%s"}`, outputFilename, url)
+}
+
+type DeleteRequest struct {
+	Title string `json:"title"`
+}
+
+func HandleDelete(w http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(auth.UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var req DeleteRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Failed to decode request", http.StatusBadRequest)
+		return
+	}
+
+	postVersions, err := blogPostDataDB.FetchAllPostVersions(r.Context(), username, req.Title)
+	if err != nil {
+		http.Error(w, "Failed to fetch post versions", http.StatusInternalServerError)
+		return
+	}
+
+	versions := make([]string, len(postVersions.Versions))
+
+	for index, post := range postVersions.Versions {
+		versions[index] = post.Version
+	}
+
+	_, err = blogPostDataDB.DeleteBlogPost(r.Context(), username, req.Title)
+	if err != nil {
+		http.Error(w, "Failed to delete blog post", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = AnalyticsDataDB.DeletePostAnalytics(r.Context(), username, req.Title)
+	if err != nil {
+		http.Error(w, "Failed to delete post analytics", http.StatusInternalServerError)
+		return
+	}
+
+	cred, err := LoadCredentials()
+	if err != nil {
+		fmt.Println("AWS CREDENTIALS NOT SET UP")
+		http.Error(w, "Failed to load AWS credentials", http.StatusInternalServerError)
+		return
+	}
+
+	for _, version := range versions {
+		html_keyname := fmt.Sprintf("%s_%s_%s.html", username, req.Title, version)
+		md_keyname := fmt.Sprintf("%s_%s_%s.md", username, req.Title, version)
+		err = DeleteFile(r.Context(), html_keyname, cred)
+		if err != nil {
+			http.Error(w, "Failed to delete html file", http.StatusInternalServerError)
+			return
+		}
+		err = DeleteFile(r.Context(), md_keyname, cred)
+		if err != nil {
+			http.Error(w, "Failed to delete md file", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	endpoint := "/" + username + "/" + req.Title
+	if redisdb.RedisActive {
+		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
+		if err != nil {
+			fmt.Printf("Error removing old endpoint from redis")
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"message": "Post deleted successfully"}`)
 }
