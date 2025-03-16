@@ -50,6 +50,7 @@ func SetupRouter() *chi.Mux {
 		protected.Get("/like", api.HandleLikePost)
 		protected.Post("/render", markdown_render.HandleRender)
 		protected.Post("/markdown", api.HandleFetchMD)
+		protected.Post("/delete", api.HandleDelete)
 
 	})
 

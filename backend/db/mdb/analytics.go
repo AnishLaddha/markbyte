@@ -96,3 +96,12 @@ func (r *MongoAnalyticsRepository) IncrementLikes(ctx context.Context, username 
 	}
 	return nil
 }
+
+func (r *MongoAnalyticsRepository) DeletePostAnalytics(ctx context.Context, username string, title string) (int, error) {
+	filter := bson.M{"username": username, "title": title}
+	res, err := r.collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return 0, err
+	}
+	return int(res.DeletedCount), nil
+}
