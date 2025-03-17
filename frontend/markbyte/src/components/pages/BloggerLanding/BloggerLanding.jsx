@@ -187,9 +187,7 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                             {post.title}
                           </h2>
                           <p className="text-gray-600 line-clamp-2 text-base leading-relaxed">
-                            {post.description ||
-                              "Click to read this insightful article by " +
-                                post.user}
+                            {post.description || "Lorem ipsum dolor sit amet."}
                           </p>
                         </div>
 
