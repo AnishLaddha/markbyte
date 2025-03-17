@@ -10,38 +10,44 @@
   --transition-speed: 0.3s;
 }
 
-.tagline {
+.tagline p{
   font-family: 'Consolas', monospace;
   font-weight: 400;
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.5s;
-  position: relative;
+  margin-inline: auto;
+  white-space: nowrap;
+  border-right: 2px solid;
+  display: inline-block; 
+  max-width: 100%;
 }
 
-.tagline::after {
-  content: '|';
-  position: absolute;
-  animation: blinkCursor 1s step-end infinite;
-  font-size: 1.7rem;
-  cursor: text;
+@media (min-width: 560px) {
+  .tagline p {
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3s steps(22) forwards, blink 1s step-end infinite;
+  }
 }
 
-@keyframes fadeIn {
+@media (max-width: 559px) {
+  .tagline p {
+    white-space: normal;
+    border-right: none;
+    animation: none; 
+  }
+}
+
+@keyframes typing {
   from {
-    opacity: 0;
+    width: 0;
   }
   to {
-    opacity: 1;
+    width: 100%;
   }
 }
 
-@keyframes blinkCursor {
-  from, to {
-    opacity: 1;
-  }
+@keyframes blink {
   50% {
-    opacity: 0;
+    border-color: transparent;
   }
 }
 

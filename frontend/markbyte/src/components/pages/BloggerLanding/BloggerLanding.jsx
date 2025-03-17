@@ -9,8 +9,11 @@ import styles from "./BloggerLanding.module.css";
 import { useAuth } from "@/contexts/AuthContext";
 import { CiLogin } from "react-icons/ci";
 import UserDropdown from "@/components/ui/profiledropdown";
+import React from "react";
+import { motion } from "framer-motion";
+import { Bookmark } from "lucide-react";
 
-function BloggerLandingPage() {
+const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
   const { data: blogList, fetchPosts } = useBlogList(username);
   const isSmallScreen = useMediaQuery("(max-width:470px)");
@@ -28,7 +31,7 @@ function BloggerLandingPage() {
 
   return (
     <div className={styles.BloggerLanding}>
-      <header className="sticky top-0 left-0 w-full h-16 flex justify-between items-center px-4 md:px-6 bg-[#084464] text-white shadow-md z-10">
+      {/* <header className="sticky top-0 left-0 w-full h-16 flex justify-between items-center px-4 md:px-6 bg-[#084464] text-white shadow-md z-10">
         <div
           className="flex items-center cursor-pointer"
           onClick={() => navigate("/")}
@@ -64,20 +67,51 @@ function BloggerLandingPage() {
             </div>
           )}
         </div>
-      </header>
-      <main className="container mx-auto mt-8 px-4 mb-16">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">
-          {username}'s Blog
-        </h1>
-        <p className="text-lg mb-8 text-gray-600">
-          Explore {username}'s recent blog posts
-        </p>
+      </header> */}
 
+      <div className="w-full bg-gradient-to-b from-[#084464]/10 to-transparent py-12">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-[#084464]">
+              {username}'s Blog
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+              Explore {username}'s collection of thoughtful insights and
+              experiences
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      <main className="container mx-auto mt-8 px-4 mb-16">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800">Recent Posts</h2>
+          <div className="flex items-center text-sm text-[#084464]">
+            <Bookmark className="h-4 w-4 mr-1" />
+            {blogList?.length || 0} Posts
+          </div>
+        </div>
         <div className="space-y-6">
           {!blogList && (
-            <Card className="w-full py-12">
+            <Card className="w-full py-16 bg-gray-50">
               <CardContent className="text-center">
-                <p className="text-gray-500">No blog posts available yet</p>
+                <div className="flex flex-col items-center">
+                  <div className="rounded-full bg-gray-200 p-6 mb-4">
+                    <Bookmark className="h-12 w-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-700 mb-2">
+                    No posts yet
+                  </h3>
+                  <p className="text-gray-500 max-w-md">
+                    {username} hasn't published any blog posts yet. Check back
+                    later!
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -146,6 +180,6 @@ function BloggerLandingPage() {
       </main>
     </div>
   );
-}
+});
 
 export default BloggerLandingPage;

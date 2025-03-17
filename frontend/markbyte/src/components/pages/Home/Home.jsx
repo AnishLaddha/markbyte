@@ -1,11 +1,12 @@
 import "./Home.css";
+import React from "react";
 import { CiLogin } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
 import { FaArrowRight } from "react-icons/fa";
 import ParticlesBackground from "@/components/ui/particles";
 
-function Home() {
+const Home = React.memo(function Home() {
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
   const isSmallScreen2 = useMediaQuery("(min-width:611px)");
@@ -66,9 +67,9 @@ function Home() {
                   />
                 )}
               </div>
-              <p className="tagline text-xl md:text-2xl mb-8 text-blue-100 font-light">
-                The future of blogging is written in Markdown
-              </p>
+              <div className="tagline text-xl md:text-2xl mb-8 text-blue-100 font-light inline-block">
+                <p>The future of blogging is written in Markdown</p>
+              </div>
               <div className="flex justify-center gap-6">
                 <a
                   href="/auth?tab=signup"
@@ -78,10 +79,12 @@ function Home() {
                 </a>
                 <a
                   href="/about"
-                  className="flex items-center cursor-pointer group"
+                  className="flex items-center cursor-pointer group relative"
                 >
-                  <span>Learn More</span>{" "}
-                  <FaArrowRight size={13} className="ml-1" />
+                  <span className="relative inline-flex items-center after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-current after:transition-all after:duration-300 group-hover:after:w-full">
+                    Learn More
+                    <FaArrowRight size={13} className="ml-1" />
+                  </span>
                 </a>
               </div>
             </div>
@@ -95,5 +98,5 @@ function Home() {
       </footer>
     </div>
   );
-}
+});
 export default Home;

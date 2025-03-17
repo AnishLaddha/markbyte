@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useMediaQuery } from "@mui/material";
 import { IoMdCloseCircleOutline } from "react-icons/io";
+import React from "react";
 import {
   FaFileUpload,
   FaUpload,
@@ -58,7 +59,7 @@ import {
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 
-function BloggerHome() {
+const BloggerHome = React.memo(function BloggerHome() {
   const { data, fetchData } = useBlogData();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
@@ -421,29 +422,6 @@ function BloggerHome() {
               </CardContent>
             </Card>
           </div>
-
-          <div
-            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
-          >
-            <div className="absolute -top-5 left-6 overflow-visible z-10">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
-                <BookOpen className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <Card
-              className={`flex-grow bg-white relative pt-8 shadow-lg h-[200px] flex flex-col hover:shadow-xl overflow-hidden transition-shadow duration-300 ease-in-out border-2 border-[#003b5c]`}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
-              <CardContent className="px-6 pb-6 mt-auto flex flex-col justify-end">
-                <div className="mt-4 bg-[#003b5c] p-4 rounded-lg opacity-90">
-                  <h2 className="text-base font-medium text-gray-100 mb-1">
-                    Total Posts
-                  </h2>
-                  <p className="text-4xl font-bold text-white">{data.length}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
           <div
             className={`relative flex flex-col flex-grow ${styles.card_transition}`}
           >
@@ -466,7 +444,9 @@ function BloggerHome() {
                   Your Blog
                 </h3>
                 <a
-                  href={`http://localhost:5173/${user.name}`}
+                  href={`/${user.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center"
                 >
                   Visit Blog
@@ -669,6 +649,6 @@ function BloggerHome() {
       </Dialog>
     </div>
   );
-}
+});
 
 export default BloggerHome;

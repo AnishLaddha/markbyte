@@ -20,7 +20,7 @@ const ParticlesBackground = (props) => {
     () => ({
       background: {
         color: {
-          value: "#011A29",
+          value: "#011522",
         },
       },
       fpsLimit: 60,
@@ -61,7 +61,7 @@ const ParticlesBackground = (props) => {
           density: {
             enable: true,
           },
-          value: 130,
+          value: 125,
         },
         opacity: {
           value: {
