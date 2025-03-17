@@ -37,7 +37,7 @@ type BlogPostVersionsData struct {
 
 type BlogPostDataDB interface {
 	CreateBlogPost(ctx context.Context, post *BlogPostData) (string, error)
-	DeleteBlogPost(ctx context.Context, username string, title string, version string) error
+	DeleteBlogPost(ctx context.Context, username string, title string) (int, error)
 	UpdateActiveStatus(ctx context.Context, username string, title string, version string, isActive bool) error
 	FetchAllUserBlogPosts(ctx context.Context, username string) ([]BlogPostVersionsData, error)
 	FetchAllPostVersions(ctx context.Context, username string, title string) (BlogPostVersionsData, error)
@@ -61,4 +61,5 @@ type AnalyticsDB interface {
 	UpdateLikesAnalytics(ctx context.Context, username string, title string, version string, likes int) error
 	IncrementViews(ctx context.Context, username string, title string, version string) error
 	IncrementLikes(ctx context.Context, username string, title string, version string) error
+	DeletePostAnalytics(ctx context.Context, username string, title string) (int, error)
 }
