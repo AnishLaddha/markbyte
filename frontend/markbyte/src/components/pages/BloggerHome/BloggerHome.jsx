@@ -48,6 +48,16 @@ import {
   PaginationNext,
   PaginationLink,
 } from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 
@@ -59,7 +69,7 @@ import {
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 
-const BloggerHome = React.memo(function BloggerHome() {
+function BloggerHome() {
   const { data, fetchData } = useBlogData();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
@@ -70,6 +80,8 @@ const BloggerHome = React.memo(function BloggerHome() {
   const { toast } = useToast();
   const fileInputRef = useRef(null);
   const [selectedVersions, setSelectedVersions] = useState({});
+  const [isalertOpen, setIsAlertOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState("");
 
   // Initialize selected versions when data is fetched
   useEffect(() => {
@@ -227,11 +239,12 @@ const BloggerHome = React.memo(function BloggerHome() {
       accessorKey: "delete",
       header: "Delete",
       cell: ({ row }) => {
-        const rowId = row.original.id || row.original.title;
-        const selectedVersion =
-          selectedVersions[rowId] || row.original.latestVersion;
+        const title = row.original.title;
         return (
-          <button className="text-red-500 hover:text-red-700 hover:bg-red-50 active:bg-red-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-red-200">
+          <button
+            className="text-red-500 hover:text-red-700 hover:bg-red-50 active:bg-red-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-red-200"
+            onClick={() => handleDeleteClick(title)}
+          >
             <Trash2 />
           </button>
         );
@@ -253,6 +266,45 @@ const BloggerHome = React.memo(function BloggerHome() {
   const handleRemoveFile = () => {
     setFileName("");
     fileInputRef.current.value = "";
+  };
+
+  const handleDeleteClick = (title) => {
+    setIsAlertOpen(true);
+    setPostToDelete(title);
+  };
+
+  const handleDeletePost = () => {
+    axios
+      .post(
+        `http://localhost:8080/delete`,
+        { title: postToDelete },
+        { withCredentials: true }
+      )
+      .then(() => {
+        toast({
+          variant: "default",
+          title: "Post Deleted",
+          description: `"${postToDelete}" has been permanently deleted.`,
+          action: <Trash2 className="h-6 w-6" />,
+          className:
+            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg rounded-md",
+          duration: 3000,
+        });
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Delete error:", error);
+        toast({
+          variant: "destructive",
+          title: "Deletion Failed",
+          description: "There was an error deleting your post.",
+          className:
+            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg",
+        });
+      })
+      .finally(() => {
+        setIsAlertOpen(false);
+      });
   };
 
   const handleUploadFile = () => {
@@ -647,8 +699,26 @@ const BloggerHome = React.memo(function BloggerHome() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isalertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this
+              post and all its versions.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleDeletePost()}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
-});
+}
 
 export default BloggerHome;

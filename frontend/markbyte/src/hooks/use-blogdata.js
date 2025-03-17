@@ -5,6 +5,9 @@ function useBlogData() {
   const [data, setData] = useState([]);
 
   const handleData = useCallback((newData) => {
+    if (!newData) {
+      setData([]);
+    }
     let transformedData = [];
     for (let i = 0; i < newData.length; i++) {
       const versions = newData[i].versions;
