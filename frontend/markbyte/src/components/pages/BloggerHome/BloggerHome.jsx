@@ -10,6 +10,7 @@ import {
   FaUpload,
   FaCheckCircle,
   FaExternalLinkAlt,
+  FaFile,
 } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
@@ -68,6 +69,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
+import { FaCss3 } from "react-icons/fa";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
@@ -83,11 +85,10 @@ function BloggerHome() {
   const [isalertOpen, setIsAlertOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState("");
 
-  // Initialize selected versions when data is fetched
   useEffect(() => {
     setSelectedVersions(
       data.reduce((acc, row) => {
-        acc[row.id || row.title] = row.latestVersion;
+        acc[row.title] = row.latestVersion;
         return acc;
       }, {})
     );
@@ -210,7 +211,9 @@ function BloggerHome() {
                 Publish
               </button>
             ) : (
-              <span className="text-gray-500 text-sm ">Current Version</span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                Current Version
+              </span>
             )}
           </div>
         );
@@ -225,12 +228,12 @@ function BloggerHome() {
           selectedVersions[rowId] || row.original.latestVersion;
         return (
           <button
-            className="text-[#084464] hover:text-[#0a5a7c] hover:bg-blue-50 active:bg-blue-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-blue-200"
+            className="inline-flex items-center justify-center p-2 rounded-full bg-indigo-50 text-[#084464] hover:bg-indigo-100 hover:text-[#0a5a7c] transition-all duration-200 ease-in-out cursor-pointer"
             onClick={() => {
               navigate(`/editor/${row.original.title}/${selectedVersion}`);
             }}
           >
-            <Pen />
+            <Pen className="h-5 w-5" />
           </button>
         );
       },
@@ -242,10 +245,10 @@ function BloggerHome() {
         const title = row.original.title;
         return (
           <button
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 active:bg-red-100 transition-all duration-200 ease-in-out cursor-pointer text-center rounded-md p-1 focus:outline-none focus:ring focus:ring-red-200"
+            className="inline-flex items-center justify-center p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all duration-200 ease-in-out cursor-pointer"
             onClick={() => handleDeleteClick(title)}
           >
-            <Trash2 />
+            <Trash2 className="h-5 w-5" />
           </button>
         );
       },
@@ -326,7 +329,7 @@ function BloggerHome() {
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
           });
-        }, 1000);
+        }, 500);
         fetchData();
       })
       .catch((error) => {
@@ -416,24 +419,22 @@ function BloggerHome() {
           </motion.div>
         </div>
 
-        <div className="flex gap-6 ml-8 mt-10 mr-8">
-          <div
-            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
-          >
-            <div className="absolute -top-5 left-6 overflow-visible z-10">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mx-8 mt-10">
+          <div className={`relative ${styles.card_transition}`}>
+            <div className="absolute -top-5 left-6 z-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
                 <Upload className="w-8 h-8 text-white" />
               </div>
             </div>
-            <Card className="bg-white relative pt-8 shadow-lg h-[200px] hover:shadow-xl transition-shadow duration-300 overflow-hidden ease-in-out border-2 border-[#003b5c] flex flex-col">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
-              <CardContent className="px-6 pb-6 flex flex-col justify-end mt-auto">
+            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
                 <div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-gray-500 font-medium mb-2">
                     Upload a markdown file
                   </p>
                   <button
-                    className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
+                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
                     onClick={() => setIsOpen(true)}
                   >
                     <span className="flex items-center gap-2">
@@ -446,23 +447,21 @@ function BloggerHome() {
             </Card>
           </div>
 
-          <div
-            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
-          >
-            <div className="absolute -top-5 left-6 overflow-visible z-10">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+          <div className={`relative ${styles.card_transition}`}>
+            <div className="absolute -top-5 left-6 z-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform -rotate-2">
                 <Pen className="w-8 h-8 text-white" />
               </div>
             </div>
-            <Card className="bg-white relative pt-8 shadow-lg h-[200px] hover:shadow-xl transition-shadow duration-300 overflow-hidden ease-in-out border-2 border-[#003b5c] flex flex-col">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
-              <CardContent className="px-6 pb-6 flex flex-col justify-end mt-auto">
+            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
                 <div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-gray-500 font-medium mb-2">
                     Ready to start writing?
                   </p>
                   <button
-                    className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-6 rounded-md transition-colors w-full flex items-center justify-center gap-2"
+                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
                     onClick={() => navigate("/editor")}
                   >
                     <span className="flex items-center gap-2">
@@ -474,32 +473,52 @@ function BloggerHome() {
               </CardContent>
             </Card>
           </div>
-          <div
-            className={`relative flex flex-col flex-grow ${styles.card_transition}`}
-          >
-            <div className="absolute -top-5 left-6 overflow-visible z-10">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
+
+          <div className={`relative ${styles.card_transition}`}>
+            <div className="absolute -top-5 left-6 z-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                <FaCss3 className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                <div>
+                  <p className="text-gray-500 font-medium mb-2">
+                    Upload custom CSS styling
+                  </p>
+                  <button
+                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
+                    onClick
+                  >
+                    <span className="flex items-center gap-2">
+                      <FaUpload />
+                      <span>Upload</span>
+                    </span>
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Visit Blog Card */}
+          <div className={`relative ${styles.card_transition}`}>
+            <div className="absolute -top-5 left-6 z-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-1">
                 <Notebook className="w-8 h-8 text-white" />
               </div>
             </div>
-            <Card
-              className={`flex-grow bg-white relative pt-8 shadow-lg h-[200px] flex flex-col hover:shadow-xl transition-shadow duration-300 ease-in-out border-2 border-[#003b5c]`}
-            >
-              <div className="absolute -top-5 left-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#003b5c] to-[#0a5a7c] rounded-full flex items-center justify-center shadow-lg">
-                  <Notebook className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#003b5c] opacity-5 rounded-bl-full"></div>
-              <CardContent className="px-6 pb-6 mt-auto flex flex-col justify-end">
-                <h3 className="text-lg font-semibold text-[#003b5c]">
+            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   Your Blog
                 </h3>
                 <a
                   href={`/${user.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 bg-[#084464] hover:bg-[#0a5a7c] text-white text-sm font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center"
+                  className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
                 >
                   Visit Blog
                 </a>
@@ -513,37 +532,37 @@ function BloggerHome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="bg-white shadow-lg rounded-lg p-6 ml-8 mr-8 mt-12 h-auto w-auto overflow-x-auto mb-12 hover:shadow-xl transition-shadow duration-300 ease-in-out border-2 border-[#003b5c]">
-            <div className="flex justify-between items-center">
+          <div className="bg-white shadow-xl rounded-2xl p-6 mx-4 sm:mx-8 mt-12 h-auto w-auto overflow-hidden mb-12 hover:shadow-2xl transition-shadow duration-300 ease-in-out border border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h1 className="text-2xl font-bold text-[#003b5c] inline-flex items-center gap-2 whitespace-nowrap">
                 <Notebook className="h-6 w-6" />
                 My Blog Posts
-                <span className="text-sm bg-[#003b5c] text-white px-3 py-1 rounded-full ml-1">
+                <span className="text-sm bg-[#003b5c] text-white px-3 py-1 rounded-full ml-1 font-medium">
                   {data.length}
                 </span>
               </h1>
 
-              <div className="relative flex-end">
+              <div className="relative w-full sm:w-auto">
                 <Search className="h-4 w-4 absolute top-2.5 left-3 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search posts..."
-                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-[#003b5c] focus:border-transparent"
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-[#003b5c] focus:border-transparent transition-all duration-200"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="mt-6 overflow-x-auto">
-              <table className="table-auto min-w-full divide-y divide-gray-200 overflow-hidden">
+            <div className="mt-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50 rounded-xl">
+              <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                 <thead className="bg-gradient-to-r from-[#003b5c] to-[#0a5a7c]">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
                         <th
                           key={header.id}
-                          className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                          className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
                         >
                           {header.isPlaceholder
                             ? null
@@ -558,8 +577,12 @@ function BloggerHome() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {table.getRowModel().rows.map((row, index) => (
-                    <tr
+                    <motion.tr
                       key={row.id}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.2, delay: index * 0.05 }}
                       className={`hover:bg-gray-50 transition-colors ${
                         index % 2 === 0 ? "bg-gray-50" : "bg-white"
                       }`}
@@ -575,7 +598,7 @@ function BloggerHome() {
                           )}
                         </td>
                       ))}
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
@@ -650,11 +673,14 @@ function BloggerHome() {
             </DialogHeader>
           </div>
           <div className="p-8 flex flex-col items-center justify-center">
-            <div className="mb-6 bg-gray-50 p-8 rounded-full">
+            <div
+              className="mb-6 bg-blue-50 p-8 rounded-2xl group transition-all duration-300 cursor-pointer w-full max-w-[250px] flex items-center justify-center"
+              onClick={handleIconButtonClick}
+            >
               <IconButton
                 aria-label="upload"
-                className="text-9xl text-[#084464] hover:text-[#0a5a7c] transition-colors"
-                onClick={handleIconButtonClick}
+                className="text-9xl text-[#084464] group-hover:text-[#005a7a] transition-colors duration-300 ease-in-out"
+                disableRipple
               >
                 <FaFileUpload size={80} />
               </IconButton>
@@ -671,9 +697,10 @@ function BloggerHome() {
               </p>
             )}
             {fileName && (
-              <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
-                {fileName}
-              </p>
+              <div className="mt-2 text-base text-gray-700 font-medium bg-indigo-50 py-2 px-4 rounded-lg flex items-center gap-2 max-w-full overflow-hidden">
+                <FaFile className="flex-shrink-0 text-[#084464]" />
+                <span className="truncate">{fileName}</span>
+              </div>
             )}
             {fileName && (
               <div className="flex gap-4 mt-6 w-full">
