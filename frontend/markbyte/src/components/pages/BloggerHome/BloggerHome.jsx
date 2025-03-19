@@ -15,7 +15,6 @@ import {
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  BookOpen,
   Home,
   Pen,
   Notebook,
@@ -61,6 +60,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { Input } from "@/components/ui/input";
 
 import {
   flexRender,
@@ -544,7 +544,7 @@ function BloggerHome() {
 
               <div className="relative w-full sm:w-auto">
                 <Search className="h-4 w-4 absolute top-2.5 left-3 text-gray-400" />
-                <input
+                <Input
                   type="text"
                   placeholder="Search posts..."
                   className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-[#003b5c] focus:border-transparent transition-all duration-200"
