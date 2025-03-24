@@ -206,18 +206,48 @@ const PublishEditorPreview = () => {
               <TabsTrigger
                 value="editor"
                 className="flex items-center justify-center transition-all duration-200 focus:ring-2 focus:ring-blue-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white rounded-lg transform hover:scale-105"
+                onClick={() => {
+                  if (
+                    activeTab === "editor" &&
+                    editorPanelRef.current &&
+                    previewPanelRef.current
+                  ) {
+                    editorPanelRef.current.resize(100);
+                    previewPanelRef.current.resize(0);
+                  }
+                }}
               >
                 <FaMarkdown className="h-4 w-4" />
               </TabsTrigger>
               <TabsTrigger
                 value="split"
                 className="flex items-center justify-center transition-all duration-200 focus:ring-2 focus:ring-blue-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white rounded-lg transform hover:scale-105"
+                onClick={() => {
+                  if (
+                    activeTab === "split" &&
+                    editorPanelRef.current &&
+                    previewPanelRef.current
+                  ) {
+                    editorPanelRef.current.resize(50);
+                    previewPanelRef.current.resize(50);
+                  }
+                }}
               >
                 <SquareSplitHorizontal className="h-5 w-5" />
               </TabsTrigger>
               <TabsTrigger
                 value="preview"
                 className="flex items-center justify-center transition-all duration-200 focus:ring-2 focus:ring-blue-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white rounded-lg transform hover:scale-105"
+                onClick={() => {
+                  if (
+                    activeTab === "preview" &&
+                    editorPanelRef.current &&
+                    previewPanelRef.current
+                  ) {
+                    editorPanelRef.current.resize(0);
+                    previewPanelRef.current.resize(100);
+                  }
+                }}
               >
                 <Eye className="h-4 w-4" />
               </TabsTrigger>
