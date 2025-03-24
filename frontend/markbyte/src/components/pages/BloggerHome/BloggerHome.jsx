@@ -489,7 +489,6 @@ function BloggerHome() {
                   </p>
                   <button
                     className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                    onClick
                   >
                     <span className="flex items-center gap-2">
                       <FaUpload />

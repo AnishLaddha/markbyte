@@ -7,6 +7,7 @@ function useBlogData() {
   const handleData = useCallback((newData) => {
     if (!newData) {
       setData([]);
+      return;
     }
     let transformedData = [];
     for (let i = 0; i < newData.length; i++) {
