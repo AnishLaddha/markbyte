@@ -2,15 +2,12 @@ import styles from "./BloggerHome.module.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { useMediaQuery } from "@mui/material";
-import { IoMdCloseCircleOutline } from "react-icons/io";
 import React from "react";
 import {
   FaFileUpload,
   FaUpload,
   FaCheckCircle,
   FaExternalLinkAlt,
-  FaFile,
 } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +18,10 @@ import {
   Search,
   Trash2,
   Upload,
+  FileArchive,
+  X,
+  File,
+  ArrowUp,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -33,35 +34,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import UserDropdown from "@/components/ui/profiledropdown";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
-
+import ConfirmDeleteDialog from "@/components/ui/confirmdelete";
+import BlogTablePagination from "@/components/ui/blogtablepagination";
 import {
   flexRender,
   getCoreRowModel,
@@ -69,18 +54,19 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
-import { FaCss3 } from "react-icons/fa";
+import DashboardHeader from "@/components/ui/dashboardheader";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
   const navigate = useNavigate();
-  const isSmallScreen = useMediaQuery("(max-width:470px)");
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [fileName, setFileName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  const fileInputRef = useRef(null);
+  const [mdFileName, setMdFileName] = useState("");
+  const [zipFileName, setZipFileName] = useState("");
+  const mdFileInputRef = useRef(null);
+  const zipFileInputRef = useRef(null);
   const [selectedVersions, setSelectedVersions] = useState({});
   const [isalertOpen, setIsAlertOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState("");
@@ -255,25 +241,76 @@ function BloggerHome() {
     },
   ];
 
-  const handleIconButtonClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFileName(file.name);
+  const handleIconButtonClick = (fileType) => {
+    if (fileType === "md") {
+      mdFileInputRef.current.click();
+    } else if (fileType === "zip") {
+      zipFileInputRef.current.click();
     }
   };
 
-  const handleRemoveFile = () => {
-    setFileName("");
-    fileInputRef.current.value = "";
+  const handleFileChange = (event, fileType) => {
+    const file = event.target.files[0];
+    if (fileType === "md") {
+      setMdFileName(file ? file.name : "");
+    } else if (fileType === "zip") {
+      setZipFileName(file ? file.name : "");
+    }
+  };
+
+  const handleRemoveFile = (fileType) => {
+    if (fileType === "md") {
+      setMdFileName("");
+      if (mdFileInputRef.current) {
+        mdFileInputRef.current.value = "";
+      }
+    } else {
+      setZipFileName("");
+      if (zipFileInputRef.current) {
+        zipFileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleDeleteClick = (title) => {
     setIsAlertOpen(true);
     setPostToDelete(title);
+  };
+
+  const handleTabChange = (value) => {
+    // Reset file input value when switching tabs
+    if (value === "zip") {
+      setMdFileName("");
+      if (mdFileInputRef.current) {
+        mdFileInputRef.current.value = "";
+      }
+    } else if (value === "markdown") {
+      setZipFileName("");
+      if (zipFileInputRef.current) {
+        zipFileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const createUploadToast = (fileType, fileName) => {
+    return toast({
+      title: <div className="flex items-center">File Uploaded</div>,
+      description: `Your ${fileType} file, "${fileName}", has been uploaded successfully.`,
+      variant: "success",
+      action: <FaCheckCircle size={30} className="text-white" />,
+      className:
+        "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
+      duration: 3000,
+    });
+  };
+
+  const createFailureToast = (ttitle, tdescription) => {
+    return toast({
+      variant: "destructive",
+      title: ttitle,
+      description: tdescription,
+      className: "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg",
+    });
   };
 
   const handleDeletePost = () => {
@@ -297,54 +334,76 @@ function BloggerHome() {
       })
       .catch((error) => {
         console.error("Delete error:", error);
-        toast({
-          variant: "destructive",
-          title: "Deletion Failed",
-          description: "There was an error deleting your post.",
-          className:
-            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg",
-        });
+        createFailureToast(
+          "Deletion Failed",
+          "There was an error deleting your post."
+        );
       })
       .finally(() => {
         setIsAlertOpen(false);
       });
   };
 
-  const handleUploadFile = () => {
-    const file = fileInputRef.current.files[0];
+  const handleUploadFile = (fileType) => {
+    const fileInput = fileType === "md" ? mdFileInputRef : zipFileInputRef;
+    const file = fileInput.current.files[0];
     const formData = new FormData();
-    formData.append("file", file);
-
-    axios
-      .post("http://localhost:8080/upload", formData, { withCredentials: true })
-      .then(() => {
-        setIsOpen(false);
-        setTimeout(() => {
-          toast({
-            title: <div className="flex items-center">File Uploaded</div>,
-            description: `Your file, "${fileName}", has been uploaded successfully.`,
-            variant: "success",
-            action: <FaCheckCircle size={30} className="text-white" />,
-            className:
-              "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
-            duration: 3000,
-          });
-        }, 500);
-        fetchData();
-      })
-      .catch((error) => {
-        console.error("File upload error:", error);
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          className:
-            "bg-red-800 text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
-          description: "File upload failed. Please try again.",
+    if (fileType == "md") {
+      formData.append("file", file);
+      axios
+        .post("http://localhost:8080/upload", formData, {
+          withCredentials: true,
+        })
+        .then(() => {
+          setIsOpen(false);
+          setTimeout(() => {
+            createUploadToast(fileType, mdFileName);
+          }, 500);
+          fetchData();
+        })
+        .catch((error) => {
+          console.error("File upload error:", error);
+          createFailureToast(
+            "Upload Failed",
+            "There was an error uploading your file."
+          );
+        })
+        .finally(() => {
+          setMdFileName("");
+          if (mdFileInputRef.current) {
+            mdFileInputRef.current.value = "";
+          }
         });
-      })
-      .finally(() => {
-        handleRemoveFile();
-      });
+    } else {
+      formData.append("zipfile", file);
+      axios
+        .post("http://localhost:8080/zipupload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        })
+        .then(() => {
+          setIsOpen(false);
+          setTimeout(() => {
+            createUploadToast(fileType, zipFileName);
+          }, 500);
+          fetchData();
+        })
+        .catch((error) => {
+          console.error("File upload error:", error);
+          createFailureToast(
+            "Upload Failed",
+            "There was an error uploading your file."
+          );
+        })
+        .finally(() => {
+          setZipFileName("");
+          if (zipFileInputRef.current) {
+            zipFileInputRef.current.value = "";
+          }
+        });
+    }
   };
 
   const filteredData = useMemo(() => {
@@ -374,25 +433,7 @@ function BloggerHome() {
     <div
       className={`${styles.BloggerHome} bg-gradient-to-br from-gray-50 to-gray-100`}
     >
-      <header className="sticky top-0 left-0 w-full h-16 flex justify-between items-center px-4 md:px-6 bg-[#084464] text-white shadow-md z-10">
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          <img
-            src="/assets/markbytealt.png"
-            alt="MarkByte Logo"
-            className="h-8 w-auto"
-          />
-          {!isSmallScreen && (
-            <span className="text-xl font-semibold">arkByte</span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <UserDropdown userName={user.name} logout={logout} />
-        </div>
-      </header>
+      <DashboardHeader />
 
       <main className="container mx-auto px-4 sm:px-4 py-8">
         <div className="ml-8">
@@ -419,7 +460,7 @@ function BloggerHome() {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mx-8 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
           <div className={`relative ${styles.card_transition}`}>
             <div className="absolute -top-5 left-6 z-10">
               <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
@@ -431,7 +472,7 @@ function BloggerHome() {
               <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
                 <div>
                   <p className="text-gray-500 font-medium mb-2">
-                    Upload a markdown file
+                    Upload your file
                   </p>
                   <button
                     className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
@@ -467,32 +508,6 @@ function BloggerHome() {
                     <span className="flex items-center gap-2">
                       <FaRegPenToSquare />
                       <span>Start Writing</span>
-                    </span>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className={`relative ${styles.card_transition}`}>
-            <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                <FaCss3 className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
-                <div>
-                  <p className="text-gray-500 font-medium mb-2">
-                    Upload custom CSS styling
-                  </p>
-                  <button
-                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FaUpload />
-                      <span>Upload</span>
                     </span>
                   </button>
                 </div>
@@ -604,53 +619,7 @@ function BloggerHome() {
             </div>
 
             <div className="flex justify-center items-center mt-6">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => {
-                        if (table.getCanPreviousPage()) {
-                          return table.previousPage();
-                        }
-                      }}
-                      className={`cursor-pointer ${
-                        !table.getCanPreviousPage()
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                      }`}
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: table.getPageCount() }, (_, i) => (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        onClick={() => table.setPageIndex(i)}
-                        isActive={table.getState().pagination.pageIndex === i}
-                        className={`cursor-pointer px-4 py-2 rounded-md transition-colors ${
-                          table.getState().pagination.pageIndex === i
-                            ? "bg-[#003b5c] text-white font-medium shadow-md"
-                            : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                        }`}
-                      >
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => {
-                        if (table.getCanNextPage()) {
-                          return table.nextPage();
-                        }
-                      }}
-                      className={`cursor-pointer ${
-                        !table.getCanNextPage()
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                      }`}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+              <BlogTablePagination table={table} />
             </div>
           </div>
         </motion.div>
@@ -660,89 +629,174 @@ function BloggerHome() {
         open={isOpen}
         onOpenChange={(open) => {
           setIsOpen(open);
-          if (!open) setFileName("");
+          if (!open) {
+            setMdFileName("");
+            setZipFileName("");
+          }
         }}
       >
         <DialogContent className="sm:max-w-[450px] rounded-xl p-0 overflow-hidden">
           <div className="bg-gradient-to-r from-[#003b5c] to-[#0a5a7c] p-6 text-white">
             <DialogHeader>
               <DialogTitle className="text-center text-3xl font-bold font-['DM Sans']">
-                Upload a Markdown File
+                Upload Files
               </DialogTitle>
             </DialogHeader>
           </div>
-          <div className="p-8 flex flex-col items-center justify-center">
-            <div
-              className="mb-6 bg-blue-50 p-8 rounded-2xl group transition-all duration-300 cursor-pointer w-full max-w-[250px] flex items-center justify-center"
-              onClick={handleIconButtonClick}
-            >
-              <IconButton
-                aria-label="upload"
-                className="text-9xl text-[#084464] group-hover:text-[#005a7a] transition-colors duration-300 ease-in-out"
-                disableRipple
-              >
-                <FaFileUpload size={80} />
-              </IconButton>
+          <Tabs
+            defaultValue="markdown"
+            className="w-auto"
+            onValueChange={handleTabChange}
+          >
+            <div className="flex justify-center px-8 pt-4 pb-2">
+              <TabsList className="grid grid-cols-2 w-full max-w-[320px]">
+                <TabsTrigger value="markdown">Markdown</TabsTrigger>
+                <TabsTrigger value="zip">ZIP</TabsTrigger>
+              </TabsList>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            {!fileName && (
-              <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
-                Select a file to upload
-              </p>
-            )}
-            {fileName && (
-              <div className="mt-2 text-base text-gray-700 font-medium bg-indigo-50 py-2 px-4 rounded-lg flex items-center gap-2 max-w-full overflow-hidden">
-                <FaFile className="flex-shrink-0 text-[#084464]" />
-                <span className="truncate">{fileName}</span>
-              </div>
-            )}
-            {fileName && (
-              <div className="flex gap-4 mt-6 w-full">
-                <button
-                  onClick={() => {
-                    handleUploadFile();
-                  }}
-                  className="text-sm font-['DM Sans'] bg-gradient-to-r from-[#084464] to-[#0a5a7c] text-white rounded-lg px-6 py-3 hover:shadow-lg transition-all flex-1 flex items-center justify-center"
-                >
-                  <FaUpload size={16} className="mr-2" />
-                  Upload File
-                </button>
 
-                <button
-                  onClick={handleRemoveFile}
-                  className="text-sm font-['DM Sans'] bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg px-6 py-3 hover:shadow-lg transition-all flex-1 flex items-center justify-center"
+            <TabsContent
+              value="markdown"
+              className="p-8 pt-0 flex flex-col items-center justify-center data-[state=inactive]:hidden"
+            >
+              <div
+                className="w-full max-w-[320px] h-[180px] rounded-xl border-2 border-dashed transition-all duration-200 flex flex-col items-center justify-center gap-4 cursor-pointer"
+                onClick={() => handleIconButtonClick("md")}
+              >
+                <IconButton
+                  aria-label="upload markdown"
+                  className="text-9xl text-[#084464] group-hover:text-[#005a7a] transition-colors duration-300 ease-in-out"
+                  disableRipple
                 >
-                  <IoMdCloseCircleOutline size={19} className="mr-1" />
-                  Remove File
-                </button>
+                  <FaFileUpload size={80} />
+                </IconButton>
+                {!mdFileName && (
+                  <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
+                    Select a Markdown file to upload
+                  </p>
+                )}
+                {mdFileName && (
+                  <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
+                    Change file
+                  </p>
+                )}
               </div>
-            )}
-          </div>
+              <input
+                ref={mdFileInputRef}
+                type="file"
+                accept=".md"
+                className="hidden"
+                onChange={(e) => handleFileChange(e, "md")}
+              />
+              {mdFileName && (
+                <div className="mt-6 w-full max-w-[320px]">
+                  <div className="p-3 rounded-lg bg-primary/5 flex items-center gap-3 mb-4">
+                    <div className="rounded-md bg-primary/10 p-2">
+                      <File size={20} className="text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {mdFileName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Markdown file
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => handleRemoveFile("md")}
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                  <Button
+                    className="w-full bg-gradient-to-r from-[#084464] to-[#0a5a7c] text-white"
+                    onClick={() => handleUploadFile("md")}
+                  >
+                    <ArrowUp size={16} className="mr-2" />
+                    Upload File
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent
+              value="zip"
+              className="p-8 pt-0 flex flex-col items-center justify-center data-[state=inactive]:hidden"
+            >
+              <div
+                className="w-full max-w-[320px] h-[180px] rounded-xl border-2 border-dashed transition-all duration-200 flex flex-col items-center justify-center gap-4 cursor-pointer"
+                onClick={() => handleIconButtonClick("zip")}
+              >
+                <IconButton
+                  aria-label="upload zip"
+                  className="text-9xl text-[#084464] group-hover:text-[#005a7a] transition-colors duration-300 ease-in-out"
+                  disableRipple
+                >
+                  <FileArchive size={80} />
+                </IconButton>
+                {!zipFileName && (
+                  <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
+                    Select a ZIP file to upload
+                  </p>
+                )}
+                {zipFileName && (
+                  <p className="mt-1 text-base font-['DM Sans'] text-gray-500">
+                    Change file
+                  </p>
+                )}
+              </div>
+              <input
+                ref={zipFileInputRef}
+                type="file"
+                accept=".zip"
+                className="hidden"
+                onChange={(e) => handleFileChange(e, "zip")}
+              />
+              {zipFileName && (
+                <div className="mt-6 w-full max-w-[320px]">
+                  <div className="p-3 rounded-lg bg-primary/5 flex items-center gap-3 mb-4">
+                    <div className="rounded-md bg-primary/10 p-2">
+                      <FileArchive size={20} className="text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {zipFileName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ZIP Archive
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => handleRemoveFile("zip")}
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                  <Button
+                    className="w-full bg-gradient-to-r from-[#084464] to-[#0a5a7c] text-white"
+                    onClick={() => handleUploadFile("zip")}
+                  >
+                    <ArrowUp size={16} className="mr-2" />
+                    Upload File
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isalertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this
-              post and all its versions.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDeletePost()}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        isOpen={isalertOpen}
+        onOpenChange={setIsAlertOpen}
+        onConfirm={handleDeletePost}
+      />
     </div>
   );
 }
