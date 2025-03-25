@@ -1,3 +1,5 @@
+// Code implemented with the help of: https://www.youtube.com/watch?v=AKM3EodFZek
+
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { useEffect, useMemo, useState } from "react";
 import { loadSlim } from "@tsparticles/slim";
@@ -20,7 +22,7 @@ const ParticlesBackground = (props) => {
     () => ({
       background: {
         color: {
-          value: "#011A29",
+          value: "#011522",
         },
       },
       fpsLimit: 60,
@@ -61,7 +63,7 @@ const ParticlesBackground = (props) => {
           density: {
             enable: true,
           },
-          value: 130,
+          value: 125,
         },
         opacity: {
           value: {
