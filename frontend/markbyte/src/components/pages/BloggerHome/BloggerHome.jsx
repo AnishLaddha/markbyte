@@ -559,7 +559,7 @@ function BloggerHome() {
           <div className="bg-gradient-to-r from-[#003b5c] to-[#0a5a7c] p-6 text-white">
             <DialogHeader>
               <DialogTitle className="text-center text-3xl font-bold font-['DM Sans']">
-                Upload Files
+                Upload Your File
               </DialogTitle>
             </DialogHeader>
           </div>
@@ -569,9 +569,19 @@ function BloggerHome() {
             onValueChange={handleTabChange}
           >
             <div className="flex justify-center px-8 pt-4 pb-2">
-              <TabsList className="grid grid-cols-2 w-full max-w-[320px]">
-                <TabsTrigger value="markdown">Markdown</TabsTrigger>
-                <TabsTrigger value="zip">ZIP</TabsTrigger>
+              <TabsList className="grid grid-cols-2 gap-1 w-full max-w-[320px]">
+                <TabsTrigger
+                  value="markdown"
+                  className="data-[state=active]:bg-[#064c61] data-[state=active]:text-white transition-colors duration-200"
+                >
+                  Markdown
+                </TabsTrigger>
+                <TabsTrigger
+                  value="zip"
+                  className="data-[state=active]:bg-[#064c61] data-[state=active]:text-white transition-colors duration-200"
+                >
+                  ZIP
+                </TabsTrigger>
               </TabsList>
             </div>
 
