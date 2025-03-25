@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -166,4 +168,47 @@ func DeleteFile(ctx context.Context, key string, cred S3Credentials) error {
 	}
 
 	return nil
+}
+
+func UploadImages(ctx context.Context, images map[string][]byte, cred S3Credentials) (map[string]string, error) {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	urls := make(map[string]string)
+
+	var contentType string
+
+	for key, image := range images {
+		imageReader := bytes.NewReader(image)
+		ext := strings.ToLower(filepath.Ext(key)) // ".jpg"
+		if ext == ".jpg" || ext == ".jpeg" {
+			contentType = "image/jpeg"
+		} else if ext == ".png" {
+			contentType = "image/png"
+		} else {
+			return nil, fmt.Errorf("unsupported image extension: %s", ext)
+		}
+
+		_, err = client.PutObject(ctx, &s3.PutObjectInput{
+			Bucket: aws.String(cred.Bucket),
+			Key:    aws.String(key),
+			Body:   imageReader,
+			//content type needs to be set for images, could be jpg or png depends on extension
+			ContentType: aws.String(contentType),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to upload file to s3: %w", err)
+		}
+
+		url := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cred.Bucket, cred.Region, key)
+		urls[key] = url
+	}
+
+	return urls, nil
 }
