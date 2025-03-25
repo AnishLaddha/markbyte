@@ -45,6 +45,7 @@ func SetupRouter() *chi.Mux {
 		protected.Use(auth.JWTAuthMiddleware)
 
 		protected.Post("/upload", api.HandleUpload)
+		protected.Post("/zipupload", api.HandleZipUpload)
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
 		protected.Get("/like", api.HandleLikePost)
