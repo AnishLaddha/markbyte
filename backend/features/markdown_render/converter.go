@@ -3,6 +3,7 @@ package markdown_render
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -128,6 +129,9 @@ func ConvertMarkdown(mdContent []byte) (string, error) {
 			gmhtml.WithUnsafe(),
 		),
 	)
+
+	re := regexp.MustCompile(`(?is)<script.*?</script>`)
+	mdContent = re.ReplaceAll(mdContent, []byte(""))
 
 	// convert markdown to html
 	if err := md.Convert(mdContent, &buf); err != nil {

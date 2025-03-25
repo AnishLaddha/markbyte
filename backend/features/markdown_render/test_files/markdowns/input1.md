@@ -9,6 +9,10 @@ look like:
   * that one
   * the other one
 
+<script> 
+    alert("🚨 XSS test: If you see this, script injection is working!");
+</script>
+
 another jit:
 + hjdhhj
 + shjdhjksdjh
