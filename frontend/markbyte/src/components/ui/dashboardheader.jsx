@@ -16,10 +16,10 @@ function DashboardHeader() {
         <img
           src="/assets/markbytealt.png"
           alt="MarkByte Logo"
-          className="h-8 w-auto"
+          className="h-10 w-auto"
         />
         {!isSmallScreen && (
-          <span className="text-xl font-semibold">arkByte</span>
+          <span className="text-2xl font-semibold">arkByte</span>
         )}
       </div>
 
