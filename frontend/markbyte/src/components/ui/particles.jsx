@@ -25,7 +25,7 @@ const ParticlesBackground = (props) => {
           value: "#011522",
         },
       },
-      fpsLimit: 60,
+      fpsLimit: 30,
       interactivity: {
         events: {},
         modes: {
@@ -63,7 +63,7 @@ const ParticlesBackground = (props) => {
           density: {
             enable: true,
           },
-          value: 125,
+          value: 120,
         },
         opacity: {
           value: {

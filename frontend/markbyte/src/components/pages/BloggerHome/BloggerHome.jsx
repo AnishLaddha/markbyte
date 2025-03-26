@@ -515,7 +515,7 @@ function BloggerHome() {
           {/* Visit Blog Card */}
           <div className={`relative ${styles.card_transition}`}>
             <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-1">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
                 <Notebook className="w-8 h-8 text-white" />
               </div>
             </div>
