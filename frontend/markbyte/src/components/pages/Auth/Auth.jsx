@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./Auth.css";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import axios from "axios";
