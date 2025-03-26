@@ -238,7 +238,11 @@ function Auth() {
                     >
                       Sign In{" "}
                       {isLoading && (
-                        <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="flex space-x-1">
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse1"></span>
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse2"></span>
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse3"></span>
+                        </div>
                       )}
                     </Button>
                   </form>
@@ -316,7 +320,11 @@ function Auth() {
                     >
                       Sign Up
                       {isLoading && (
-                        <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="flex space-x-1">
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse1"></span>
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse2"></span>
+                          <span className="dot w-2 h-2 bg-black rounded-full inline-block animate-pulse3"></span>
+                        </div>
                       )}
                     </Button>
                   </form>
