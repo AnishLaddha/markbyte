@@ -312,7 +312,7 @@ const PublishEditorPreview = () => {
             <div className="flex items-center gap-2 font-medium">
               <FileEdit size={17} className="text-blue-300" />
               <span className="font-semibold text-blue-100 font-medium">
-                Editor
+                Markdown Editor
               </span>
               <Select
                 defaultValue="vscodeDark"
