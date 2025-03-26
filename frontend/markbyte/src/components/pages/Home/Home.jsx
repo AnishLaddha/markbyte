@@ -139,7 +139,7 @@ const Home = React.memo(function Home() {
                 </a>
                 <a
                   href="/about"
-                  className="flex items-center justify-center cursor-pointer group relative py-3 px-6 border border-blue-400/30 rounded-lg hover:bg-blue-900/20 transition-all duration-300"
+                  className="flex items-center justify-center cursor-pointer group relative py-3 px-6 border border-blue-400/30 hover:bg-blue-900/20 transition-all duration-300 rounded-full"
                 >
                   <span className="relative inline-flex items-center">
                     Learn More

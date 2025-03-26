@@ -469,7 +469,7 @@ function BloggerHome() {
               <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
                 <div>
                   <p className="text-gray-500 font-medium mb-2">
-                    Upload your file
+                    Upload your blog files
                   </p>
                   <button
                     className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
@@ -515,7 +515,7 @@ function BloggerHome() {
           {/* Visit Blog Card */}
           <div className={`relative ${styles.card_transition}`}>
             <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-1">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
                 <Notebook className="w-8 h-8 text-white" />
               </div>
             </div>
