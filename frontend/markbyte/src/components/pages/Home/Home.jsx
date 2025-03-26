@@ -107,7 +107,13 @@ const Home = React.memo(function Home() {
               <div className="relative">
                 <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight tracking-tight">
                   Welcome to{" "}
-                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <span
+                    className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 
+                 bg-[length:200%_100%] 
+                 bg-clip-text 
+                 text-transparent 
+                 animate-gradientFlow"
+                  >
                     MarkByte
                   </span>
                   .
