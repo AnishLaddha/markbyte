@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -112,8 +111,6 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-
-		fmt.Println(claims["username"].(string))
 
 		ctx := context.WithValue(r.Context(), UsernameKey, claims["username"].(string))
 

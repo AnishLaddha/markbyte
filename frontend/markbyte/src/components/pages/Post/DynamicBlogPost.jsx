@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
 function DynamicBlogPost() {
   const { user, post } = useParams();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/${user}/${post}`)
+      .get(`${API_URL}/${user}/${post}`)
       .then((response) => {
         document.open();
         document.write(response.data);

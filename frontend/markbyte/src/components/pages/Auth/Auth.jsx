@@ -11,6 +11,8 @@ import { AlertCircle, User, Lock, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { API_URL } from "@/config/api";
+
 
 function Auth() {
   const [activeTab, setActiveTab] = useState("login");
@@ -51,7 +53,7 @@ function Auth() {
     e.preventDefault();
     axios
       .post(
-        "http://localhost:8080/login",
+        `${API_URL}/login`,
         { username: lusername, password: lpassword },
         {
           headers: { "Content-Type": "application/json" },
@@ -84,14 +86,14 @@ function Auth() {
     };
     e.preventDefault();
     axios
-      .post("http://localhost:8080/signup", signup_data, {
+      .post(`${API_URL}/signup`, signup_data, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       })
       .then((response) => {
         axios
           .post(
-            "http://localhost:8080/login",
+            `${API_URL}/login`,
             { username: susername, password: spassword },
             {
               headers: { "Content-Type": "application/json" },

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
@@ -12,19 +13,25 @@ import (
 )
 
 func main() {
-	userDB, err := mdb.NewUserDB("mongodb://localhost:27017", "markbyte", "users")
+	var MONGO_URL string
+	if os.Getenv("RUNNING_IN_DOCKER") == "true" {
+		MONGO_URL = "mongodb://mongo:27017"
+	} else {
+		MONGO_URL = "mongodb://localhost:27017"
+	}
+	userDB, err := mdb.NewUserDB(MONGO_URL, "markbyte", "users")
 	if err != nil {
 		fmt.Printf("Failed to create userDB: %v\n", err)
 	}
 	auth.SetUserDB(userDB)
 
-	blogPostDataDB, err := mdb.NewBlogPostDataDB("mongodb://localhost:27017", "markbyte", "blog_post_data")
+	blogPostDataDB, err := mdb.NewBlogPostDataDB(MONGO_URL, "markbyte", "blog_post_data")
 	if err != nil {
 		fmt.Printf("Failed to create blogPostDataDB: %v\n", err)
 	}
 	api.SetBlogPostDataDB(blogPostDataDB)
 
-	analyticsDB, err := mdb.NewMongoAnalyticsDB("mongodb://localhost:27017", "markbyte", "analytics")
+	analyticsDB, err := mdb.NewMongoAnalyticsDB(MONGO_URL, "markbyte", "analytics")
 	if err != nil {
 		fmt.Printf("Failed to create analyticsDB: %v\n", err)
 	}
