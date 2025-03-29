@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
 const AuthContext = createContext();
 
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    axios.post("http://localhost:8080/logout", {}, { withCredentials: true });
+    axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);

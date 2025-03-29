@@ -23,10 +23,14 @@ type S3Credentials struct {
 }
 
 func LoadCredentials() (S3Credentials, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return S3Credentials{}, err
+
+	if os.Getenv("RUNNING_IN_DOCKER") != "true" {
+		_ = godotenv.Load() // ignore error, it may not exist
 	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return S3Credentials{}, err
+	// }
 
 	bucket := os.Getenv("S3_BUCKET_NAME")
 	region := os.Getenv("S3_REGION")

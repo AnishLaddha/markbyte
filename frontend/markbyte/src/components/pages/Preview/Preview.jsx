@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
 function Preview({ markdownContent, renderMarkdown, setRenderMarkdown }) {
   const iframeRef = useRef(null);
@@ -9,7 +10,7 @@ function Preview({ markdownContent, renderMarkdown, setRenderMarkdown }) {
     if (renderMarkdown && markdownContent !== null) {
       axios
         .post(
-          "http://localhost:8080/render",
+          `${API_URL}/render`,
           { markdown_content: markdownContent },
           { withCredentials: true }
         )

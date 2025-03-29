@@ -3,6 +3,7 @@ package redisdb
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -12,8 +13,14 @@ var client *redis.Client
 var RedisActive bool
 
 func Init() error {
+	var REDIS_URL string
+	if os.Getenv("RUNNING_IN_DOCKER") == "true" {
+		REDIS_URL = "redis:6379"
+	} else {
+		REDIS_URL = "localhost:6379"
+	}
 	client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     REDIS_URL,
 		Password: "",
 		DB:       0,
 	})

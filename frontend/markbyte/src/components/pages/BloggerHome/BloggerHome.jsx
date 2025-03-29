@@ -52,6 +52,7 @@ import {
 import { motion } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
 import BlogPostTable from "@/components/ui/blogposttable";
+import { API_URL } from "@/config/api";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
@@ -167,7 +168,7 @@ function BloggerHome() {
                 onClick={() => {
                   axios
                     .post(
-                      "http://localhost:8080/publish",
+                      `${API_URL}/publish`,
                       {
                         username: user.name,
                         title: row.original.title,
@@ -313,7 +314,7 @@ function BloggerHome() {
   const handleDeletePost = () => {
     axios
       .post(
-        `http://localhost:8080/delete`,
+        `${API_URL}/delete`,
         { title: postToDelete },
         { withCredentials: true }
       )
@@ -348,7 +349,7 @@ function BloggerHome() {
     if (fileType == "md") {
       formData.append("file", file);
       axios
-        .post("http://localhost:8080/upload", formData, {
+        .post(`${API_URL}/upload`, formData, {
           withCredentials: true,
         })
         .then(() => {
@@ -374,7 +375,7 @@ function BloggerHome() {
     } else {
       formData.append("zipfile", file);
       axios
-        .post("http://localhost:8080/zipupload", formData, {
+        .post(`${API_URL}/zipupload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

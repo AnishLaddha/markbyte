@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { API_URL, FRONTEND_URL } from "@/config/api";
 
 function useBlogData() {
   const [data, setData] = useState([]);
@@ -18,9 +19,9 @@ function useBlogData() {
       let directLink = activeVersion?.direct_link || null;
 
       if (link && !link.includes("/static")) {
-        link = "http://localhost:5173" + directLink;
+        link = `${FRONTEND_URL}` + directLink;
       } else {
-        link = "http://localhost:8080" + link;
+        link = `${API_URL}` + link;
       }
       const date = activeVersion?.date_uploaded || null;
       transformedData.push({
@@ -36,7 +37,7 @@ function useBlogData() {
 
   const fetchData = useCallback(() => {
     axios
-      .get("http://localhost:8080/user/blog_posts", { withCredentials: true })
+      .get(`${API_URL}/user/blog_posts`, { withCredentials: true })
       .then((response) => handleData(response.data))
       .catch((error) => console.error("Error fetching blogger's blog posts:", error));
   }, [handleData]);

@@ -47,6 +47,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FaCheckCircle } from "react-icons/fa";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
+import { API_URL } from "@/config/api";
 
 const PublishEditorPreview = () => {
   // Set the initial content
@@ -58,7 +59,7 @@ const PublishEditorPreview = () => {
   const revert = () => {
     axios
       .post(
-        "http://localhost:8080/markdown",
+        `${API_URL}/markdown`,
         {
           title: title,
           version: version,
@@ -152,7 +153,7 @@ const PublishEditorPreview = () => {
     const formData = new FormData();
     formData.append("file", blob, title + ".md");
     axios
-      .post("http://localhost:8080/upload", formData, { withCredentials: true })
+      .post(`${API_URL}/upload`, formData, { withCredentials: true })
       .then(() => {
         setTimeout(() => {
           toast({
