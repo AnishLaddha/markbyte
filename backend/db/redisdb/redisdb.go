@@ -71,3 +71,27 @@ func DeleteEndpoint(ctx context.Context, endpoint string) error {
 	}
 	return nil
 }
+
+func DeleteEndpointByPrefix(ctx context.Context, prefix string) error {
+	var cursor uint64
+	var keys []string
+	var err error
+	for {
+		keys, cursor, err = client.Scan(ctx, cursor, prefix+"*", 1000).Result()
+		if err != nil {
+			fmt.Printf("error scanning redis: %v", err)
+			return err
+		}
+		if len(keys) > 0 {
+			err = client.Del(ctx, keys...).Err()
+			if err != nil {
+				fmt.Printf("error deleting in redis: %v", err)
+				return err
+			}
+		}
+		if cursor == 0 {
+			break
+		}
+	}
+	return nil
+}

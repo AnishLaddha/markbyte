@@ -52,7 +52,8 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/render", markdown_render.HandleRender)
 		protected.Post("/markdown", api.HandleFetchMD)
 		protected.Post("/delete", api.HandleDelete)
-
+		protected.Get("/user/style", api.HandleFetchUserStyle)
+		protected.Post("/user/style", api.HandleUpdateUserStyle)
 	})
 
 	r.Get("/static/*", api.HandleStatic)

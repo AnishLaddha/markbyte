@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -45,5 +46,22 @@ func (r *MongoUserRepository) GetUser(ctx context.Context, username string) (*db
 
 func (r *MongoUserRepository) RemoveUser(ctx context.Context, username string) error {
 	_, err := r.collection.DeleteOne(ctx, map[string]string{"username": username})
+	return err
+}
+
+func (r *MongoUserRepository) GetUserStyle(ctx context.Context, username string) (string, error) {
+	var user db.User
+	err := r.collection.FindOne(ctx, map[string]string{"username": username}).Decode(&user)
+	if err != nil {
+		return "", err
+	}
+	if user.Style == "" {
+		return "default", nil
+	}
+	return user.Style, nil
+}
+
+func (r *MongoUserRepository) UpdateUserStyle(ctx context.Context, username string, style string) error {
+	_, err := r.collection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"style": style}})
 	return err
 }

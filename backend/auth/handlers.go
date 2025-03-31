@@ -52,6 +52,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		Username: usrReq.Username,
 		Password: hashedPassword,
 		Email:    usrReq.Email,
+		Style:    "default",
 	}
 
 	_, err = userDB.CreateUser(r.Context(), newUser)
