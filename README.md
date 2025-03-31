@@ -12,7 +12,12 @@ to view frontend/backend logs
 docker-compose logs -f backend frontend
 ```
 
-to view all logs (not recomended, outside of actual dev)
+to pipe them into a log file as well
+```bash
+docker-compose logs -f backend frontend | tee -a logs.txt
+```
+
+to view all logs (not recomended, outside of debugging mongo/redis)
 ```bash
 docker-compose logs -f
 ```

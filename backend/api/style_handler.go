@@ -21,7 +21,11 @@ func HandleFetchUserStyle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(style))
+	_, err = w.Write([]byte(style))
+	if err != nil {
+		http.Error(w, "Failed to write user style", http.StatusInternalServerError)
+		return
+	}
 }
 
 type UpdateUserStyleRequest struct {
@@ -52,5 +56,9 @@ func HandleUpdateUserStyle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("User style updated successfully"))
+	_, err = w.Write([]byte("User style updated successfully"))
+	if err != nil {
+		http.Error(w, "Failed to write user style", http.StatusInternalServerError)
+		return
+	}
 }
