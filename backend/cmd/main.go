@@ -9,6 +9,7 @@ import (
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db/mdb"
 	"github.com/shrijan-swaminathan/markbyte/backend/db/redisdb"
+	"github.com/shrijan-swaminathan/markbyte/backend/features/markdown_render"
 	"github.com/shrijan-swaminathan/markbyte/backend/server"
 )
 
@@ -24,6 +25,8 @@ func main() {
 		fmt.Printf("Failed to create userDB: %v\n", err)
 	}
 	auth.SetUserDB(userDB)
+	api.SetUserDB(userDB)
+	markdown_render.SetUserDB(userDB)
 
 	blogPostDataDB, err := mdb.NewBlogPostDataDB(MONGO_URL, "markbyte", "blog_post_data")
 	if err != nil {

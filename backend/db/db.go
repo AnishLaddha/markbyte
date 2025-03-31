@@ -9,12 +9,15 @@ type User struct {
 	Username string  `json:"username" bson:"username"`
 	Password string  `json:"password" bson:"password"`
 	Email    *string `json:"email" bson:"email"`
+	Style    string  `json:"style,omitempty" bson:"style,omitempty"`
 }
 
 type UserDB interface {
 	CreateUser(ctx context.Context, user *User) (string, error)
 	GetUser(ctx context.Context, username string) (*User, error)
 	RemoveUser(ctx context.Context, username string) error
+	GetUserStyle(ctx context.Context, username string) (string, error)
+	UpdateUserStyle(ctx context.Context, username string, style string) error
 }
 
 type BlogPostData struct {
