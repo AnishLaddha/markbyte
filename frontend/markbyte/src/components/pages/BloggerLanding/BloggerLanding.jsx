@@ -194,12 +194,12 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                         <div className="flex items-center mt-6 pt-4 border-t border-gray-100">
                           <Avatar className="cursor-pointer bg-gray-200 mr-3 h-9 w-9">
                             <AvatarImage
-                              src={`https://api.dicebear.com/9.x/initials/svg?seed=${user.name}&backgroundType=gradientLinear`}
+                              src={`https://api.dicebear.com/9.x/initials/svg?seed=${username}&backgroundType=gradientLinear`}
                             />
-                            <AvatarFallback>{user.name[0]}</AvatarFallback>
+                            <AvatarFallback>{username[0]}</AvatarFallback>
                           </Avatar>
                           <span className="text-sm font-medium text-gray-700">
-                            {user.name}
+                            {username}
                           </span>
                         </div>
                       </div>
