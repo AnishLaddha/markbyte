@@ -225,9 +225,10 @@ function BloggerProfile() {
                         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                       </div>
                       <div className="mt-3 text-xs text-gray-500 flex items-center gap-2">
-                        <InfoIcon className="h-3 w-3" />
+                        <InfoIcon className="h-3 w-3 min-w-[1rem] flex-shrink-0" />
+
                         {cssStyle === "default"
-                          ? "Modern, clean interface"
+                          ? "Modern, clean interface, with table of contents"
                           : cssStyle === "old"
                           ? "Classic interface with neutral gray tones"
                           : cssStyle === "futuristic"
