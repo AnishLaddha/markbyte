@@ -22,6 +22,7 @@ import {
   Eye,
   InfoIcon,
   History,
+  CircuitBoard,
 } from "lucide-react";
 
 function BloggerProfile() {
@@ -163,6 +164,21 @@ function BloggerProfile() {
                             Classic
                           </Label>
                         </div>
+                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100">
+                          <RadioGroupItem
+                            value="futuristic"
+                            id="futuristic"
+                            className="border-[#003b5c]"
+                            color="blue"
+                          />
+                          <Label
+                            htmlFor="futuristic"
+                            className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
+                          >
+                            <CircuitBoard className="h-4 w-4 text-[#003b5c]" />
+                            Futuristic
+                          </Label>
+                        </div>
                       </RadioGroup>
                     </div>
 
@@ -197,7 +213,11 @@ function BloggerProfile() {
                           src={
                             cssStyle === "default"
                               ? "/assets/defaultview.png"
-                              : "/assets/oldview.png"
+                              : cssStyle === "old"
+                              ? "/assets/oldview.png"
+                              : cssStyle === "futuristic"
+                              ? "/assets/futuristicview.png"
+                              : ""
                           }
                           alt="Interface preview"
                           className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
@@ -208,7 +228,11 @@ function BloggerProfile() {
                         <InfoIcon className="h-3 w-3" />
                         {cssStyle === "default"
                           ? "Modern, clean interface"
-                          : "Classic interface with neutral gray tones"}
+                          : cssStyle === "old"
+                          ? "Classic interface with neutral gray tones"
+                          : cssStyle === "futuristic"
+                          ? "Futuristic interface with neon accents and holographic effects"
+                          : ""}
                       </div>
                     </div>
                   </div>
