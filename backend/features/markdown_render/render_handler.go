@@ -42,7 +42,7 @@ func HandleRender(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		style = "default"
 	}
-	InsertTemplate(&output_html, style)
+	InsertTemplate(&output_html, style, username)
 	w.Header().Set("Content-Type", "text/html")
 	_, err = w.Write([]byte(output_html))
 	if err != nil {
@@ -51,10 +51,14 @@ func HandleRender(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func InsertTemplate(output_html *string, template_name string) {
+func InsertTemplate(output_html *string, template_name string, username string) {
 	if template_name == "old" {
 		*output_html = strings.ReplaceAll(old_template, "{{CONTENT}}", *output_html)
 		fmt.Println("old template")
+	} else if template_name == "futuristic" {
+		*output_html = strings.ReplaceAll(futuristic_template, "{{CONTENT}}", *output_html)
+		*output_html = strings.ReplaceAll(*output_html, "{{USERNAME}}", username)
+		fmt.Println("futuristic template")
 	} else {
 		*output_html = strings.ReplaceAll(default_template, "{{CONTENT}}", *output_html)
 		fmt.Println("default template")

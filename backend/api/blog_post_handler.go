@@ -59,7 +59,7 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			style = "default"
 		}
-		markdown_render.InsertTemplate(&htmlContent, style)
+		markdown_render.InsertTemplate(&htmlContent, style, username)
 	}
 	if redisdb.RedisActive && !cacheHit {
 		err = redisdb.SetEndpoint(r.Context(), endpoint, &htmlContent)
