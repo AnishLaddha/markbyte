@@ -119,3 +119,99 @@ const old_template = `
 </body>
 </html>
 `
+
+const futuristic_template = "" +
+	"<!DOCTYPE html>\n" +
+	"<html lang=\"en\">\n" +
+	"<head>\n" +
+	"    <meta charset=\"UTF-8\">\n" +
+	"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+	"    <title>Futuristic Template</title>\n" +
+	"    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n" +
+	"    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" +
+	"    <link href=\"https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap\" rel=\"stylesheet\">\n" +
+	"    <link rel=\"stylesheet\" href=\"https://markbyteblogfiles.s3.us-east-1.amazonaws.com/futuristic.css\">\n" +
+	"</head>\n" +
+	"<body>\n" +
+	"    <div class=\"bg-grid\"></div>\n" +
+	"    <div class=\"glow-circle green\"></div>\n" +
+	"    <div class=\"glow-circle purple\"></div>\n" +
+	"    <div class=\"glow-circle blue\"></div>\n" +
+	"    \n" +
+	"    <div class=\"container\">\n" +
+	"        <div class=\"content-container\">\n" +
+	"         {{CONTENT}}\n" +
+	"        </div>\n" +
+	"    </div>\n" +
+	"    \n" +
+	"    <script>\n" +
+	"        document.addEventListener('DOMContentLoaded', () => {\n" +
+	"            const codeBlocks = document.querySelectorAll('pre code');\n" +
+	"            codeBlocks.forEach(block => {\n" +
+	"                const lines = block.innerHTML.split('\\n');\n" +
+	"                let formattedCode = '';\n" +
+	"                lines.forEach((line, index) => {\n" +
+	"                    formattedCode += `<span data-line=\"${index + 1}\">${line}</span>`;\n" +
+	"                });\n" +
+	"                block.innerHTML = formattedCode;\n" +
+	"            });\n" +
+	"            const headers = document.querySelectorAll('h1, h2, h3');\n" +
+	"            headers.forEach((header, index) => {\n" +
+	"                header.style.opacity = '0';\n" +
+	"                header.style.transform = 'translateY(20px)';\n" +
+	"                header.style.transition = 'opacity 0.6s ease, transform 0.6s ease';\n" +
+	"                setTimeout(() => {\n" +
+	"                    header.style.opacity = '1';\n" +
+	"                    header.style.transform = 'translateY(0)';\n" +
+	"                }, 300 + (index * 150));\n" +
+	"            });\n" +
+	"\n" +
+	"            // Inject dynamic ::before content for h1\n" +
+	"            const h1 = document.querySelector('h1');\n" +
+	"            const labelText = '{{USERNAME}} 🚀'; // Change this to your desired label\n" +
+	"            if (h1) {\n" +
+	"                if (!h1.id) h1.id = 'dynamic-h1';\n" +
+	"                const dynamicStyle = document.createElement('style');\n" +
+	"                dynamicStyle.textContent = `#${h1.id}::before {\n" +
+	"                    content: \"${labelText}\";\n" +
+	"                    position: absolute;\n" +
+	"                    right: 0;\n" +
+	"                    top: 0;\n" +
+	"                    font-size: 1rem;\n" +
+	"                    color: var(--neon-green);\n" +
+	"                    background: rgba(10, 255, 157, 0.1);\n" +
+	"                    padding: 5px 10px;\n" +
+	"                    border-radius: 5px;\n" +
+	"                    font-weight: normal;\n" +
+	"                }`;\n" +
+	"                document.head.appendChild(dynamicStyle);\n" +
+	"            }\n" +
+	"\n" +
+	"            function createDots() {\n" +
+	"                const container = document.querySelector('.container');\n" +
+	"                const dotCount = 15;\n" +
+	"                for (let i = 0; i < dotCount; i++) {\n" +
+	"                    const dot = document.createElement('div');\n" +
+	"                    dot.style.position = 'absolute';\n" +
+	"                    dot.style.width = `${Math.random() * 4 + 2}px`;\n" +
+	"                    dot.style.height = dot.style.width;\n" +
+	"                    dot.style.backgroundColor = 'var(--neon-green)';\n" +
+	"                    dot.style.borderRadius = '50%';\n" +
+	"                    dot.style.opacity = `${Math.random() * 0.3 + 0.1}`;\n" +
+	"                    dot.style.left = `${Math.random() * 100}%`;\n" +
+	"                    dot.style.top = `${Math.random() * 100}%`;\n" +
+	"                    dot.style.animation = `pulse ${Math.random() * 3 + 2}s infinite alternate ease-in-out`;\n" +
+	"                    container.appendChild(dot);\n" +
+	"                }\n" +
+	"            }\n" +
+	"            const style = document.createElement('style');\n" +
+	"            style.textContent = `@keyframes pulse {\n" +
+	"                0% { transform: scale(1); opacity: 0.2; }\n" +
+	"                100% { transform: scale(1.5); opacity: 0.5; }\n" +
+	"            }`;\n" +
+	"            document.head.appendChild(style);\n" +
+	"            createDots();\n" +
+	"        });\n" +
+	"    </script>\n" +
+	"</body>\n" +
+	"</html>"

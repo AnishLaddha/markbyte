@@ -31,3 +31,6 @@ backend/cmd/static/*.html
 
 # logs
 logs.txt
+
+*.html
+*.css

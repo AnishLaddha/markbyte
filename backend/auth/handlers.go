@@ -127,3 +127,13 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func HandleLoggedInUser(w http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(username))
+}
