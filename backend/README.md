@@ -27,7 +27,7 @@ it will start the api on localhost:8080
 to sign up:
 
 ```bash
-curl -X POST http://localhost:8080/signup \                                
+curl -X POST http://localhost:8080/signup \
      -H "Content-Type: application/json" \
      -d '{"username": "[your username]", "password": "[your password]"}'
 ```
@@ -35,7 +35,7 @@ curl -X POST http://localhost:8080/signup \
 to log in:
 
 ```bash
-curl -X POST http://localhost:8080/login \                                
+curl -X POST http://localhost:8080/login \
      -H "Content-Type: application/json" \
      -d '{"username": "[your username]", "password": "[your password]"}'
 ```
@@ -45,7 +45,7 @@ this will give you an authorization token.
 
 to upload a file:
 ```bash
-curl -X POST http://localhost:8080/upload \                                
+curl -X POST http://localhost:8080/upload \
      -H "Authorization: Bearer [your token]" \
      -F "file=@filename.md"
 ```

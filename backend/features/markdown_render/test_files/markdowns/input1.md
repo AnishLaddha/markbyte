@@ -1,4 +1,4 @@
-An h1 header
+An h1 header NEW V
 ============
 
 Paragraphs are separated by a blank line.
@@ -8,6 +8,10 @@ look like:
   * this one
   * that one
   * the other one
+
+<script> 
+    alert("🚨 XSS test: If you see this, script injection is working!");
+</script>
 
 another jit:
 + hjdhhj

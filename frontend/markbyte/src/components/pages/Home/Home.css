@@ -1,0 +1,158 @@
+:root {
+  /* Design Tokens */
+  --primary-color: #084464;
+  --secondary-color: #005a7a;
+  --text-color: #003b5c;
+  --alt-color:rgb(1, 26, 41);
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+.tagline p{
+  font-family: 'Consolas', monospace;
+  font-weight: 400;
+  margin-inline: auto;
+  white-space: nowrap;
+  border-right: 2px solid;
+  display: inline-block; 
+  max-width: 100%;
+}
+
+@media (min-width: 560px) {
+  .tagline p {
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3s steps(22) forwards, blink 1s step-end infinite;
+  }
+}
+
+@media (max-width: 559px) {
+  .tagline p {
+    white-space: normal;
+    border-right: none;
+    animation: none; 
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.App {
+  position: relative;
+  min-height: 100vh;
+  background-image: linear-gradient(to right, #80808012 1px, transparent 1px),
+    linear-gradient(to bottom, #80808012 1px, transparent 1px);
+  background-size: 180px 180px;
+  /* cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='22' height='22'><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d='M453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-52.1 52.1s0 0 0 0l-1-1s0 0 0 0l-16-16-96-96-17-17 52.1-52.1c25-25 65.5-25 90.5 0zM241 114.9c-9.4-9.4-24.6-9.4-33.9 0L105 217c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L173.1 81c28.1-28.1 73.7-28.1 101.8 0L288 94.1l17 17 96 96 16 16 1 1-17 17L229.5 412.5c-48 48-109.2 80.8-175.8 94.1l-25 5c-7.9 1.6-16-.9-21.7-6.6s-8.1-13.8-6.6-21.7l5-25c13.3-66.6 46.1-127.8 94.1-175.8L254.1 128 241 114.9z' fill='white'/></svg>"), auto; */
+}
+
+body {
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem var(--spacing-md);
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: auto;
+  z-index: 1000;
+  opacity: 1;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: -1rem;
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  space-between: 10rem;
+}
+
+.header-link:hover {
+  underline: 1px solid white;
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    padding: 0.5rem var(--spacing-sm);
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+}
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.page-logo-2 {
+  width: 80px;
+  height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.post-button {
+  align-self: flex-end;
+  margin-top: 1rem;
+  width: auto;
+  height: 40px;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.post-button:hover {
+  background-color: var(--secondary-color);
+}
+
+
+

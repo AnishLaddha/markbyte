@@ -3,7 +3,7 @@ package markdown_render
 import (
 	"bytes"
 	"fmt"
-	"strings"
+	"regexp"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -14,41 +14,6 @@ import (
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
-
-const templateHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Render</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const darkModeToggle = document.createElement("button");
-        darkModeToggle.innerText = "Toggle Dark Mode";
-        darkModeToggle.classList.add("dark-mode-toggle");
-        document.body.appendChild(darkModeToggle);
-    
-        if (localStorage.getItem("dark-mode") === "enabled") {
-            document.body.classList.add("dark-mode");
-        }
-    
-        darkModeToggle.addEventListener("click", function() {
-            document.body.classList.toggle("dark-mode");
-            localStorage.setItem("dark-mode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
-        });
-    });
-</script>
-    
-<body>
-    <div class="content">
-        {{CONTENT}}
-    </div>
-</body>
-</html>
-`
 
 func ConvertMarkdown(mdContent []byte) (string, error) {
 	var buf bytes.Buffer
@@ -75,6 +40,9 @@ func ConvertMarkdown(mdContent []byte) (string, error) {
 		),
 	)
 
+	re := regexp.MustCompile(`(?is)<script.*?</script>`)
+	mdContent = re.ReplaceAll(mdContent, []byte(""))
+
 	// convert markdown to html
 	if err := md.Convert(mdContent, &buf); err != nil {
 		fmt.Println("Error converting Markdown:", err)
@@ -82,7 +50,7 @@ func ConvertMarkdown(mdContent []byte) (string, error) {
 	}
 
 	// insert converted html into template
-	outputHTML := strings.Replace(string(templateHTML), "{{CONTENT}}", buf.String(), 1)
+	// outputHTML := strings.Replace(string(templateHTML), "{{CONTENT}}", buf.String(), 1)
 
-	return outputHTML, nil
+	return buf.String(), nil
 }
