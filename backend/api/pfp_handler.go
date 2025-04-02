@@ -74,7 +74,11 @@ func HandleUpdateUserProfilePicture(w http.ResponseWriter, r *http.Request) {
 
 	// Return the URL in response
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(UpdateUserProfilePictureResponse{
+	err = json.NewEncoder(w).Encode(UpdateUserProfilePictureResponse{
 		URL: urls[filename],
 	})
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
