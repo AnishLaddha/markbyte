@@ -172,7 +172,9 @@ const EditorPreview = () => {
   }
 
   const { isAuthenticated, user, logout } = useAuth();
-  const isSmallScreen = useMediaQuery("(max-width:470px)");
+  const isSmallScreenupload = useMediaQuery("(max-width:580px)");
+  const isSmallScreenlogo = useMediaQuery("(max-width:666px)");
+  const isSmallScreen2 = useMediaQuery("(max-width:878px)");
 
   return (
     <div className="Preview min-h-screen flex flex-col bg-[#0d1117] text-gray-200 overflow-hidden transition-colors duration-300">
@@ -268,7 +270,7 @@ const EditorPreview = () => {
               alt="MarkByte Logo"
               className="h-12 w-auto"
             />
-            {!isSmallScreen && (
+            {!isSmallScreenlogo && (
               <span className="text-xl font-semibold">arkByte</span>
             )}
           </div>
@@ -282,14 +284,14 @@ const EditorPreview = () => {
             onClick={() => {loadTemplate()}}
           >
             <FileText className="h-4 w-4" />
-            <span className="font-bold">{isSmallScreen ? "" : "Load Template"}</span>
+            {!isSmallScreen2 && <span className="font-bold">Load Template</span>}
           </button>
           <button
             className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
             onClick={() => handlePreviewClick()}
           >
             <Upload className="h-4 w-4" />
-            <span className="font-bold">{isSmallScreen ? "" : "Publish"}</span>
+            {!isSmallScreenupload && <span className="font-bold">Publish</span>}
           </button>
           {isAuthenticated && (
             <UserDropdown userName={user.name} logout={logout} />
