@@ -33,6 +33,11 @@ function BloggerProfile() {
   const [cssStyle, setCssStyle] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(user.name);
+  const options = [
+    { value: "default", label: "Default", icon: Sparkles },
+    { value: "old", label: "Classic", icon: History },
+    { value: "futuristic", label: "Futuristic", icon: CircuitBoard },
+  ];
   const handleSaveName = () => {
     setIsEditingName(false);
   };
@@ -92,11 +97,11 @@ function BloggerProfile() {
           <Card className="border-none shadow-none">
             <div className="h-24 bg-gradient-to-r from-[#084464] to-[#011522] relative">
               <div className="absolute -bottom-14 left-6">
-                <Avatar className="cursor-pointer bg-gray-100 h-24 w-24 rounded-full border-4 border-white shadow-lg">
+                <Avatar className="cursor-pointer bg-gray-100 h-28 w-28 rounded-full border-[5px] border-white shadow-xl hover:scale-105 transition-transform">
                   <AvatarImage
                     src={`https://api.dicebear.com/9.x/initials/svg?seed=${user.name}&backgroundType=gradientLinear`}
                   />
-                  <AvatarFallback className="text-xl font-bold text-blue-700">
+                  <AvatarFallback className="text-xl font-bold text-blue-800">
                     {user.name[0]}
                   </AvatarFallback>
                 </Avatar>
@@ -117,12 +122,12 @@ function BloggerProfile() {
             <Separator />
             <CardContent className="py-8 space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center">
+                <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Palette className="h-5 w-5 text-[#003b5c]" />
                     Post Styles
                   </h3>
-                  <div className="ml-2 px-2 py-1 bg-[#003b5c] rounded-full text-xs font-medium text-white">
+                  <div className="px-3 py-1 bg-[#003b5c] rounded-full text-xs font-medium text-white">
                     Appearance
                   </div>
                 </div>
@@ -135,50 +140,25 @@ function BloggerProfile() {
                         onValueChange={handleStyleChange}
                         className="flex flex-col space-y-4"
                       >
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100">
-                          <RadioGroupItem
-                            value="default"
-                            id="default"
-                            className="border-[#003b5c]"
-                            color="blue"
-                          />
-                          <Label
-                            htmlFor="default"
-                            className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
+                        {options.map(({ value, label, icon: Icon }) => (
+                          <div
+                            key={value}
+                            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100"
                           >
-                            <Sparkles className="h-4 w-4 text-[#003b5c]" />
-                            Default
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100">
-                          <RadioGroupItem
-                            value="old"
-                            id="old"
-                            className="border-[#003b5c]"
-                          />
-                          <Label
-                            htmlFor="old"
-                            className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
-                          >
-                            <History className="h-4 w-4 text-[#003b5c]" />
-                            Classic
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100">
-                          <RadioGroupItem
-                            value="futuristic"
-                            id="futuristic"
-                            className="border-[#003b5c]"
-                            color="blue"
-                          />
-                          <Label
-                            htmlFor="futuristic"
-                            className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
-                          >
-                            <CircuitBoard className="h-4 w-4 text-[#003b5c]" />
-                            Futuristic
-                          </Label>
-                        </div>
+                            <RadioGroupItem
+                              value={value}
+                              id={value}
+                              className="border-[#003b5c]"
+                            />
+                            <Label
+                              htmlFor={value}
+                              className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
+                            >
+                              <Icon className="h-4 w-4 text-[#003b5c]" />
+                              {label}
+                            </Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </div>
 
