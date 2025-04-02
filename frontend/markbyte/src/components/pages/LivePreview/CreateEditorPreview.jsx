@@ -58,6 +58,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
 import { API_URL } from "@/config/api";
+import mdtemplate from "@/constants/mdtemplate";
 
 const EditorPreview = () => {
   // Set the initial content
@@ -164,6 +165,12 @@ const EditorPreview = () => {
     setActiveTab(value);
   };
 
+  const loadTemplate = () => {
+    setCurrMarkdownContent(mdtemplate);
+    setMarkdownContent(mdtemplate);
+    setRenderMarkdown(true);
+  }
+
   const { isAuthenticated, user, logout } = useAuth();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
 
@@ -269,6 +276,14 @@ const EditorPreview = () => {
 
         {/* Right section with auth buttons */}
         <div className="flex items-center gap-5">
+          { /* This button will load in a default template */ }
+          <button
+            className="bg-green-800 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30 hover:bg-green-900"
+            onClick={() => {loadTemplate()}}
+          >
+            <FileText className="h-4 w-4" />
+            <span className="font-bold">{isSmallScreen ? "" : "Load Template"}</span>
+          </button>
           <button
             className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
             onClick={() => handlePreviewClick()}
