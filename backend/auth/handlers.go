@@ -49,10 +49,12 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser := &db.User{
-		Username: usrReq.Username,
-		Password: hashedPassword,
-		Email:    usrReq.Email,
-		Style:    "default",
+		Username:       usrReq.Username,
+		Password:       hashedPassword,
+		Email:          usrReq.Email,
+		Style:          "default",
+		Name:           "Markbyte User",
+		ProfilePicture: "",
 	}
 
 	_, err = userDB.CreateUser(r.Context(), newUser)

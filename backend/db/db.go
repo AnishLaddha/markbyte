@@ -6,10 +6,12 @@ import (
 )
 
 type User struct {
-	Username string  `json:"username" bson:"username"`
-	Password string  `json:"password" bson:"password"`
-	Email    *string `json:"email" bson:"email"`
-	Style    string  `json:"style,omitempty" bson:"style,omitempty"`
+	Username       string  `json:"username" bson:"username"`
+	Password       string  `json:"password" bson:"password"`
+	Email          *string `json:"email" bson:"email"`
+	Style          string  `json:"style,omitempty" bson:"style,omitempty"`
+	ProfilePicture string  `json:"profile_picture,omitempty" bson:"profile_picture,omitempty"`
+	Name           string  `json:"name,omitempty" bson:"name,omitempty"`
 }
 
 type UserDB interface {
@@ -18,6 +20,8 @@ type UserDB interface {
 	RemoveUser(ctx context.Context, username string) error
 	GetUserStyle(ctx context.Context, username string) (string, error)
 	UpdateUserStyle(ctx context.Context, username string, style string) error
+	UpdateUserProfilePicture(ctx context.Context, username string, profilePicture string) error
+	UpdateUserName(ctx context.Context, username string, name string) error
 }
 
 type BlogPostData struct {

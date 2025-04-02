@@ -65,3 +65,13 @@ func (r *MongoUserRepository) UpdateUserStyle(ctx context.Context, username stri
 	_, err := r.collection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"style": style}})
 	return err
 }
+
+func (r *MongoUserRepository) UpdateUserProfilePicture(ctx context.Context, username string, profilePicture string) error {
+	_, err := r.collection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"profile_picture": profilePicture}})
+	return err
+}
+
+func (r *MongoUserRepository) UpdateUserName(ctx context.Context, username string, name string) error {
+	_, err := r.collection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"name": name}})
+	return err
+}
