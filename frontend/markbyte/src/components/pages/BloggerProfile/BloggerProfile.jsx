@@ -127,9 +127,6 @@ function BloggerProfile() {
                     <Palette className="h-5 w-5 text-[#003b5c]" />
                     Post Styles
                   </h3>
-                  <div className="px-3 py-1 bg-[#003b5c] rounded-full text-xs font-medium text-white">
-                    Appearance
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -143,20 +140,31 @@ function BloggerProfile() {
                         {options.map(({ value, label, icon: Icon }) => (
                           <div
                             key={value}
-                            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white transition-colors border border-transparent hover:border-gray-100"
+                            className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-gray-50 ${
+                              cssStyle === value
+                                ? "bg-blue-50 border border-blue-200"
+                                : "border border-gray-200"
+                            }`}
                           >
-                            <RadioGroupItem
-                              value={value}
-                              id={value}
-                              className="border-[#003b5c]"
-                            />
-                            <Label
-                              htmlFor={value}
-                              className="text-gray-700 font-medium cursor-pointer flex items-center gap-2"
-                            >
-                              <Icon className="h-4 w-4 text-[#003b5c]" />
-                              {label}
-                            </Label>
+                            <div className="flex items-center space-x-3">
+                              <RadioGroupItem
+                                value={value}
+                                id={value}
+                                className="border-[#003b5c] "
+                              />
+                              <Label
+                                htmlFor={value}
+                                className="text-gray-800 font-medium cursor-pointer flex items-center gap-2"
+                              >
+                                <Icon className="h-4 w-4 text-[#003b5c]" />
+                                {label}
+                              </Label>
+                            </div>
+                            {usercssStyle === value && (
+                              <div className="flex items-center justify-center">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              </div>
+                            )}
                           </div>
                         ))}
                       </RadioGroup>

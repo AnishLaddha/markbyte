@@ -3,12 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
 import React from "react";
-import {
-  FaFileUpload,
-  FaUpload,
-  FaCheckCircle,
-  FaExternalLinkAlt,
-} from "react-icons/fa";
+import { FaFileUpload, FaUpload } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,7 +16,8 @@ import {
   X,
   File,
   ArrowUp,
-  CheckCircle
+  CheckCircle,
+  ExternalLink,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -82,14 +78,20 @@ function BloggerHome() {
   const blogTablecols = [
     {
       accessorKey: "title",
-      header: "Blog Post Name",
+      header: "Post Name",
     },
     {
       accessorKey: "date",
       header: "Date Published",
       cell: ({ getValue }) => {
         const date = new Date(getValue());
-        return isNaN(date) ? "Invalid Date" : date.toLocaleDateString();
+        if (isNaN(date.getTime())) return "N/A";
+        
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
       },
     },
     {
@@ -100,9 +102,9 @@ function BloggerHome() {
           href={getValue()}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center"
+          className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
         >
-          View Post <FaExternalLinkAlt className="ml-2" />
+          View Post <ExternalLink className="ml-1 h-4 w-4" />
         </a>
       ),
     },
