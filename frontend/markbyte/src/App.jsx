@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "./components/pages/Home/Home";
 import Auth from "./components/pages/Auth/Auth";
@@ -14,6 +10,7 @@ import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
 import EditorPreview from "./components/pages/LivePreview/CreateEditorPreview";
 import PublishEditorPreview from "./components/pages/LivePreview/PublishEditorPreview";
 import DynamicBlogPost from "./components/pages/Post/DynamicBlogPost";
+import BloggerProfile from "./components/pages/BloggerProfile/BloggerProfile";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -70,6 +67,18 @@ function App() {
         />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
         <Route path="/:username" element={<BloggerLandingPage />} />
+        <Route
+          path="/profile"
+          element={
+            isLoading ? (
+              console.log("Loading...")
+            ) : !isAuthenticated ? (
+              <Home />
+            ) : (
+              <BloggerProfile />
+            )
+          }
+        />
         <Route
           path="/auth"
           element={isAuthenticated ? <BloggerHome /> : <Auth />}
