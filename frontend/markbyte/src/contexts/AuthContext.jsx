@@ -5,7 +5,7 @@ import { API_URL } from "@/config/api";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(undefined);
   const [user, setUser] = useState(null);
   const [name, setName] = useState(null);
   const [profilepicture, setProfilePicture] = useState(null);
