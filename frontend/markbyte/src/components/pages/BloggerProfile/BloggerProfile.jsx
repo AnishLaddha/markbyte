@@ -44,37 +44,40 @@ function BloggerProfile() {
     { value: "old", label: "Classic", icon: History },
     { value: "futuristic", label: "Futuristic", icon: CircuitBoard },
   ];
-  const handleSaveName = () => {
+  const handleSaveName = async () => {
     if (Name.trim() === usersName.trim()) {
       setIsEditingName(false);
       setName(usersName);
       return;
     }
 
-    axios
-      .post(`${API_URL}/user/name`, { name: Name }, { withCredentials: true })
-      .then((response) => {
-        // Ensure the profile data is fetched and state is updated after the name change
-        fetchProfileData();
-        fetchUserInfo();
+    try {
+      const response = await axios.post(
+        `${API_URL}/user/name`,
+        { name: Name },
+        { withCredentials: true }
+      );
 
-        setUsersName(Name);
-        setName(Name);
+      await fetchProfileData();
+      await fetchUserInfo();
 
-        toast({
-          title: "Success",
-          description: "Name updated successfully.",
-          variant: "success",
-          action: <CheckCircle size={30} color="green" />,
-          className: "bg-green-100 text-green-800",
-          duration: 3000,
-        });
-        setIsEditingName(false);
-      })
-      .catch((error) => {
-        // Handle error case here
-        console.error("Error updating name:", error);
+      setUsersName(Name);
+      setName(Name);
+
+      toast({
+        title: "Success",
+        description: "Name updated successfully.",
+        variant: "success",
+        action: <CheckCircle size={30} color="green" />,
+        className: "bg-green-100 text-green-800",
+        duration: 3000,
       });
+
+      setIsEditingName(false);
+    } catch (error) {
+      // Handle error case here
+      console.error("Error updating name:", error);
+    }
   };
 
   // on page mount, fetch the css style from the server
@@ -125,30 +128,30 @@ function BloggerProfile() {
     setCssStyle(value);
   }
 
-  function handleUpdateStyle() {
-    axios
-      .post(
+  const handleUpdateStyle = async () => {
+    try {
+      const response = await axios.post(
         `${API_URL}/user/style`,
         { style: cssStyle },
         { withCredentials: true }
-      )
-      .then((response) => {
-        fetchProfileData();
-        setUserCssStyle(cssStyle);
-        setCssStyle(cssStyle);
-        toast({
-          title: "Success",
-          description: "Style updated successfully.",
-          variant: "success",
-          action: <CheckCircle size={30} color="green" />,
-          className: "bg-green-100 text-green-800",
-          duration: 3000,
-        });
-      })
-      .catch((error) => {
-        console.error("Error updating style:", error);
+      );
+      await fetchProfileData();
+
+      setUserCssStyle(cssStyle);
+      setCssStyle(cssStyle);
+
+      toast({
+        title: "Success",
+        description: "Style updated successfully.",
+        variant: "success",
+        action: <CheckCircle size={30} color="green" />,
+        className: "bg-green-100 text-green-800",
+        duration: 3000,
       });
-  }
+    } catch (error) {
+      console.error("Error updating style:", error);
+    }
+  };
 
   return (
     <div className="BloggerProfile min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 text-gray-200 overflow-hidden transition-colors duration-300">
