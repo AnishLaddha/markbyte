@@ -22,7 +22,7 @@ const Home = React.memo(function Home() {
   const isSmallScreen3 = useMediaQuery("(min-width:611px)");
 
   return (
-    <div className="App min-h-screen flex flex-col bg-[#011A29] text-white overflow-hidden">
+    <div className="relative min-h-screen flex flex-col bg-[#011A29] text-white overflow-hidden">
       <ParticlesBackground id="particles" />
       <header className="header">
         <div className="logo-container" onClick={() => navigate("/")}>

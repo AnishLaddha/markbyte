@@ -89,3 +89,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
