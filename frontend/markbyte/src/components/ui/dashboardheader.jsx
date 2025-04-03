@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import UserDropdown from "@/components/ui/profiledropdown";
 import { useMediaQuery } from "@mui/material";
 function DashboardHeader() {
-  const { user, logout } = useAuth();
+  const { user, name, profilepicture, logout} = useAuth();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
   return (
@@ -24,7 +24,7 @@ function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-2">
-        <UserDropdown userName={user.name} logout={logout} />
+        <UserDropdown userName={user.name} logout={logout} name={name} pfp={profilepicture}/>
       </div>
     </header>
   );

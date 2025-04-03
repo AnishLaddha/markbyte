@@ -3,7 +3,6 @@ const mdtemplate =
 
 *Published on: YYYY-MM-DD*  
 *Author: Your Name*  
-*Tags: tag1, tag2, tag3*
 
 ![Featured Image Description](/path/to/image.jpg)
 

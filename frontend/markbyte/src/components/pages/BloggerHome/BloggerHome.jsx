@@ -54,7 +54,7 @@ import { API_URL } from "@/config/api";
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, name } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
@@ -450,7 +450,7 @@ function BloggerHome() {
               <h1 className="text-3xl font-semibold text-gray-900 leading-tight">
                 Welcome back,{" "}
                 <span className="bg-gradient-to-r from-[#084464] to-[#1A698F] text-transparent bg-clip-text">
-                  {user.name}
+                  {name}
                 </span>
                 !
               </h1>
