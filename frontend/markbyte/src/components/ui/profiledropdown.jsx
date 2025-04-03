@@ -20,7 +20,7 @@ const UserDropdown = ({ userName, logout, name, pfp }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.2}}
       >
         <DropdownMenuTrigger className="cursor-pointer rounded-full overflow-hidden">
           <Avatar className="w-10 h-10 rounded-full overflow-hidden">

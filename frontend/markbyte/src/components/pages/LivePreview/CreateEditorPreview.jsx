@@ -171,7 +171,7 @@ const EditorPreview = () => {
     setRenderMarkdown(true);
   }
 
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreenupload = useMediaQuery("(max-width:580px)");
   const isSmallScreenlogo = useMediaQuery("(max-width:666px)");
   const isSmallScreen2 = useMediaQuery("(max-width:878px)");
@@ -294,7 +294,7 @@ const EditorPreview = () => {
             {!isSmallScreenupload && <span className="font-bold">Publish</span>}
           </button>
           {isAuthenticated && (
-            <UserDropdown userName={user.name} logout={logout} />
+            <UserDropdown userName={user.name} logout={logout} pfp={profilepicture} name={name}/>
           )}
         </div>
       </header>

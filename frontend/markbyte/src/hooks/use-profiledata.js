@@ -22,6 +22,7 @@ function useProfileData() {
         style: profileResponse.data.style || "default",
         name: profileResponse.data.name || "User",
         profilepicture: profileResponse.data.profile_picture || null,
+        email: profileResponse.data.email || null,
       };
 
       setProfileData(combinedData);

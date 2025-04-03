@@ -24,6 +24,7 @@ import {
   CircuitBoard,
   Pencil,
   Check,
+  Mail,
 } from "lucide-react";
 
 function BloggerProfile() {
@@ -34,6 +35,7 @@ function BloggerProfile() {
   const [cssStyle, setCssStyle] = useState("");
   const [usersName, setUsersName] = useState("");
   const [Name, setName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [userProfilePicture, setUserProfilePicture] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
@@ -121,6 +123,9 @@ function BloggerProfile() {
     if (profileData && profileData.profilepicture) {
       setProfilePicture(profileData.profilepicture);
       setUserProfilePicture(profileData.profilepicture);
+    }
+    if (profileData && profileData.email) {
+      setUserEmail(profileData.email);
     }
   }, [profileData]);
 
@@ -214,8 +219,18 @@ function BloggerProfile() {
                       />
                     )}
                   </CardTitle>
-                  <div className="text-sm font-normal text-gray-500 mt-1">
-                    @{user.name}
+                  <div className="text-sm font-normal text-gray-500 mt-1 flex items-center">
+                    <span>@{user.name}</span>
+                    {userEmail && (
+                      <>
+                        <span className="mx-2">|</span>{" "}
+                        {/* Add the separator here */}
+                        <div className="flex items-center gap-1">
+                          <Mail className="w-4 h-4"></Mail>
+                          <span>{userEmail}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
