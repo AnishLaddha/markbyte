@@ -7,8 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import useProfileData from "@/hooks/use-profiledata";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
@@ -23,23 +22,59 @@ import {
   InfoIcon,
   History,
   CircuitBoard,
+  Pencil,
+  Check,
 } from "lucide-react";
 
 function BloggerProfile() {
-  const { user } = useAuth();
+  const { user, fetchUserInfo } = useAuth();
   const { toast } = useToast();
   const { profileData, fetchProfileData } = useProfileData();
   const [usercssStyle, setUserCssStyle] = useState("");
   const [cssStyle, setCssStyle] = useState("");
+  const [usersName, setUsersName] = useState("");
+  const [Name, setName] = useState("");
+  const [userProfilePicture, setUserProfilePicture] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
-  const [nameValue, setNameValue] = useState(user.name);
+  const inputRef = useRef(null);
+  const checkRef = useRef(null);
   const options = [
     { value: "default", label: "Default", icon: Sparkles },
     { value: "old", label: "Classic", icon: History },
     { value: "futuristic", label: "Futuristic", icon: CircuitBoard },
   ];
   const handleSaveName = () => {
-    setIsEditingName(false);
+    if (Name.trim() === usersName.trim()) {
+      setIsEditingName(false);
+      setName(usersName);
+      return;
+    }
+
+    axios
+      .post(`${API_URL}/user/name`, { name: Name }, { withCredentials: true })
+      .then((response) => {
+        // Ensure the profile data is fetched and state is updated after the name change
+        fetchProfileData();
+        fetchUserInfo();
+
+        setUsersName(Name);
+        setName(Name);
+
+        toast({
+          title: "Success",
+          description: "Name updated successfully.",
+          variant: "success",
+          action: <CheckCircle size={30} color="green" />,
+          className: "bg-green-100 text-green-800",
+          duration: 3000,
+        });
+        setIsEditingName(false);
+      })
+      .catch((error) => {
+        // Handle error case here
+        console.error("Error updating name:", error);
+      });
   };
 
   // on page mount, fetch the css style from the server
@@ -48,9 +83,41 @@ function BloggerProfile() {
   }, [fetchProfileData]);
 
   useEffect(() => {
+    function handleClickOutside(event) {
+      // Make sure the click is not on input or check icon
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target) &&
+        checkRef.current &&
+        !checkRef.current.contains(event.target)
+      ) {
+        setIsEditingName(false);
+        setName(usersName);
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+    }
+
+    if (isEditingName) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isEditingName]);
+
+  useEffect(() => {
     if (profileData && profileData.style) {
       setUserCssStyle(profileData.style);
       setCssStyle(profileData.style);
+    }
+    if (profileData && profileData.name) {
+      setName(profileData.name);
+      setUsersName(profileData.name);
+    }
+    if (profileData && profileData.profilepicture) {
+      setProfilePicture(profileData.profilepicture);
+      setUserProfilePicture(profileData.profilepicture);
     }
   }, [profileData]);
 
@@ -97,21 +164,52 @@ function BloggerProfile() {
           <Card className="border-none shadow-none">
             <div className="h-24 bg-gradient-to-r from-[#084464] to-[#011522] relative">
               <div className="absolute -bottom-14 left-6">
-                <Avatar className="cursor-pointer bg-gray-100 h-28 w-28 rounded-full border-[5px] border-white shadow-xl hover:scale-105 transition-transform">
+                <Avatar className="h-28 w-28 border-[5px] border-white shadow-xl">
                   <AvatarImage
-                    src={`https://api.dicebear.com/9.x/initials/svg?seed=${user.name}&backgroundType=gradientLinear`}
+                    src={
+                      userProfilePicture ||
+                      `https://api.dicebear.com/9.x/initials/svg?seed=${usersName}&backgroundType=gradientLinear`
+                    }
+                    alt="Profile preview"
+                    className="object-cover w-full h-full"
                   />
-                  <AvatarFallback className="text-xl font-bold text-blue-800">
-                    {user.name[0]}
-                  </AvatarFallback>
+                  <AvatarFallback>{usersName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
             </div>
             <CardHeader className="pt-16 pb-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-2xl font-bold text-gray-800">
-                    {user.name}
+                  <CardTitle className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    {!isEditingName && (
+                      <span className="text-gray-800">{usersName}</span>
+                    )}
+                    {isEditingName ? (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Input
+                          type="text"
+                          value={Name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-40"
+                          ref={inputRef}
+                        />
+
+                        <button
+                          onClick={() => {
+                            handleSaveName();
+                          }}
+                          className="h-5 w-5 cursor-pointer"
+                          ref={checkRef}
+                        >
+                          <Check color="green" />
+                        </button>
+                      </div>
+                    ) : (
+                      <Pencil
+                        className="h-4 w-4 cursor-pointer"
+                        onClick={() => setIsEditingName(true)}
+                      />
+                    )}
                   </CardTitle>
                   <div className="text-sm font-normal text-gray-500 mt-1">
                     @{user.name}
