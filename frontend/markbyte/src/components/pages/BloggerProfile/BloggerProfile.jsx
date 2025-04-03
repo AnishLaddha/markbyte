@@ -1,4 +1,7 @@
 import DashboardHeader from "@/components/ui/dashboardheader";
+import UserDropdown from "@/components/ui/profiledropdown";
+import { useMediaQuery } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -25,27 +28,45 @@ import {
   Pencil,
   Check,
   Mail,
+  ImageIcon,
+  Upload,
+  X,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function BloggerProfile() {
-  const { user, fetchUserInfo } = useAuth();
+  const { user, name, logout, fetchUserInfo } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { profileData, fetchProfileData } = useProfileData();
   const [usercssStyle, setUserCssStyle] = useState("");
   const [cssStyle, setCssStyle] = useState("");
   const [usersName, setUsersName] = useState("");
   const [Name, setName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userProfilePicture, setUserProfilePicture] = useState("");
+  // const [userProfilePicture, setUserProfilePicture] = useState("");
+  // const [profilePicture, setProfilePicture] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
+  const [previewPicture, setPreviewPicture] = useState(null);
+  const [imagefile, setimageFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const inputRef = useRef(null);
   const checkRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const isSmallScreen = useMediaQuery("(max-width:470px)");
   const options = [
     { value: "default", label: "Default", icon: Sparkles },
     { value: "old", label: "Classic", icon: History },
     { value: "futuristic", label: "Futuristic", icon: CircuitBoard },
   ];
+
   const handleSaveName = async () => {
     if (Name.trim() === usersName.trim()) {
       setIsEditingName(false);
@@ -60,11 +81,10 @@ function BloggerProfile() {
         { withCredentials: true }
       );
 
-      await fetchProfileData();
+      const newData = await fetchProfileData();
+      setUsersName(newData.name);
+      setName(newData.name);
       await fetchUserInfo();
-
-      setUsersName(Name);
-      setName(Name);
 
       toast({
         title: "Success",
@@ -77,9 +97,92 @@ function BloggerProfile() {
 
       setIsEditingName(false);
     } catch (error) {
-      // Handle error case here
       console.error("Error updating name:", error);
     }
+  };
+
+  const handlePfpUpload = async () => {
+    if (!imagefile) return;
+    const formData = new FormData();
+    formData.append("profile_picture", imagefile);
+    try {
+      await axios.post(`${API_URL}/user/pfp`, formData, {
+        withCredentials: true,
+      });
+
+      const newData = await fetchProfileData();
+      const cacheBustedUrl = `${newData.profilepicture}?t=${Date.now()}`;
+      await fetchUserInfo();
+
+      // Update only one state variable
+      setProfilePicture(cacheBustedUrl);
+
+      // Reset the preview and file input
+      setPreviewPicture(null);
+      setimageFile(null);
+      setImageDialogOpen(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully.",
+        variant: "success",
+        action: <CheckCircle size={30} color="green" />,
+        className: "bg-green-100 text-green-800",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+    }
+  };
+
+  const handleUpdateStyle = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/user/style`,
+        { style: cssStyle },
+        { withCredentials: true }
+      );
+      const newData = await fetchProfileData();
+
+      setUserCssStyle(newData.style);
+      setCssStyle(newData.style);
+
+      toast({
+        title: "Success",
+        description: "Style updated successfully.",
+        variant: "success",
+        action: <CheckCircle size={30} color="green" />,
+        className: "bg-green-100 text-green-800",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error updating style:", error);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setimageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Set preview instead of changing the actual profile picture
+        setPreviewPicture(e.target?.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeProfilePic = () => {
+    // Reset preview only, not the actual profile picture
+    setPreviewPicture(null);
+    setimageFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // on page mount, fetch the css style from the server
@@ -122,7 +225,7 @@ function BloggerProfile() {
     }
     if (profileData && profileData.profilepicture) {
       setProfilePicture(profileData.profilepicture);
-      setUserProfilePicture(profileData.profilepicture);
+      // No need to set userProfilePicture anymore
     }
     if (profileData && profileData.email) {
       setUserEmail(profileData.email);
@@ -132,31 +235,6 @@ function BloggerProfile() {
   function handleStyleChange(value) {
     setCssStyle(value);
   }
-
-  const handleUpdateStyle = async () => {
-    try {
-      const response = await axios.post(
-        `${API_URL}/user/style`,
-        { style: cssStyle },
-        { withCredentials: true }
-      );
-      await fetchProfileData();
-
-      setUserCssStyle(cssStyle);
-      setCssStyle(cssStyle);
-
-      toast({
-        title: "Success",
-        description: "Style updated successfully.",
-        variant: "success",
-        action: <CheckCircle size={30} color="green" />,
-        className: "bg-green-100 text-green-800",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Error updating style:", error);
-    }
-  };
 
   return (
     <div className="BloggerProfile min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 text-gray-200 overflow-hidden transition-colors duration-300">
@@ -172,16 +250,34 @@ function BloggerProfile() {
           <Card className="border-none shadow-none">
             <div className="h-24 bg-gradient-to-r from-[#084464] to-[#011522] relative">
               <div className="absolute -bottom-14 left-6">
-                <Avatar className="h-28 w-28 border-[5px] border-white shadow-xl">
+                <Avatar
+                  className="h-28 w-28 border-[5px] border-white shadow-xl cursor-pointer"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  onClick={() => {
+                    setImageDialogOpen(true);
+                  }}
+                >
                   <AvatarImage
                     src={
-                      userProfilePicture ||
-                      `https://api.dicebear.com/9.x/initials/svg?seed=${usersName}&backgroundType=gradientLinear`
+                      profilePicture
+                        ? `${profilePicture}`
+                        : `https://api.dicebear.com/9.x/initials/svg?seed=${usersName}&backgroundType=gradientLinear`
                     }
                     alt="Profile preview"
                     className="object-cover w-full h-full"
                   />
+
                   <AvatarFallback>{usersName?.charAt(0)}</AvatarFallback>
+
+                  {/* Overlay with image icon on hover */}
+                  <div
+                    className={`absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-semibold transition-opacity duration-300 rounded-full ${
+                      isHovered ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <ImageIcon className="h-6 w-6" />
+                  </div>
                 </Avatar>
               </div>
             </div>
@@ -347,6 +443,101 @@ function BloggerProfile() {
           </Card>
         </motion.div>
       </div>
+      <Dialog
+        open={imageDialogOpen}
+        onOpenChange={(open) => {
+          setImageDialogOpen(open);
+          if (!open) {
+            // Reset preview when dialog closes
+            setPreviewPicture(null);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[550px] rounded-xl p-0 overflow-hidden bg-slate-50">
+          <div className="bg-gradient-to-r from-[#003b5c] to-[#0a5a7c] p-6 text-white">
+            <DialogHeader>
+              <DialogTitle className="text-center text-3xl font-bold font-['DM Sans'] flex items-center justify-center gap-2">
+                <ImageIcon className="h-6 w-6 inline-block mr-2" />
+                Upload Profile Picture
+              </DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="flex flex-row items-center justify-center p-8 bg-slate-50 rounded-lg shadow-sm">
+            <div className="flex flex-col items-center gap-6 w-full max-w-xs">
+              {/* Profile Picture Preview */}
+              <div className="relative group">
+                <Avatar className="w-48 h-48 border-4 border-white shadow-lg transition-all duration-300 hover:shadow-xl">
+                  <AvatarImage
+                    src={
+                      previewPicture
+                        ? previewPicture
+                        : profilePicture ||
+                          `https://api.dicebear.com/9.x/initials/svg?seed=${
+                            usersName || "User"
+                          }&backgroundType=gradientLinear`
+                    }
+                    alt="Profile preview"
+                    className="object-cover w-full h-full"
+                  />
+                  <AvatarFallback className="bg-blue-600 text-white text-4xl">
+                    {usersName?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+
+                {!previewPicture ? (
+                  <div className="absolute -top-1 -right-1 bg-[#0e3a56] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                    Current
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={removeProfilePic}
+                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 rounded-full p-1.5 shadow-md transition-colors duration-200"
+                  >
+                    <X className="h-4 w-4 text-white" />
+                  </button>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex flex-col items-center gap-3 w-full">
+                <Input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                  accept="image/jpg, image/jpeg, image/png"
+                />
+
+                <Button
+                  type="button"
+                  onClick={triggerFileInput}
+                  className="w-full bg-[#0e3a56] hover:bg-[#1e5b82] text-white font-medium py-2.5 rounded-md transition-all duration-200 shadow-sm hover:shadow"
+                >
+                  {previewPicture
+                    ? "Choose Different Picture"
+                    : "Select New Picture"}
+                </Button>
+
+                {previewPicture && (
+                  <Button
+                    type="button"
+                    className="w-full bg-white hover:bg-gray-50 text-blue-600 font-medium py-2.5 border border-blue-200 rounded-md flex items-center justify-center gap-2 transition-all duration-200 shadow-sm hover:shadow"
+                    onClick={handlePfpUpload}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Save as Profile Picture
+                  </Button>
+                )}
+
+                <p className="text-xs text-gray-500 mt-1">
+                  JPG, JPEG or PNG. Max 5MB.
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

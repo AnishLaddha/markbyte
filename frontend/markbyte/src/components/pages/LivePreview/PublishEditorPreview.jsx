@@ -298,7 +298,7 @@ const PublishEditorPreview = () => {
             <span className="font-bold">{isSmallScreen ? "" : "Publish"}</span>
           </button>
           {isAuthenticated && (
-            <UserDropdown userName={user.name} logout={logout} pfp={profilepicture} name={name}/>
+            <UserDropdown/>
           )}
         </div>
       </header>

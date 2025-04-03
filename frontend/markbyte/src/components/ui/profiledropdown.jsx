@@ -11,9 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
-const UserDropdown = ({ userName, logout, name, pfp }) => {
+const UserDropdown = React.memo(() => {
   const navigate = useNavigate();
+  const { profilepicture, user, name, logout } = useAuth();
 
   return (
     <DropdownMenu>
@@ -26,7 +28,7 @@ const UserDropdown = ({ userName, logout, name, pfp }) => {
           <Avatar className="w-10 h-10 rounded-full overflow-hidden">
             <AvatarImage
               src={
-                pfp ||
+                profilepicture ||
                 `https://api.dicebear.com/9.x/initials/svg?seed=${name}&backgroundType=gradientLinear`
               }
               alt="Profile preview"
@@ -45,7 +47,7 @@ const UserDropdown = ({ userName, logout, name, pfp }) => {
           <Avatar className="w-10 h-10 rounded-full overflow-hidden">
             <AvatarImage
               src={
-                pfp ||
+                profilepicture ||
                 `https://api.dicebear.com/9.x/initials/svg?seed=${name}&backgroundType=gradientLinear`
               }
               alt="Profile preview"
@@ -56,7 +58,7 @@ const UserDropdown = ({ userName, logout, name, pfp }) => {
 
           <div className="flex flex-col">
             <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              {userName || "User"}
+              {user.name || "User"}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Account Settings
@@ -89,6 +91,6 @@ const UserDropdown = ({ userName, logout, name, pfp }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
 
 export default UserDropdown;

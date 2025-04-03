@@ -11,29 +11,36 @@ export const AuthProvider = ({ children }) => {
   const [profilepicture, setProfilePicture] = useState(null);
   const [email, setEmail] = useState(null);
 
-  const fetchUserInfo = () => {
-    return axios
-      .get(`${API_URL}/user/info`, { withCredentials: true })
-      .then((response) => {
-        if (response.status === 200) {
-          const userInfo = response.data;
-          setIsAuthenticated(true);
-          setUser({ name: userInfo.username });
-          setName(userInfo.name);
-          setProfilePicture(userInfo.profile_picture);
-          setEmail(userInfo.email);
-          return true;
-        } else if (response.status === 401) {
-          setIsAuthenticated(false);
-          setUser(null);
-          return false;
-        }
-      })
-      .catch((error) => {
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/user/info`, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        const userInfo = response.data;
+        setIsAuthenticated(true);
+        setUser({ name: userInfo.username });
+        setName(userInfo.name);
+
+        // Add cache busting to the profile picture URL
+        const cacheBustedProfilePicture = userInfo.profile_picture
+          ? `${userInfo.profile_picture}?t=${Date.now()}`
+          : userInfo.profile_picture;
+
+        setProfilePicture(cacheBustedProfilePicture);
+        setEmail(userInfo.email);
+        return true;
+      } else {
         setIsAuthenticated(false);
         setUser(null);
         return false;
-      });
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+      setUser(null);
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -61,8 +68,6 @@ export const AuthProvider = ({ children }) => {
       return false;
     }
   };
-
-
 
   const logout = () => {
     axios.post(`${API_URL}/logout`, {}, { withCredentials: true });

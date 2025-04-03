@@ -18,7 +18,7 @@ function useBlogList( user ) {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   return { data, fetchPosts };
 }
