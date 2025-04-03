@@ -32,7 +32,7 @@ function App() {
           path="/"
           element={
             isLoading ? (
-              console.log("Loading...") // This will simply log "Loading..." to the console
+              console.log("Loading...")
             ) : !isAuthenticated ? (
               <Home />
             ) : (

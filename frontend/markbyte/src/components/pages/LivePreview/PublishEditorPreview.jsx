@@ -177,7 +177,7 @@ const PublishEditorPreview = () => {
       });
   };
 
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
 
   return (
@@ -298,7 +298,7 @@ const PublishEditorPreview = () => {
             <span className="font-bold">{isSmallScreen ? "" : "Publish"}</span>
           </button>
           {isAuthenticated && (
-            <UserDropdown userName={user.name} logout={logout} />
+            <UserDropdown/>
           )}
         </div>
       </header>
