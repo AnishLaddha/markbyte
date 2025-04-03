@@ -1,5 +1,4 @@
 import DashboardHeader from "@/components/ui/dashboardheader";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,7 +8,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useRef } from "react";
-import useProfileData from "@/hooks/use-profiledata";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { API_URL } from "@/config/api";
