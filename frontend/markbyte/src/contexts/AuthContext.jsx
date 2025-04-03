@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [name, setName] = useState(null);
   const [profilepicture, setProfilePicture] = useState(null);
   const [email, setEmail] = useState(null);
+  const [style, setStyle] = useState(null);
 
   const fetchUserInfo = async () => {
     try {
@@ -30,7 +31,14 @@ export const AuthProvider = ({ children }) => {
 
         setProfilePicture(cacheBustedProfilePicture);
         setEmail(userInfo.email);
-        return true;
+        setStyle(userInfo.style);
+        const combinedData = {
+          style: userInfo.style || "default",
+          name: userInfo.name || "User",
+          profilepicture: cacheBustedProfilePicture,
+          email: userInfo.email || null,
+        };
+        return combinedData;
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -86,6 +94,7 @@ export const AuthProvider = ({ children }) => {
         name,
         profilepicture,
         email,
+        style,
         login,
         logout,
         fetchUserInfo,

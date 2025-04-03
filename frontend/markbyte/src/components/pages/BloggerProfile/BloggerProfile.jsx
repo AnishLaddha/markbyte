@@ -1,6 +1,4 @@
 import DashboardHeader from "@/components/ui/dashboardheader";
-import UserDropdown from "@/components/ui/profiledropdown";
-import { useMediaQuery } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,18 +38,14 @@ import {
 } from "@/components/ui/dialog";
 
 function BloggerProfile() {
-  const { user, name, logout, fetchUserInfo } = useAuth();
+  const { user, name, profilepicture, email, style, fetchUserInfo } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { profileData, fetchProfileData } = useProfileData();
-  const [usercssStyle, setUserCssStyle] = useState("");
-  const [cssStyle, setCssStyle] = useState("");
-  const [usersName, setUsersName] = useState("");
-  const [Name, setName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  // const [userProfilePicture, setUserProfilePicture] = useState("");
-  // const [profilePicture, setProfilePicture] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
+  const [usercssStyle, setUserCssStyle] = useState(style);
+  const [cssStyle, setCssStyle] = useState(style);
+  const [usersName, setUsersName] = useState(name);
+  const [Name, setName] = useState(name);
+  const [userEmail, setUserEmail] = useState(email);
+  const [profilePicture, setProfilePicture] = useState(profilepicture);
   const [previewPicture, setPreviewPicture] = useState(null);
   const [imagefile, setimageFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -60,7 +54,6 @@ function BloggerProfile() {
   const inputRef = useRef(null);
   const checkRef = useRef(null);
   const fileInputRef = useRef(null);
-  const isSmallScreen = useMediaQuery("(max-width:470px)");
   const options = [
     { value: "default", label: "Default", icon: Sparkles },
     { value: "old", label: "Classic", icon: History },
@@ -81,10 +74,9 @@ function BloggerProfile() {
         { withCredentials: true }
       );
 
-      const newData = await fetchProfileData();
+      const newData = await fetchUserInfo();
       setUsersName(newData.name);
       setName(newData.name);
-      await fetchUserInfo();
 
       toast({
         title: "Success",
@@ -110,9 +102,8 @@ function BloggerProfile() {
         withCredentials: true,
       });
 
-      const newData = await fetchProfileData();
+      const newData = await fetchUserInfo();
       const cacheBustedUrl = `${newData.profilepicture}?t=${Date.now()}`;
-      await fetchUserInfo();
 
       // Update only one state variable
       setProfilePicture(cacheBustedUrl);
@@ -143,7 +134,7 @@ function BloggerProfile() {
         { style: cssStyle },
         { withCredentials: true }
       );
-      const newData = await fetchProfileData();
+      const newData = await fetchUserInfo();
 
       setUserCssStyle(newData.style);
       setCssStyle(newData.style);
@@ -185,10 +176,6 @@ function BloggerProfile() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // on page mount, fetch the css style from the server
-  useEffect(() => {
-    fetchProfileData();
-  }, [fetchProfileData]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -213,24 +200,6 @@ function BloggerProfile() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditingName]);
-
-  useEffect(() => {
-    if (profileData && profileData.style) {
-      setUserCssStyle(profileData.style);
-      setCssStyle(profileData.style);
-    }
-    if (profileData && profileData.name) {
-      setName(profileData.name);
-      setUsersName(profileData.name);
-    }
-    if (profileData && profileData.profilepicture) {
-      setProfilePicture(profileData.profilepicture);
-      // No need to set userProfilePicture anymore
-    }
-    if (profileData && profileData.email) {
-      setUserEmail(profileData.email);
-    }
-  }, [profileData]);
 
   function handleStyleChange(value) {
     setCssStyle(value);
