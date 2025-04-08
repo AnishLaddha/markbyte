@@ -32,7 +32,7 @@ function App() {
           path="/"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -45,7 +45,7 @@ function App() {
           path="/editor"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -57,7 +57,7 @@ function App() {
           path="/editor/:title/:version"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -71,7 +71,7 @@ function App() {
           path="/profile"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (

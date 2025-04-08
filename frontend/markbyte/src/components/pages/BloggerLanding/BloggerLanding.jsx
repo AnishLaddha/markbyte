@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
 import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon } from "lucide-react";
 import styles from "./BloggerLanding.module.css";
-import { useAuth } from "@/contexts/AuthContext";
 // import { CiLogin } from "react-icons/ci";
 // import UserDropdown from "@/components/ui/profiledropdown";
 import React from "react";
@@ -23,7 +22,6 @@ import {
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
   const { data: blogList, fetchPosts } = useBlogList(username);
-  const { isAuthenticated, user, logout } = useAuth();
   const nposts = 5;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
