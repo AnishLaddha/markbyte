@@ -11,6 +11,7 @@ import EditorPreview from "./components/pages/LivePreview/CreateEditorPreview";
 import PublishEditorPreview from "./components/pages/LivePreview/PublishEditorPreview";
 import DynamicBlogPost from "./components/pages/Post/DynamicBlogPost";
 import BloggerProfile from "./components/pages/BloggerProfile/BloggerProfile";
+import NotFound from "./components/pages/404/invalid";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -83,6 +84,7 @@ function App() {
           path="/auth"
           element={isAuthenticated ? <BloggerHome /> : <Auth />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </Router>

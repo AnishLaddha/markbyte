@@ -29,6 +29,7 @@ import {
   Upload,
   FileText,
   Home,
+  CheckCircle,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -54,7 +55,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FaMarkdown } from "react-icons/fa";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-import { FaCheckCircle } from "react-icons/fa";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
 import { API_URL } from "@/config/api";
@@ -143,10 +143,10 @@ const EditorPreview = () => {
       .then(() => {
         setTimeout(() => {
           toast({
-            title: <div className="flex items-center">File Uploaded</div>,
+            title: <div className="flex items-center">Post Uploaded</div>,
             description: `Your post, "${postTitle}", has been uploaded successfully.`,
             variant: "success",
-            action: <FaCheckCircle size={30} className="text-white" />,
+            action: <CheckCircle size={30} className="text-white" />,
             className:
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,

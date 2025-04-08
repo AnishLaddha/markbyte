@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import NotFound from "../404/invalid";
 import { API_URL } from "@/config/api";
 
 function DynamicBlogPost() {
   const { user, post } = useParams();
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     axios
@@ -15,9 +17,12 @@ function DynamicBlogPost() {
         document.close();
       })
       .catch((error) => {
-        console.error("Error fetching blogger's post page:", error);
+        setError(true);
       });
   }, [user, post]);
+
+  // On error, show NotFound
+  if (error) return <NotFound />;
 
   return null;
 }

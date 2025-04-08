@@ -2,10 +2,8 @@ import { useParams } from "react-router-dom";
 import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Home } from "lucide-react";
 import styles from "./BloggerLanding.module.css";
-// import { CiLogin } from "react-icons/ci";
-// import UserDropdown from "@/components/ui/profiledropdown";
 import React from "react";
 import { motion } from "framer-motion";
 import { Bookmark, Eye, User2 } from "lucide-react";
@@ -18,6 +16,7 @@ import {
   PaginationNext,
   PaginationLink,
 } from "@/components/ui/pagination";
+import { useNavigate } from "react-router-dom";
 
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
@@ -25,6 +24,7 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const nposts = 5;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!blogList || blogList.length === 0) {
@@ -92,9 +92,19 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                 Explore {username}'s blog posts and articles.
               </p>
             </div>
-            <button className="px-6 py-3 text-lg font-medium text-white bg-[#084464] hover:bg-[#0B5D89] rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center">
-              <User2 className="mr-2" /> About
-            </button>
+            <div className="flex flex-row items-center gap-4">
+              <button
+                className="bg-[#084464] hover:bg-[#0B5D89] rounded-full p-2 shadow-lg transition-all duration-300 ease-in-out flex items-center justify-center"
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
+                <Home className="h-8 w-8 text-white" />
+              </button>
+              <button className="px-6 py-3 text-lg font-medium text-white bg-[#084464] hover:bg-[#0B5D89] rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center">
+                <User2 className="mr-2" /> About
+              </button>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -184,12 +194,9 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                           <h2 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-[#005a7a] transition-colors duration-300">
                             {post.title}
                           </h2>
-                          <p className="text-gray-600 line-clamp-2 text-base leading-relaxed">
-                            {post.description || "Lorem ipsum dolor sit amet."}
-                          </p>
                         </div>
 
-                        <div className="flex items-center mt-6 pt-4 border-t border-gray-100">
+                        <div className="flex items-center pt-4 border-t border-gray-100">
                           <Avatar className="cursor-pointer bg-gray-200 mr-3 h-9 w-9">
                             <AvatarImage
                               src={`https://api.dicebear.com/9.x/initials/svg?seed=${username}&backgroundType=gradientLinear`}
@@ -211,17 +218,17 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
             <Pagination>
               <PaginationContent className="flex items-center gap-2">
                 <PaginationItem>
-                  <PaginationPrevious 
+                  <PaginationPrevious
                     onClick={() => setCurrentPage(Math.max(currentPage - 1, 0))}
                     className={`cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                      currentPage === 0 
-                        ? "pointer-events-none opacity-50" 
+                      currentPage === 0
+                        ? "pointer-events-none opacity-50"
                         : "hover:bg-gray-100"
                     }`}
                   />
                 </PaginationItem>
-                
-                {getPageNumbers().map((pageNum) => (
+
+                {getPageNumbers().map((pageNum) =>
                   pageNum === null ? (
                     <PaginationItem>
                       <PaginationEllipsis />
@@ -240,14 +247,16 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                       </PaginationLink>
                     </PaginationItem>
                   )
-                ))}
-                
+                )}
+
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => setCurrentPage(Math.min(currentPage + 1, npages - 1))}
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage(Math.min(currentPage + 1, npages - 1))
+                    }
                     className={`cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                      currentPage >= npages - 1 
-                        ? "pointer-events-none opacity-50" 
+                      currentPage >= npages - 1
+                        ? "pointer-events-none opacity-50"
                         : "hover:bg-gray-100"
                     }`}
                   />
