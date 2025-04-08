@@ -10,7 +10,7 @@ function NotFound() {
       <div className="absolute left-[-15%] top-1/6 h-[450px] w-[350px] -rotate-15 rounded-[120px] bg-blue-500 opacity-10 blur-[130px] z-0"></div>
       <div className="absolute right-[-10%] bottom-1/4 h-[550px] w-[450px] rotate-40 rounded-[130px] bg-blue-500 opacity-10 blur-[140px] z-0"></div>
       <div className="relative">
-        <span className="text-6xl block">🐒</span>
+        <img src="/assets/monkey.gif" className = "h-24 w-24"></img>
         <span className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-4 bg-black/20 rounded-full blur-sm"></span>
       </div>
       <div className="z-10 max-w-xl w-full">
