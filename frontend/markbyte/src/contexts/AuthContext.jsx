@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
     setIsAuthenticated(false);
+    localStorage.clear();
     setUser(null);
     setName(null);
     setProfilePicture(null);
