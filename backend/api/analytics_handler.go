@@ -19,7 +19,7 @@ func SetAnalyticsDB(repo db.AnalyticsDB) {
 type PostAnalyticsRequest struct {
 	Title    string `json:"title"`
 	Username string `json:"username"`
-	Version  string `json:"version"`
+	Version  string `json:"version,omitempty"`
 }
 
 func HandleGetPostAnalytics(w http.ResponseWriter, r *http.Request) {
@@ -34,12 +34,18 @@ func HandleGetPostAnalytics(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
-	activeVersion, err := blogPostDataDB.FetchActiveBlog(r.Context(), postAnalyticsRequest.Username, postAnalyticsRequest.Title)
-	if err != nil {
-		http.Error(w, "Failed to fetch active version", http.StatusInternalServerError)
-		return
+
+	versionToUse := postAnalyticsRequest.Version
+	if versionToUse == "" {
+		activeVersion, err := blogPostDataDB.FetchActiveBlog(r.Context(), postAnalyticsRequest.Username, postAnalyticsRequest.Title)
+		if err != nil {
+			http.Error(w, "Failed to fetch active version", http.StatusInternalServerError)
+			return
+		}
+		versionToUse = activeVersion
 	}
-	analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, postAnalyticsRequest.Title, activeVersion)
+
+	analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, postAnalyticsRequest.Title, versionToUse)
 	if err != nil {
 		http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
 		return
@@ -135,7 +141,7 @@ type UserActiveAnalyticsResponse struct {
 	PostTimestamps []time.Time `json:"post_timestamps"`
 }
 
-func HandleUserActiveAnalytics(w http.ResponseWriter, r *http.Request) {
+func HandleUserActiveTimestamps(w http.ResponseWriter, r *http.Request) {
 	username, ok := r.Context().Value(auth.UsernameKey).(string)
 	if !ok || username == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -153,6 +159,33 @@ func HandleUserActiveAnalytics(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(userActiveAnalyticsResponse)
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandleAllAnalytics(w http.ResponseWriter, r *http.Request) {
+	all_analytics := []db.PostAnalytics{}
+	username, ok := r.Context().Value(auth.UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	active_posts, err := blogPostDataDB.FetchAllActiveBlogPosts(r.Context(), username)
+	if err != nil {
+		http.Error(w, "Failed to fetch active posts", http.StatusInternalServerError)
+	}
+	for _, post := range active_posts {
+		analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, post.Title, post.Version)
+		if err != nil {
+			http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
+		}
+		all_analytics = append(all_analytics, *analytics)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(all_analytics)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
