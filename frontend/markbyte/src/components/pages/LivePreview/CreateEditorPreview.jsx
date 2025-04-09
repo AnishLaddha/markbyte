@@ -30,6 +30,10 @@ import {
   FileText,
   Home,
   CheckCircle,
+  LayoutTemplate,
+  Type,
+  Box,
+  Layers,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -50,6 +54,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FaMarkdown } from "react-icons/fa";
@@ -165,11 +176,22 @@ const EditorPreview = () => {
     setActiveTab(value);
   };
 
-  const loadTemplate = () => {
-    setCurrMarkdownContent(mdtemplate);
-    setMarkdownContent(mdtemplate);
+  const loadTemplate = (name) => {
+    if (name == "header") {
+      setCurrMarkdownContent(currMarkdownContent + mdtemplate[0]);
+      setMarkdownContent(markdownContent + mdtemplate[0]);
+    } else if (name == "body") {
+      setCurrMarkdownContent(currMarkdownContent + mdtemplate[1]);
+      setMarkdownContent(markdownContent + mdtemplate[1]);
+    } else if (name == "footer") {
+      setCurrMarkdownContent(currMarkdownContent + mdtemplate[2]);
+      setMarkdownContent(markdownContent + mdtemplate[2]);
+    } else if (name == "full") {
+      setCurrMarkdownContent(mdtemplate[3]);
+      setMarkdownContent(mdtemplate[3]);
+    }
     setRenderMarkdown(true);
-  }
+  };
 
   const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreenupload = useMediaQuery("(max-width:580px)");
@@ -256,8 +278,8 @@ const EditorPreview = () => {
 
         {/* Center section with title */}
         <motion.div
-          initial={{ opacity: 0}}
-          animate={{ opacity: 1}}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="absolute inset-x-0 flex justify-center items-center pointer-events-none cursor-pointer"
         >
@@ -278,14 +300,52 @@ const EditorPreview = () => {
 
         {/* Right section with auth buttons */}
         <div className="flex items-center gap-5">
-          { /* This button will load in a default template */ }
-          <button
-            className="bg-green-800 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30 hover:bg-green-900"
-            onClick={() => {loadTemplate()}}
-          >
-            <FileText className="h-4 w-4" />
-            {!isSmallScreen2 && <span className="font-bold">Load Template</span>}
-          </button>
+          {/* This button will load in a default template */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="bg-green-800 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30 hover:bg-green-900">
+                <FileText className="h-4 w-4" />
+                {!isSmallScreen2 && (
+                  <span className="font-bold">Templates</span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-34" align="end">
+              <DropdownMenuItem
+                onClick={() => loadTemplate("header")}
+                className="flex items-center gap-3 py-2.5 px-3 cursor-pointer hover:bg-gray-50 rounded-sm transition-colors"
+              >
+                <Type className="h-4 w-4 text-blue-600" />
+                <span className="font-medium">Header</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => loadTemplate("body")}
+                className="flex items-center gap-3 py-2.5 px-3 cursor-pointer hover:bg-gray-50 rounded-sm transition-colors"
+              >
+                <Box className="h-4 w-4 text-purple-600" />
+                <span className="font-medium">Body</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => loadTemplate("footer")}
+                className="flex items-center gap-3 py-2.5 px-3 cursor-pointer hover:bg-gray-50 rounded-sm transition-colors"
+              >
+                <LayoutTemplate className="h-4 w-4 text-amber-600" />
+                <span className="font-medium">Footer</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="my-1 h-px bg-gray-200" />
+
+              <DropdownMenuItem
+                onClick={() => loadTemplate("full")}
+                className="flex items-center gap-3 py-2.5 px-3 cursor-pointer hover:bg-gray-50 rounded-sm transition-colors"
+              >
+                <Layers className="h-4 w-4 text-green-600" />
+                <span className="font-medium">Full Template</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button
             className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
             onClick={() => handlePreviewClick()}
@@ -294,7 +354,12 @@ const EditorPreview = () => {
             {!isSmallScreenupload && <span className="font-bold">Publish</span>}
           </button>
           {isAuthenticated && (
-            <UserDropdown userName={user.name} logout={logout} pfp={profilepicture} name={name}/>
+            <UserDropdown
+              userName={user.name}
+              logout={logout}
+              pfp={profilepicture}
+              name={name}
+            />
           )}
         </div>
       </header>

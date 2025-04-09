@@ -328,7 +328,8 @@ function BloggerProfile() {
                         {options.map(({ value, label, icon: Icon }) => (
                           <div
                             key={value}
-                            className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-gray-50 ${
+                            onClick={() => setCssStyle(value)}
+                            className={`cursor-pointer flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-gray-50 ${
                               cssStyle === value
                                 ? "bg-blue-50 border border-blue-200"
                                 : "border border-gray-200"
@@ -338,7 +339,7 @@ function BloggerProfile() {
                               <RadioGroupItem
                                 value={value}
                                 id={value}
-                                className="border-[#003b5c] "
+                                className="border-[#003b5c] pointer-events-none" // prevent double-handling
                               />
                               <Label
                                 htmlFor={value}

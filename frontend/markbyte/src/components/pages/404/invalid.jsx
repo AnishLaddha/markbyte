@@ -15,7 +15,7 @@ function NotFound() {
       </div>
       <div className="z-10 max-w-xl w-full">
         <div className="relative mb-6">
-          <h1 className="text-[180px] font-black text-white/10 leading-none select-none">
+          <h1 className="text-[180px] font-black text-white/30 leading-none select-none">
             404
           </h1>
           <div className="absolute inset-0 flex items-center justify-center">
