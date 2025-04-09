@@ -7,14 +7,14 @@ src/
 │   │   ├── blogposttable.jsx
 │   │   └── ...
 │   ├── pages/                         # Page-specific components
-│   │   ├── Blogger/
-│   │   │   ├── BloggerHome.jsx
-│   │   │   ├── BloggerLanding.jsx
-│   │   │   └── BloggerProfile.jsx
-│   │   ├── Editor/
-│   │   │   ├── CreateEditorPreview.jsx
-│   │   │   └── PublishEditorPreview.jsx
-│   │   └── ...
+│       ├── Blogger/
+│       │   ├── BloggerHome.jsx
+│       │   ├── BloggerLanding.jsx
+│       │   └── BloggerProfile.jsx
+│       ├── Editor/
+│       │   ├── CreateEditorPreview.jsx
+│       │   └── PublishEditorPreview.jsx
+│       └── ...
 ├── contexts/
 │   ├── AuthContext.js                 # State management contexts
 ├── hooks/                             # Custom React hooks (also includes shadcn hooks)
