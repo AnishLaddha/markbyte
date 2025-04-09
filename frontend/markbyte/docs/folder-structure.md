@@ -23,8 +23,13 @@ src/
 │   ├── use-bloglist.js
 │   └── use-profiledata.js
 |
+├── services/                          # Application logic for interacting with APIs and encapsulating reusable service functions
+│   ├── authService.jsx
+│   ├── blogService.jsx
+│   └── userService.jsx
+|
 ├── lib/
-│   ├── utils.js
+│   ├── utils.js                       # ShadCN provided
 |
 ├── config/
 │   ├── api.js                         # API configuration

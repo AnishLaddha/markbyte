@@ -37,7 +37,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import ConfirmDeleteDialog from "@/components/ui/confirmdelete";
 import {
   getCoreRowModel,
@@ -49,7 +48,12 @@ import DashboardHeader from "@/components/ui/dashboardheader";
 import BlogPostTable from "@/components/ui/blogposttable";
 import { blogTableStaticCols } from "@/constants/blogTableStaticcols";
 import HomePageHeader from "@/components/ui/homepgintro";
-import { API_URL } from "@/config/api";
+import {
+  publishBlogVersion,
+  deleteBlogPost,
+  uploadMarkdownFile,
+  uploadZipFile,
+} from "@/services/blogService";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
@@ -138,30 +142,22 @@ function BloggerHome() {
                          transition-all duration-200 ease-in-out
                          shadow-sm hover:shadow-md"
                 onClick={() => {
-                  axios
-                    .post(
-                      `${API_URL}/publish`,
-                      {
-                        username: user.name,
-                        title: row.original.title,
-                        version: selectedVersion,
-                      },
-                      { withCredentials: true }
-                    )
-                    .then(() => {
-                      fetchData();
-                      toast({
-                        variant: "default",
-                        title: "Version Published Successfully",
-                        description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
-                        action: (
-                          <CheckCircle size={30} className="text-white" />
-                        ),
-                        className:
-                          "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
-                        duration: 3000,
-                      });
+                  publishBlogVersion(
+                    user.name,
+                    row.original.title,
+                    selectedVersion
+                  ).then(() => {
+                    fetchData();
+                    toast({
+                      variant: "default",
+                      title: "Version Published Successfully",
+                      description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
+                      action: <CheckCircle size={30} className="text-white" />,
+                      className:
+                        "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
+                      duration: 3000,
                     });
+                  });
                 }}
               >
                 Publish
@@ -290,12 +286,8 @@ function BloggerHome() {
   };
 
   const handleDeletePost = () => {
-    axios
-      .post(
-        `${API_URL}/delete`,
-        { title: postToDelete },
-        { withCredentials: true }
-      )
+    // refactor with service
+    deleteBlogPost(postToDelete)
       .then(() => {
         toast({
           variant: "default",
@@ -325,11 +317,8 @@ function BloggerHome() {
     const file = fileInput.current.files[0];
     const formData = new FormData();
     if (fileType == "md") {
-      formData.append("file", file);
-      axios
-        .post(`${API_URL}/upload`, formData, {
-          withCredentials: true,
-        })
+      // refactor with service
+      uploadMarkdownFile(file)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
@@ -351,14 +340,7 @@ function BloggerHome() {
           }
         });
     } else {
-      formData.append("zipfile", file);
-      axios
-        .post(`${API_URL}/zipupload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        })
+      uploadZipFile(file)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
@@ -406,9 +388,7 @@ function BloggerHome() {
   }, [data, searchTerm]);
 
   return (
-    <div
-      className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100"
-    >
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100">
       <DashboardHeader />
 
       <main className="container mx-auto px-4 sm:px-4 py-8">

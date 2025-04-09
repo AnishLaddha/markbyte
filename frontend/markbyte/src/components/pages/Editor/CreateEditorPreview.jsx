@@ -64,16 +64,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FaMarkdown } from "react-icons/fa";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
-import { API_URL } from "@/config/api";
 import mdtemplate from "@/constants/mdtemplate";
+import { uploadMarkdownFile } from "@/services/blogService";
 
 const EditorPreview = () => {
-  // Set the initial content
-
   const navigate = useNavigate();
   const [spin, setSpin] = useState(false);
   const [renderMarkdown, setRenderMarkdown] = useState(true);
@@ -147,10 +144,7 @@ const EditorPreview = () => {
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
-    const formData = new FormData();
-    formData.append("file", blob, postTitle + ".md");
-    axios
-      .post(`${API_URL}/upload`, formData, { withCredentials: true })
+    uploadMarkdownFile(blob, postTitle + ".md")
       .then(() => {
         setTimeout(() => {
           toast({

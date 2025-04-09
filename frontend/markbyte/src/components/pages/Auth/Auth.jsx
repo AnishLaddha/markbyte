@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
@@ -17,7 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { API_URL } from "@/config/api";
+import { signup } from "@/services/authService";
+import { uploadProfilePicture, updateName } from "@/services/userService";
 
 function Auth() {
   const [activeTab, setActiveTab] = useState("login");
@@ -105,10 +105,7 @@ function Auth() {
         email: semail || "",
       };
 
-      await axios.post(`${API_URL}/signup`, signup_data, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+      await signup(susername, spassword, semail);
 
       // Step 2: Login after signup
       const loginSuccess = await login(susername, spassword);
@@ -119,27 +116,13 @@ function Auth() {
 
         // Add name update request
         if (sname) {
-          requests.push(
-            axios.post(
-              `${API_URL}/user/name`,
-              { name: sname },
-              { withCredentials: true }
-            )
-          );
+          requests.push(updateName(sname));
         }
 
-        // Add profile picture update request if imagefile exists
         if (imagefile) {
-          const formData = new FormData();
-          formData.append("profile_picture", imagefile);
-          requests.push(
-            axios.post(`${API_URL}/user/pfp`, formData, {
-              withCredentials: true,
-            })
-          );
+          requests.push(uploadProfilePicture(imagefile));
         }
 
-        // Step 4: Execute all requests concurrently
         if (requests.length > 0) {
           await Promise.all(requests);
         }

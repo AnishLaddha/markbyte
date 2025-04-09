@@ -1,30 +1,32 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import NotFound from "../404/invalid";
-import { API_URL } from "@/config/api";
+import { getBlogPost } from "@/services/blogService";
 
 function DynamicBlogPost() {
   const { user, post } = useParams();
   const [error, setError] = useState(false);
+  const [htmlContent, setHtmlContent] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/${user}/${post}`)
+    getBlogPost(user, post)
       .then((response) => {
-        document.open();
-        document.write(response.data);
-        document.close();
+        setHtmlContent(response.data);
       })
-      .catch((error) => {
+      .catch(() => {
         setError(true);
       });
   }, [user, post]);
 
-  // On error, show NotFound
   if (error) return <NotFound />;
 
-  return null;
+  return (
+    <iframe
+      srcDoc={htmlContent}
+      title="Blog Post"
+      className="w-full h-screen border-none"
+    />
+  );
 }
 
 export default DynamicBlogPost;
