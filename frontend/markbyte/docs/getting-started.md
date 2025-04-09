@@ -45,3 +45,5 @@ The optimized build will be output to the `/dist` folder.
 ## Project Structure
 
 Refer to [`docs/folder-structure.md`](./folder-structure.md) for a detailed breakdown of the folder layout.
+
+Refer to [`docs/routing.md`](./routing.md) for a detailed breakdown of the page routing and logic.
