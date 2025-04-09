@@ -3,7 +3,6 @@ import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon, Home } from "lucide-react";
-import styles from "./BloggerLanding.module.css";
 import React from "react";
 import { motion } from "framer-motion";
 import { Bookmark, Eye, User2 } from "lucide-react";
@@ -66,7 +65,7 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   };
 
   return (
-    <div className={styles.BloggerLanding}>
+    <div className="relative min-h-screen bg-[#f6f8fa] overflow-x-hidden">
       <div className="w-full bg-gradient-to-r from-[#084464] to-[#011522] py-16 relative overflow-hidden">
         <div className="absolute left-0 top-0 w-20 h-20 grid grid-cols-5 gap-2 opacity-60 mt-6 ml-6">
           {[...Array(25)].map((_, i) => (
