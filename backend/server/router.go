@@ -50,7 +50,7 @@ func SetupRouter() *chi.Mux {
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
 		protected.Get("/like", api.HandleLikePost)
-		protected.Get("/analytics", api.HandleGetPostAnalytics)
+		protected.Get("/post/analytics", api.HandleGetPostAnalytics)
 		protected.Post("/render", markdown_render.HandleRender)
 		protected.Post("/markdown", api.HandleFetchMD)
 		protected.Post("/delete", api.HandleDelete)
@@ -59,6 +59,7 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/user/pfp", api.HandleUpdateUserProfilePicture)
 		protected.Post("/user/name", api.HandleUpdateUserName)
 		protected.Get("/user/info", api.HandleUserInfo)
+		protected.Get("/user/analytics", api.HandleUserActiveAnalytics)
 	})
 
 	r.Get("/static/*", api.HandleStatic)

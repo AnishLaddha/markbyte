@@ -67,4 +67,5 @@ type AnalyticsDB interface {
 	IncrementViews(ctx context.Context, username string, title string, version string) error
 	ToggleLike(ctx context.Context, postUsername string, title string, version string, likingUsername string) (bool, error)
 	DeletePostAnalytics(ctx context.Context, username string, title string) (int, error)
+	GetAllPostTimeStamps(ctx context.Context, username string, active_posts []BlogPostData) ([]time.Time, error)
 }

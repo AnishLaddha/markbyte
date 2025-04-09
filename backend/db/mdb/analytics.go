@@ -104,3 +104,17 @@ func (r *MongoAnalyticsRepository) DeletePostAnalytics(ctx context.Context, user
 	}
 	return int(res.DeletedCount), nil
 }
+
+func (r *MongoAnalyticsRepository) GetAllPostTimeStamps(ctx context.Context, username string, active_posts []db.BlogPostData) ([]time.Time, error) {
+	post_timestamps := []time.Time{}
+	for _, post := range active_posts {
+		filter := bson.M{"username": username, "title": post.Title, "version": post.Version}
+		var analytics db.PostAnalytics
+		err := r.collection.FindOne(ctx, filter).Decode(&analytics)
+		if err != nil {
+			return nil, err
+		}
+		post_timestamps = append(post_timestamps, analytics.Views...)
+	}
+	return post_timestamps, nil
+}
