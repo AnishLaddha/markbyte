@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
@@ -15,28 +16,57 @@ func SetAnalyticsDB(repo db.AnalyticsDB) {
 	AnalyticsDataDB = repo
 }
 
+type PostAnalyticsRequest struct {
+	Title    string `json:"title"`
+	Username string `json:"username"`
+	Version  string `json:"version,omitempty"`
+}
+
 func HandleGetPostAnalytics(w http.ResponseWriter, r *http.Request) {
 	username, ok := r.Context().Value(auth.UsernameKey).(string)
 	if !ok || username == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	var postAnalyticsRequest PostAnalyticsRequest
+	err := json.NewDecoder(r.Body).Decode(&postAnalyticsRequest)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
 
-	title := r.URL.Query().Get("title")
-	version := r.URL.Query().Get("version")
+	versionToUse := postAnalyticsRequest.Version
+	if versionToUse == "" {
+		activeVersion, err := blogPostDataDB.FetchActiveBlog(r.Context(), postAnalyticsRequest.Username, postAnalyticsRequest.Title)
+		if err != nil {
+			http.Error(w, "Failed to fetch active version", http.StatusInternalServerError)
+			return
+		}
+		versionToUse = activeVersion
+	}
 
-	analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, title, version)
+	analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, postAnalyticsRequest.Title, versionToUse)
 	if err != nil {
 		http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(analytics)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+type LikePostRequest struct {
+	PostUsername string `json:"post_username"`
+	Title        string `json:"title"`
+}
+
+type LikePostResponse struct {
+	Liked bool `json:"liked"`
 }
 
 func HandleLikePost(w http.ResponseWriter, r *http.Request) {
@@ -46,33 +76,117 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-
-	title := r.URL.Query().Get("title")
-	version, err := blogPostDataDB.FetchActiveBlog(r.Context(), username, title)
+	var likePostRequest LikePostRequest
+	err := json.NewDecoder(r.Body).Decode(&likePostRequest)
 	if err != nil {
-		fmt.Printf("Failed to fetch active blog: %v\n", err)
-		http.Error(w, "Failed to fetch active blog", http.StatusInternalServerError)
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
-
-	err = AnalyticsDataDB.IncrementLikes(r.Context(), username, title, version)
+	//first, get the active version of the post
+	activeVersion, err := blogPostDataDB.FetchActiveBlog(r.Context(), likePostRequest.PostUsername, likePostRequest.Title)
 	if err != nil {
-		fmt.Printf("Failed to update likes: %v\n", err)
-		http.Error(w, "Failed to update likes", http.StatusInternalServerError)
+		http.Error(w, "Failed to fetch active version", http.StatusInternalServerError)
+	}
+	liked, err := AnalyticsDataDB.ToggleLike(r.Context(), likePostRequest.PostUsername, likePostRequest.Title, activeVersion, username)
+	if err != nil {
+		http.Error(w, "Failed to toggle like", http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("%s %s %s\n", username, title, version)
-	updatedAnalytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, title, version)
-	if err != nil {
-		fmt.Printf("Failed to fetch updated analytics: %v\n", err)
-		http.Error(w, "Failed to fetch updated analytics", http.StatusInternalServerError)
-		return
-	}
-
+	likePostResponse := LikePostResponse{Liked: liked}
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(updatedAnalytics)
+	err = json.NewEncoder(w).Encode(likePostResponse)
 	if err != nil {
-		fmt.Printf("Failed to encode response: %v\n", err)
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+type PublicPostDataRequest struct {
+	Title    string `json:"title"`
+	Username string `json:"username"`
+}
+
+type PublicPostAnalyticsResponse struct {
+	Views int `json:"views"`
+	Likes int `json:"likes"`
+}
+
+func HandlePublicPostAnalytics(w http.ResponseWriter, r *http.Request) {
+	var publicPostDataRequest PublicPostDataRequest
+	err := json.NewDecoder(r.Body).Decode(&publicPostDataRequest)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+	activeVersion, err := blogPostDataDB.FetchActiveBlog(r.Context(), publicPostDataRequest.Username, publicPostDataRequest.Title)
+	if err != nil {
+		http.Error(w, "Failed to fetch active version", http.StatusInternalServerError)
+	}
+	analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), publicPostDataRequest.Username, publicPostDataRequest.Title, activeVersion)
+	if err != nil {
+		http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
+	}
+	publicPostAnalyticsResponse := PublicPostAnalyticsResponse{Views: len(analytics.Views), Likes: len(analytics.Likes)}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(publicPostAnalyticsResponse)
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+type UserActiveAnalyticsResponse struct {
+	PostTimestamps []time.Time `json:"post_timestamps"`
+}
+
+func HandleUserActiveTimestamps(w http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(auth.UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	active_posts, err := blogPostDataDB.FetchAllActiveBlogPosts(r.Context(), username)
+	if err != nil {
+		http.Error(w, "Failed to fetch active posts", http.StatusInternalServerError)
+	}
+	post_timestamps, err := AnalyticsDataDB.GetAllPostTimeStamps(r.Context(), username, active_posts)
+	if err != nil {
+		http.Error(w, "Failed to fetch post timestamps", http.StatusInternalServerError)
+	}
+	userActiveAnalyticsResponse := UserActiveAnalyticsResponse{PostTimestamps: post_timestamps}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(userActiveAnalyticsResponse)
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandleAllAnalytics(w http.ResponseWriter, r *http.Request) {
+	all_analytics := []db.PostAnalytics{}
+	username, ok := r.Context().Value(auth.UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	active_posts, err := blogPostDataDB.FetchAllActiveBlogPosts(r.Context(), username)
+	if err != nil {
+		http.Error(w, "Failed to fetch active posts", http.StatusInternalServerError)
+	}
+	for _, post := range active_posts {
+		analytics, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, post.Title, post.Version)
+		if err != nil {
+			http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
+		}
+		all_analytics = append(all_analytics, *analytics)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(all_analytics)
+	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}

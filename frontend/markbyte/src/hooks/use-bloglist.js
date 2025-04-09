@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
 function useBlogList( user ) {
   const [data, setData] = useState([]);
 
   const fetchPosts = useCallback(() => {
     axios
-      .get("http://localhost:8080/get_all_posts", {
+      .get(`${API_URL}/get_all_posts`, {
         params: {
           user: user,
         },
@@ -17,7 +18,7 @@ function useBlogList( user ) {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   return { data, fetchPosts };
 }

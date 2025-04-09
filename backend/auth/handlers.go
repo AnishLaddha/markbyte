@@ -49,9 +49,12 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser := &db.User{
-		Username: usrReq.Username,
-		Password: hashedPassword,
-		Email:    usrReq.Email,
+		Username:       usrReq.Username,
+		Password:       hashedPassword,
+		Email:          usrReq.Email,
+		Style:          "default",
+		Name:           "Markbyte User",
+		ProfilePicture: "",
 	}
 
 	_, err = userDB.CreateUser(r.Context(), newUser)
@@ -125,4 +128,14 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func HandleLoggedInUser(w http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(UsernameKey).(string)
+	if !ok || username == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(username))
 }

@@ -3,8 +3,7 @@ FROM node:20-alpine
 WORKDIR /markbyte
 
 COPY package*.json ./
-
-RUN npm install
+RUN npm ci
 
 COPY . .
 

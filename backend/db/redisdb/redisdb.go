@@ -3,6 +3,7 @@ package redisdb
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -12,8 +13,14 @@ var client *redis.Client
 var RedisActive bool
 
 func Init() error {
+	var REDIS_URL string
+	if os.Getenv("RUNNING_IN_DOCKER") == "true" {
+		REDIS_URL = "redis:6379"
+	} else {
+		REDIS_URL = "localhost:6379"
+	}
 	client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     REDIS_URL,
 		Password: "",
 		DB:       0,
 	})
@@ -61,6 +68,30 @@ func DeleteEndpoint(ctx context.Context, endpoint string) error {
 		return err
 	} else if del > 1 {
 		fmt.Printf("multiple deleted")
+	}
+	return nil
+}
+
+func DeleteEndpointByPrefix(ctx context.Context, prefix string) error {
+	var cursor uint64
+	var keys []string
+	var err error
+	for {
+		keys, cursor, err = client.Scan(ctx, cursor, prefix+"*", 1000).Result()
+		if err != nil {
+			fmt.Printf("error scanning redis: %v", err)
+			return err
+		}
+		if len(keys) > 0 {
+			err = client.Del(ctx, keys...).Err()
+			if err != nil {
+				fmt.Printf("error deleting in redis: %v", err)
+				return err
+			}
+		}
+		if cursor == 0 {
+			break
+		}
 	}
 	return nil
 }

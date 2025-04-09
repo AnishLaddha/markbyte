@@ -1,0 +1,200 @@
+@import url('https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.0/dist/typography.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/dracula.min.css');
+
+/* Global Styling */
+body {
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'PT Serif', serif;
+}
+
+/* Light Mode */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Dark Mode */
+.dark body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #f8f9fa; /* Light mode sidebar */
+    padding: 1.5rem;
+    position: fixed;
+    left: 20px; /* Move it slightly away from the left */
+    top: 20px;
+    height: auto;
+    max-height: 80vh; /* Prevent it from taking the full height */
+    overflow-y: auto;
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Floating effect */
+    transition: transform 0.3s ease-in-out;
+}
+
+.dark .sidebar {
+    background: #121212;
+    border-right: none;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    .content-container {
+        margin-left: 0 !important;
+        padding: 1rem; /* Adjust padding for better spacing */
+    }
+}
+
+.sidebar h2 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.dark .sidebar h2 {
+    color: #e5e7eb;
+}
+
+/* Main Content */
+.content-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 2rem;
+    margin-left: 260px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar a {
+    text-decoration: none !important;
+    color: #333 !important;  /* Ensures links are readable in light mode */
+}
+
+.dark .sidebar a {
+    color: white !important; /* Ensures links are readable in dark mode */
+}
+
+/* Typography */
+.prose {
+    max-width: none;
+    color: black;
+    background: transparent;
+}
+
+.dark .prose {
+    color: white;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    color: black;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: white;
+}
+
+blockquote {
+    border-left: 4px solid #2563eb;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #555;
+}
+
+.dark blockquote {
+    color: #ddd;
+}
+
+strong, b {
+    color: black;
+    font-weight: bold;
+}
+
+.dark strong, .dark b {
+    color: white !important;
+}
+
+a {
+    color: black;
+    text-decoration: underline;
+}
+
+.dark a {
+    color: white !important;
+    text-decoration: underline;
+}
+
+/* **🔹 FIX FOR TABLES** */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: black;
+}
+
+.dark table {
+    background: #111;
+    color: white;
+}
+
+th {
+    background: #f2f2f2;
+    color: black;
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.dark th {
+    background: #222;
+    color: white !important;
+}
+
+td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.dark td {
+    border: 1px solid #444;
+}
+
+/* Code Blocks */
+pre {
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    background-color: #f3f3f3;
+}
+
+.dark pre {
+    background-color: #1e1e1e !important;
+}
+
+/* Inline Code */
+code {
+    background: #f3f3f3;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #d63384;
+}
+
+.dark code {
+    background: #222;
+    color: #ffcc99;
+}
+
+.prose table {
+    margin-left: 1rem !important; /* Slight left indent */
+}
+
+th, td {
+    font-family: sans-serif !important;
+    padding: 10px !important;
+}

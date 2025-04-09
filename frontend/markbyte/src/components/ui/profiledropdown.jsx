@@ -1,48 +1,96 @@
 import React from "react";
 import { CiLogout } from "react-icons/ci";
-import { WiDaySunny } from "react-icons/wi";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
-const UserDropdown = ({ userName, logout }) => {
+const UserDropdown = React.memo(() => {
   const navigate = useNavigate();
-  return (
-    <DropdownMenu className="z-500 relative">
-      <DropdownMenuTrigger className="w-11 h-11 bg-white rounded-full flex items-center justify-center mr-2 cursor-pointer focus:outline-none active:ring-0 text-[#005a7a]">
-        <span className="font-bold text-lg text-[#005a7a]">
-          {userName.charAt(0).toUpperCase()}
-        </span>
-      </DropdownMenuTrigger>
+  const { profilepicture, user, name, logout } = useAuth();
 
-      <DropdownMenuContent className="mr-10">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+  return (
+    <DropdownMenu>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2}}
+      >
+        <DropdownMenuTrigger className="cursor-pointer rounded-full overflow-hidden">
+          <Avatar className="w-10 h-10 rounded-full overflow-hidden">
+            <AvatarImage
+              src={
+                profilepicture ||
+                `https://api.dicebear.com/9.x/initials/svg?seed=${name}&backgroundType=gradientLinear`
+              }
+              alt="Profile preview"
+              className="w-full h-full object-cover"
+            />
+            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+      </motion.div>
+
+      <DropdownMenuContent
+        className="w-56 p-2 shadow-lg rounded-xl border border-gray-100 dark:border-gray-800"
+        align="end"
+      >
+        <div className="flex items-center gap-3 px-2 py-2">
+          <Avatar className="w-10 h-10 rounded-full overflow-hidden">
+            <AvatarImage
+              src={
+                profilepicture ||
+                `https://api.dicebear.com/9.x/initials/svg?seed=${name}&backgroundType=gradientLinear`
+              }
+              alt="Profile preview"
+              className="w-full h-full object-cover"
+            />
+            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+
+          <div className="flex flex-col">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {user.name || "User"}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Account Settings
+            </p>
+          </div>
+        </div>
+
+        <DropdownMenuSeparator className="my-1" />
+
         <DropdownMenuItem
-          className="flex items-center cursor-pointer"
+          className="flex items-center gap-2 cursor-pointer p-2 m-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+          onClick={() => navigate("/profile")}
+        >
+          <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          <span>My Profile</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator className="my-1" />
+
+        <DropdownMenuItem
+          className="flex items-center gap-2 cursor-pointer p-2 m-1 text-sm text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900/20 rounded-md transition-colors"
           onClick={() => {
             logout();
             navigate("/");
           }}
         >
-          Logout
-          <CiLogout />
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <button className="flex items-center text-sm text-gray-700">
-            Toggle Dark Mode
-            <WiDaySunny className="ml-1 text-gray-500 text-base" />
-          </button>
+          <CiLogout className="h-4 w-4" />
+          <span>Sign Out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
 
 export default UserDropdown;

@@ -2,9 +2,13 @@ FROM golang:1.23 AS builder
 
 WORKDIR /app
 
+# Copy .dockerignore first to ensure it's effective
+COPY .dockerignore .
+
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Now this COPY will respect .dockerignore
 COPY . .
 
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o backend/markbyte ./cmd/main.go

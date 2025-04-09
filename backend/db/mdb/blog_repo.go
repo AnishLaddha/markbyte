@@ -37,16 +37,13 @@ func (r *MongoBlogPostDataRepository) CreateBlogPost(ctx context.Context, post *
 	return string(idBytes), err
 }
 
-func (r *MongoBlogPostDataRepository) DeleteBlogPost(ctx context.Context, username string, title string, version string) error {
-	filter := bson.M{"user": username, "title": title, "version": version}
-	res, err := r.collection.DeleteOne(ctx, filter)
+func (r *MongoBlogPostDataRepository) DeleteBlogPost(ctx context.Context, username string, title string) (int, error) {
+	filter := bson.M{"user": username, "title": title}
+	res, err := r.collection.DeleteMany(ctx, filter)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	if res.DeletedCount == 0 {
-		return fmt.Errorf("no blog post found with the given details")
-	}
-	return nil
+	return int(res.DeletedCount), nil
 }
 
 func (r *MongoBlogPostDataRepository) UpdateActiveStatus(ctx context.Context, username string, title string, version string, isActive bool) error {

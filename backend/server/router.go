@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
+	"github.com/shrijan-swaminathan/markbyte/backend/features/markdown_render"
 )
 
 func CORS(next http.Handler) http.Handler {
@@ -43,17 +44,29 @@ func SetupRouter() *chi.Mux {
 		// protected.Use(jwtauth.Authenticator(auth.TokenAuth))
 		protected.Use(auth.JWTAuthMiddleware)
 
+		protected.Get("/auth", auth.HandleLoggedInUser)
 		protected.Post("/upload", api.HandleUpload)
+		protected.Post("/zipupload", api.HandleZipUpload)
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
-		protected.Get("/like", api.HandleLikePost)
-
+		protected.Post("/render", markdown_render.HandleRender)
+		protected.Post("/markdown", api.HandleFetchMD)
+		protected.Post("/delete", api.HandleDelete)
+		protected.Get("/user/style", api.HandleFetchUserStyle)
+		protected.Post("/user/style", api.HandleUpdateUserStyle)
+		protected.Post("/user/pfp", api.HandleUpdateUserProfilePicture)
+		protected.Post("/user/name", api.HandleUpdateUserName)
+		protected.Get("/user/info", api.HandleUserInfo)
+		protected.Post("/post/analytics", api.HandleGetPostAnalytics)
+		protected.Get("/user/analytics", api.HandleAllAnalytics)
+		protected.Get("/user/analytics/timestamps", api.HandleUserActiveTimestamps)
+		protected.Post("/like", api.HandleLikePost)
 	})
 
 	r.Get("/static/*", api.HandleStatic)
 	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
 	r.Get("/get_all_posts", api.HandleFetchUserActivePosts)
-
+	r.Post("/public/analytics", api.HandlePublicPostAnalytics)
 	fmt.Println("Server Started.")
 
 	return r

@@ -10,38 +10,44 @@
   --transition-speed: 0.3s;
 }
 
-.tagline {
+.tagline p{
   font-family: 'Consolas', monospace;
   font-weight: 400;
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.5s;
-  position: relative;
+  margin-inline: auto;
+  white-space: nowrap;
+  border-right: 2px solid;
+  display: inline-block; 
+  max-width: 100%;
 }
 
-.tagline::after {
-  content: '|';
-  position: absolute;
-  animation: blinkCursor 1s step-end infinite;
-  font-size: 1.7rem;
-  cursor: text;
+@media (min-width: 560px) {
+  .tagline p {
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3s steps(22) forwards, blink 1s step-end infinite;
+  }
 }
 
-@keyframes fadeIn {
+@media (max-width: 559px) {
+  .tagline p {
+    white-space: normal;
+    border-right: none;
+    animation: none; 
+  }
+}
+
+@keyframes typing {
   from {
-    opacity: 0;
+    width: 0;
   }
   to {
-    opacity: 1;
+    width: 100%;
   }
 }
 
-@keyframes blinkCursor {
-  from, to {
-    opacity: 1;
-  }
+@keyframes blink {
   50% {
-    opacity: 0;
+    border-color: transparent;
   }
 }
 
@@ -51,6 +57,7 @@
   background-image: linear-gradient(to right, #80808012 1px, transparent 1px),
     linear-gradient(to bottom, #80808012 1px, transparent 1px);
   background-size: 180px 180px;
+  /* cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='22' height='22'><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d='M453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-52.1 52.1s0 0 0 0l-1-1s0 0 0 0l-16-16-96-96-17-17 52.1-52.1c25-25 65.5-25 90.5 0zM241 114.9c-9.4-9.4-24.6-9.4-33.9 0L105 217c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L173.1 81c28.1-28.1 73.7-28.1 101.8 0L288 94.1l17 17 96 96 16 16 1 1-17 17L229.5 412.5c-48 48-109.2 80.8-175.8 94.1l-25 5c-7.9 1.6-16-.9-21.7-6.6s-8.1-13.8-6.6-21.7l5-25c13.3-66.6 46.1-127.8 94.1-175.8L254.1 128 241 114.9z' fill='white'/></svg>"), auto; */
 }
 
 body {

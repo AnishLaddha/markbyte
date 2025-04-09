@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -21,10 +23,14 @@ type S3Credentials struct {
 }
 
 func LoadCredentials() (S3Credentials, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return S3Credentials{}, err
+
+	if os.Getenv("RUNNING_IN_DOCKER") != "true" {
+		_ = godotenv.Load() // ignore error, it may not exist
 	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return S3Credentials{}, err
+	// }
 
 	bucket := os.Getenv("S3_BUCKET_NAME")
 	region := os.Getenv("S3_REGION")
@@ -70,7 +76,34 @@ func UploadHTMLFile(ctx context.Context, htmlString string, key string, cred S3C
 	return url, nil
 }
 
-func ReadHTMLfromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
+func UploadMDFile(ctx context.Context, mdString string, key string, cred S3Credentials) (string, error) {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return "", fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	mdReader := bytes.NewReader([]byte(mdString))
+
+	_, err = client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      aws.String(cred.Bucket),
+		Key:         aws.String(key),
+		Body:        mdReader,
+		ContentType: aws.String("text/markdown"),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to upload file to s3: %w", err)
+	}
+
+	url := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cred.Bucket, cred.Region, key)
+
+	return url, nil
+}
+
+func ReadFilefromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -119,3 +152,67 @@ func ReadHTMLfromS3(ctx context.Context, key string, cred S3Credentials) (string
 // 	return string(htmlBytes), nil
 
 // }
+
+func DeleteFile(ctx context.Context, key string, cred S3Credentials) error {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	_, err = client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: aws.String(cred.Bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete file from s3: %w", err)
+	}
+
+	return nil
+}
+
+func UploadImages(ctx context.Context, images map[string][]byte, cred S3Credentials) (map[string]string, error) {
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cred.Region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	urls := make(map[string]string)
+
+	var contentType string
+
+	for key, image := range images {
+		imageReader := bytes.NewReader(image)
+		ext := strings.ToLower(filepath.Ext(key)) // ".jpg"
+		if ext == ".jpg" || ext == ".jpeg" {
+			contentType = "image/jpeg"
+		} else if ext == ".png" {
+			contentType = "image/png"
+		} else {
+			return nil, fmt.Errorf("unsupported image extension: %s", ext)
+		}
+
+		_, err = client.PutObject(ctx, &s3.PutObjectInput{
+			Bucket: aws.String(cred.Bucket),
+			Key:    aws.String(key),
+			Body:   imageReader,
+			//content type needs to be set for images, could be jpg or png depends on extension
+			ContentType: aws.String(contentType),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to upload file to s3: %w", err)
+		}
+
+		url := fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", cred.Bucket, cred.Region, key)
+		urls[key] = url
+	}
+
+	return urls, nil
+}
