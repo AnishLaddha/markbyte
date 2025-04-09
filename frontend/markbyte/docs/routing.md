@@ -14,15 +14,15 @@ The app uses **React Router DOM** for client-side routing. Routing is handled in
 
 | Path                          | Auth Required | Component Rendered             | Notes                                  |
 |-------------------------------|---------------|---------------------------------|----------------------------------------|
-| `/`                           | ❌/✅         | `Home` / `BloggerHome`         | Based on auth state                    |
-| `/about`                      | ❌            | `About`                         | Public static page                     |
-| `/editor`                    | ✅            | `EditorPreview`                | Redirects to `Home` if unauthenticated |
-| `/editor/:title/:version`    | ✅            | `PublishEditorPreview`         | Uses dynamic params                    |
-| `/:user/:post`               | ❌            | `DynamicBlogPost`              | Dynamic blog post URL                  |
-| `/:username`                 | ❌            | `BloggerLandingPage`           | Blogger’s public profile               |
-| `/profile`                   | ✅            | `BloggerProfile`               | Requires authentication                |
-| `/auth`                      | ❌/✅         | `Auth` / `BloggerHome`         | Redirects if already logged in         |
-| `*`                          | ❌            | `NotFound`                     | Catch-all route                        |
+| `/`                           | No/Yes         | `Home` / `BloggerHome`         | Based on auth state                    |
+| `/about`                      | No            | `About`                         | Public static page                     |
+| `/editor`                    | Yes            | `EditorPreview`                | Redirects to `Home` if unauthenticated |
+| `/editor/:title/:version`    | Yes           | `PublishEditorPreview`         | Uses dynamic params                    |
+| `/:user/:post`               | No           | `DynamicBlogPost`              | Dynamic blog post URL                  |
+| `/:username`                 | No           | `BloggerLandingPage`           | Blogger’s public profile               |
+| `/profile`                   | Yes           | `BloggerProfile`               | Requires authentication                |
+| `/auth`                      | No/Yes         | `Auth` / `BloggerHome`         | Redirects if already logged in         |
+| `*`                          | No            | `NotFound`                     | Catch-all route                        |
 
 ---
 
@@ -40,7 +40,7 @@ If the auth state is still loading, the route renders `null` to prevent flicker.
 
 ---
 
-## 🧭 Dynamic Routes
+## Dynamic Routes
 
 The app includes several dynamic segments in the URL:
 
@@ -55,7 +55,7 @@ These are handled with React Router’s dynamic path syntax and consumed via `us
 
 ## Toaster Integration
 
-The `<Toaster />` component (from `./components/ui/toaster`) is mounted at the root level and will show global toast messages across all routes.
+The `<Toaster />` component (shadcn) is mounted at the root level and will show global toast messages across all routes.
 
 ---
 
@@ -66,4 +66,3 @@ The `<Toaster />` component (from `./components/ui/toaster`) is mounted at the r
 - Some protected routes (e.g., `/editor`, `/profile`) fall back to `<Home />` if the user is not authenticated.
 - The `*` wildcard route renders a custom 404 component for unmatched paths.
 
----
