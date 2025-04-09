@@ -1,9 +1,11 @@
-To install dependencies, make sure you are inside the "markbyte" folder and run:
 ```bash
-npm i 
+npm i
 ```
 
-To host the site locally, run:
+To host the site locally:
+
 ```bash
 npm run dev
 ```
+
+Check `/docs` for additional documentation (markdown format).
