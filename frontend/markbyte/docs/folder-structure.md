@@ -17,17 +17,22 @@ src/
 │       └── ...
 ├── contexts/
 │   ├── AuthContext.js                 # State management contexts
+|
 ├── hooks/                             # Custom React hooks (also includes shadcn hooks)
 │   ├── use-blogdata.js
 │   ├── use-bloglist.js
 │   └── use-profiledata.js
+|
 ├── lib/
 │   ├── utils.js
+|
 ├── config/
 │   ├── api.js                         # API configuration
+|
 ├── constants/
-│   ├── blogTableStaticcols.jsx        # UI Scheme Constant
+│   ├── blogTableStaticcols.jsx        # UI Schema Constant
 │   └── mdtemplate.jsx                 # Content Template Constant
+| 
 ├── public/
 │   ├── vite.svg                       # Static assets
 │   └── assets/

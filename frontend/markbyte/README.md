@@ -1,11 +1,2 @@
-```bash
-npm i
-```
-
-To host the site locally:
-
-```bash
-npm run dev
-```
-
-Check `/docs` for additional documentation (markdown format).
+> **Welcome to Markbyte's Frontend App!**  
+> To get started, check out [`/docs/getting-started.md`](./docs/getting-started.md) for setup instructions and usage guidelines.
