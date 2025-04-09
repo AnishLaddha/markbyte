@@ -49,7 +49,6 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/zipupload", api.HandleZipUpload)
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
 		protected.Post("/publish", api.HandlePublishPostVersion)
-		protected.Get("/like", api.HandleLikePost)
 		protected.Post("/render", markdown_render.HandleRender)
 		protected.Post("/markdown", api.HandleFetchMD)
 		protected.Post("/delete", api.HandleDelete)
@@ -58,12 +57,16 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/user/pfp", api.HandleUpdateUserProfilePicture)
 		protected.Post("/user/name", api.HandleUpdateUserName)
 		protected.Get("/user/info", api.HandleUserInfo)
+		protected.Post("/post/analytics", api.HandleGetPostAnalytics)
+		protected.Get("/user/analytics", api.HandleAllAnalytics)
+		protected.Get("/user/analytics/timestamps", api.HandleUserActiveTimestamps)
+		protected.Post("/like", api.HandleLikePost)
 	})
 
 	r.Get("/static/*", api.HandleStatic)
 	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
 	r.Get("/get_all_posts", api.HandleFetchUserActivePosts)
-
+	r.Post("/public/analytics", api.HandlePublicPostAnalytics)
 	fmt.Println("Server Started.")
 
 	return r
