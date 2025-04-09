@@ -1,20 +1,23 @@
-import axios from 'axios';
-import { API_URL } from '@/config/api';
+import axios from "axios";
+import { API_URL } from "@/config/api";
 
 export const publishBlogVersion = (username, title, version) => {
-  return axios.post(`${API_URL}/publish`, { username, title, version }, { withCredentials: true });
+  return axios.post(
+    `${API_URL}/publish`,
+    { username, title, version },
+    { withCredentials: true }
+  );
 };
 
 export const deleteBlogPost = (title) => {
   return axios.post(`${API_URL}/delete`, { title }, { withCredentials: true });
 };
 
-export const uploadMarkdownFile = (file, title=null) => {
+export const uploadMarkdownFile = (file, title = null) => {
   const formData = new FormData();
-  if (title){
+  if (title) {
     formData.append("file", file, title);
-  }
-  else {
+  } else {
     formData.append("file", file);
   }
   return axios.post(`${API_URL}/upload`, formData, { withCredentials: true });
@@ -25,7 +28,7 @@ export const uploadZipFile = (file) => {
   formData.append("zipfile", file);
   return axios.post(`${API_URL}/zipupload`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
-    withCredentials: true
+    withCredentials: true,
   });
 };
 
@@ -47,5 +50,18 @@ export const renderMarkdownPreview = (markdownContent) => {
 
 export const getBlogPost = (username, title) => {
   return axios.get(`${API_URL}/${username}/${title}`);
-}
+};
 
+export const fetchUserBlogPosts = () => {
+  return axios.get(`${API_URL}/user/blog_posts`, {
+    withCredentials: true,
+  });
+};
+
+export const fetchBlogPosts = (user) => {
+  return axios.get(`${API_URL}/get_all_posts`, {
+    params: {
+      user: user,
+    },
+  });
+};

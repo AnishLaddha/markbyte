@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+import { getUserInfo } from "@/services/userService";
+import { loginUser, logoutUser } from "@/services/authService";
 
 const AuthContext = createContext();
 
@@ -14,10 +14,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`${API_URL}/user/info`, {
-        withCredentials: true,
-      });
-
+      const response = await getUserInfo();
       if (response.status === 200) {
         const userInfo = response.data;
         setIsAuthenticated(true);
@@ -57,15 +54,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/login`,
-        { username, password },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
+      const response = await loginUser(username, password);
       if (response.status === 200) {
         await fetchUserInfo();
         return true;
@@ -78,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+    logoutUser();
     setIsAuthenticated(false);
     localStorage.clear();
     setUser(null);

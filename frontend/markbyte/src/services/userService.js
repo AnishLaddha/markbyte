@@ -14,3 +14,7 @@ export const uploadProfilePicture = (file) => {
 export const updateStyle = (style) => {
   return axios.post(`${API_URL}/user/style`, { style }, { withCredentials: true });
 };
+
+export const getUserInfo = () => {
+  return axios.get(`${API_URL}/user/info`, { withCredentials: true });
+}
