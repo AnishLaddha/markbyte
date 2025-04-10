@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { API_URL } from "@/config/api";
 import { useToast } from "@/hooks/use-toast";
 import {
   CheckCircle,
@@ -27,6 +25,7 @@ import {
   ImageIcon,
   Upload,
   X,
+  ChevronLeft,
 } from "lucide-react";
 import {
   Dialog,
@@ -34,6 +33,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  updateName,
+  uploadProfilePicture,
+  updateStyle,
+} from "@/services/userService";
 
 function BloggerProfile() {
   const { user, name, profilepicture, email, style, fetchUserInfo } = useAuth();
@@ -66,12 +70,7 @@ function BloggerProfile() {
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}/user/name`,
-        { name: Name },
-        { withCredentials: true }
-      );
-
+      await updateName(Name);
       const newData = await fetchUserInfo();
       setUsersName(newData.name);
       setName(newData.name);
@@ -93,13 +92,8 @@ function BloggerProfile() {
 
   const handlePfpUpload = async () => {
     if (!imagefile) return;
-    const formData = new FormData();
-    formData.append("profile_picture", imagefile);
     try {
-      await axios.post(`${API_URL}/user/pfp`, formData, {
-        withCredentials: true,
-      });
-
+      await uploadProfilePicture(imagefile);
       const newData = await fetchUserInfo();
       const cacheBustedUrl = `${newData.profilepicture}?t=${Date.now()}`;
 
@@ -127,13 +121,8 @@ function BloggerProfile() {
 
   const handleUpdateStyle = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/user/style`,
-        { style: cssStyle },
-        { withCredentials: true }
-      );
+      await updateStyle(cssStyle);
       const newData = await fetchUserInfo();
-
       setUserCssStyle(newData.style);
       setCssStyle(newData.style);
 
@@ -174,7 +163,6 @@ function BloggerProfile() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-
   useEffect(() => {
     function handleClickOutside(event) {
       // Make sure the click is not on input or check icon
@@ -206,6 +194,15 @@ function BloggerProfile() {
   return (
     <div className="BloggerProfile min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 text-gray-200 overflow-hidden transition-colors duration-300">
       <DashboardHeader />
+      <div className="absolute top-20 left-4 z-10">
+        <a
+          href="/"
+          className="inline-flex items-center gap-2.5 py-2 px-4 text-sm font-medium text-[#003b5c] bg-white rounded-lg border border-blue-200 shadow-sm hover:bg-blue-50 hover:border-blue-300 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50"
+        >
+          <ChevronLeft className="h-4 w-4 stroke-[2.5px]" />
+          <span>Back to Home</span>
+        </a>
+      </div>
       <div className="flex-1 flex justify-center items-center p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -319,7 +316,8 @@ function BloggerProfile() {
                         {options.map(({ value, label, icon: Icon }) => (
                           <div
                             key={value}
-                            className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-gray-50 ${
+                            onClick={() => setCssStyle(value)}
+                            className={`cursor-pointer flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-gray-50 ${
                               cssStyle === value
                                 ? "bg-blue-50 border border-blue-200"
                                 : "border border-gray-200"
@@ -329,7 +327,7 @@ function BloggerProfile() {
                               <RadioGroupItem
                                 value={value}
                                 id={value}
-                                className="border-[#003b5c] "
+                                className="border-[#003b5c] pointer-events-none" // prevent double-handling
                               />
                               <Label
                                 htmlFor={value}

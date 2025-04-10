@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, User, Lock, Mail, IdCard, Upload, X } from "lucide-react";
+import {
+  AlertCircle,
+  User,
+  Lock,
+  Mail,
+  IdCard,
+  Upload,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
@@ -17,7 +25,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { API_URL } from "@/config/api";
+import { signup } from "@/services/authService";
+import { uploadProfilePicture, updateName } from "@/services/userService";
 
 function Auth() {
   const [activeTab, setActiveTab] = useState("login");
@@ -105,10 +114,7 @@ function Auth() {
         email: semail || "",
       };
 
-      await axios.post(`${API_URL}/signup`, signup_data, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+      await signup(susername, spassword, semail);
 
       // Step 2: Login after signup
       const loginSuccess = await login(susername, spassword);
@@ -119,27 +125,13 @@ function Auth() {
 
         // Add name update request
         if (sname) {
-          requests.push(
-            axios.post(
-              `${API_URL}/user/name`,
-              { name: sname },
-              { withCredentials: true }
-            )
-          );
+          requests.push(updateName(sname));
         }
 
-        // Add profile picture update request if imagefile exists
         if (imagefile) {
-          const formData = new FormData();
-          formData.append("profile_picture", imagefile);
-          requests.push(
-            axios.post(`${API_URL}/user/pfp`, formData, {
-              withCredentials: true,
-            })
-          );
+          requests.push(uploadProfilePicture(imagefile));
         }
 
-        // Step 4: Execute all requests concurrently
         if (requests.length > 0) {
           await Promise.all(requests);
         }
@@ -397,6 +389,20 @@ function Auth() {
           </CarouselItem>
           <CarouselItem className="w-full h-auto">
             <Card className="bg-[#011A29]/60 backdrop-blur-md border-[#0e3a56] shadow-xl transition duration-300">
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 border border-gray-200 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                onClick={() => {
+                  api?.scrollPrev();
+                  setProfilePic(null);
+                  setimageFile(null);
+                  setSname("");
+                }}
+              >
+                <ArrowLeft size={16} className="text-gray-600" />
+                <span className="font-medium">Back</span>
+              </Button>
               <CardHeader className="pb-4">
                 <CardTitle className="text-center text-2xl font-bold text-white">
                   Account Set Up
@@ -474,6 +480,9 @@ function Auth() {
                           </div>
                         )}
                       </div>
+                      <p className="text-xs text-white mt-1">
+                        JPG, JPEG or PNG. Max 5MB.
+                      </p>
 
                       <div className="w-full">
                         <input

@@ -29,6 +29,7 @@ import {
   Upload,
   Home,
   Undo2,
+  CheckCircle,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import {
@@ -42,35 +43,23 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FaMarkdown } from "react-icons/fa";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-import { FaCheckCircle } from "react-icons/fa";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
-import { API_URL } from "@/config/api";
+import {
+  uploadMarkdownFile,
+  getMarkdownVersion,
+} from "@/services/blogService";
 
 const PublishEditorPreview = () => {
   // Set the initial content
-
   const navigate = useNavigate();
   const { title, version } = useParams();
   const [currMarkdownContent, setCurrMarkdownContent] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
+
   const revert = () => {
-    axios
-      .post(
-        `${API_URL}/markdown`,
-        {
-          title: title,
-          version: version,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    getMarkdownVersion(title, version)
       .then((response) => {
         setCurrMarkdownContent(response.data);
         setMarkdownContent(response.data);
@@ -80,6 +69,7 @@ const PublishEditorPreview = () => {
         console.error("Markdown fetch error:", error);
       });
   };
+
   // fetch the markdown content from the backend on page load
   useEffect(() => {
     revert();
@@ -150,10 +140,7 @@ const PublishEditorPreview = () => {
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
-    const formData = new FormData();
-    formData.append("file", blob, title + ".md");
-    axios
-      .post(`${API_URL}/upload`, formData, { withCredentials: true })
+    uploadMarkdownFile(blob, title + ".md")
       .then(() => {
         setTimeout(() => {
           toast({
@@ -162,7 +149,7 @@ const PublishEditorPreview = () => {
             description: `Version ${String(
               Number(version) + 1
             )} of "${title}" has been published.`,
-            action: <FaCheckCircle size={30} className="text-white" />,
+            action: <CheckCircle size={30} className="text-white" />,
             className:
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
@@ -173,7 +160,7 @@ const PublishEditorPreview = () => {
         console.error("File upload error:", error);
       })
       .finally(() => {
-        navigate("/"); // Redirect to the home page
+        navigate("/");
       });
   };
 
@@ -258,8 +245,8 @@ const PublishEditorPreview = () => {
 
         {/* Center section with title */}
         <motion.div
-          initial={{ opacity: 0}}
-          animate={{ opacity: 1}}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="absolute inset-x-0 flex justify-center items-center pointer-events-none cursor-pointer"
         >
@@ -297,9 +284,7 @@ const PublishEditorPreview = () => {
             <Upload className="h-4 w-4" />
             <span className="font-bold">{isSmallScreen ? "" : "Publish"}</span>
           </button>
-          {isAuthenticated && (
-            <UserDropdown/>
-          )}
+          {isAuthenticated && <UserDropdown />}
         </div>
       </header>
 

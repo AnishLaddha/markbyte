@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+import { getUserInfo } from "@/services/userService";
 
 function useProfileData() {
   const [profileData, setProfileData] = useState(null);
@@ -8,11 +7,7 @@ function useProfileData() {
   const fetchProfileData = useCallback(async () => {
     try {
       // Create an array of promises for all the requests
-
-      const profileResponse = await axios.get(`${API_URL}/user/info`, {
-        withCredentials: true,
-      });
-
+      const profileResponse = await getUserInfo();
       // Combine all responses into a single object
       const combinedData = {
         style: profileResponse.data.style || "default",

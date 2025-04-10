@@ -1,4 +1,3 @@
-import styles from "./BloggerHome.module.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -7,7 +6,6 @@ import { FaFileUpload, FaUpload } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Home,
   Pen,
   Notebook,
   Trash2,
@@ -17,7 +15,7 @@ import {
   File,
   ArrowUp,
   CheckCircle,
-  ExternalLink,
+  BarChart2,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -39,7 +37,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import ConfirmDeleteDialog from "@/components/ui/confirmdelete";
 import {
   getCoreRowModel,
@@ -49,7 +46,14 @@ import {
 import { motion } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
 import BlogPostTable from "@/components/ui/blogposttable";
-import { API_URL } from "@/config/api";
+import { blogTableStaticCols } from "@/constants/blogTableStaticcols";
+import HomePageHeader from "@/components/ui/homepgintro";
+import {
+  publishBlogVersion,
+  deleteBlogPost,
+  uploadMarkdownFile,
+  uploadZipFile,
+} from "@/services/blogService";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
@@ -65,6 +69,7 @@ function BloggerHome() {
   const [selectedVersions, setSelectedVersions] = useState({});
   const [isalertOpen, setIsAlertOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState("");
+  const [pgVal, setpgVal] = useState("home");
 
   useEffect(() => {
     setSelectedVersions(
@@ -75,39 +80,7 @@ function BloggerHome() {
     );
   }, [data]);
 
-  const blogTablecols = [
-    {
-      accessorKey: "title",
-      header: "Post Name",
-    },
-    {
-      accessorKey: "date",
-      header: "Date Published",
-      cell: ({ getValue }) => {
-        const date = new Date(getValue());
-        if (isNaN(date.getTime())) return "N/A";
-        
-        return date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-      },
-    },
-    {
-      accessorKey: "link",
-      header: "Link",
-      cell: ({ getValue }) => (
-        <a
-          href={getValue()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
-        >
-          View Post <ExternalLink className="ml-1 h-4 w-4" />
-        </a>
-      ),
-    },
+  const blogTableDynamiccols = [
     {
       accessorKey: "versionAndPublish",
       header: "Version",
@@ -169,30 +142,22 @@ function BloggerHome() {
                          transition-all duration-200 ease-in-out
                          shadow-sm hover:shadow-md"
                 onClick={() => {
-                  axios
-                    .post(
-                      `${API_URL}/publish`,
-                      {
-                        username: user.name,
-                        title: row.original.title,
-                        version: selectedVersion,
-                      },
-                      { withCredentials: true }
-                    )
-                    .then(() => {
-                      fetchData();
-                      toast({
-                        variant: "default",
-                        title: "Version Published Successfully",
-                        description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
-                        action: (
-                          <CheckCircle size={30} className="text-white" />
-                        ),
-                        className:
-                          "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
-                        duration: 3000,
-                      });
+                  publishBlogVersion(
+                    user.name,
+                    row.original.title,
+                    selectedVersion
+                  ).then(() => {
+                    fetchData();
+                    toast({
+                      variant: "default",
+                      title: "Version Published Successfully",
+                      description: `Version ${selectedVersion} of "${row.original.title}" has been published.`,
+                      action: <CheckCircle size={30} className="text-white" />,
+                      className:
+                        "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
+                      duration: 3000,
                     });
+                  });
                 }}
               >
                 Publish
@@ -242,6 +207,8 @@ function BloggerHome() {
     },
   ];
 
+  const blogTablecols = [...blogTableStaticCols, ...blogTableDynamiccols];
+
   const handleIconButtonClick = (fileType) => {
     if (fileType === "md") {
       mdFileInputRef.current.click();
@@ -276,6 +243,10 @@ function BloggerHome() {
   const handleDeleteClick = (title) => {
     setIsAlertOpen(true);
     setPostToDelete(title);
+  };
+
+  const handlePageTabChange = (newTab) => {
+    setpgVal(newTab);
   };
 
   const handleTabChange = (value) => {
@@ -315,12 +286,8 @@ function BloggerHome() {
   };
 
   const handleDeletePost = () => {
-    axios
-      .post(
-        `${API_URL}/delete`,
-        { title: postToDelete },
-        { withCredentials: true }
-      )
+    // refactor with service
+    deleteBlogPost(postToDelete)
       .then(() => {
         toast({
           variant: "default",
@@ -350,11 +317,8 @@ function BloggerHome() {
     const file = fileInput.current.files[0];
     const formData = new FormData();
     if (fileType == "md") {
-      formData.append("file", file);
-      axios
-        .post(`${API_URL}/upload`, formData, {
-          withCredentials: true,
-        })
+      // refactor with service
+      uploadMarkdownFile(file)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
@@ -376,14 +340,7 @@ function BloggerHome() {
           }
         });
     } else {
-      formData.append("zipfile", file);
-      axios
-        .post(`${API_URL}/zipupload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        })
+      uploadZipFile(file)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
@@ -431,122 +388,131 @@ function BloggerHome() {
   }, [data, searchTerm]);
 
   return (
-    <div
-      className={`${styles.BloggerHome} bg-gradient-to-br from-gray-50 to-gray-100`}
-    >
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100">
       <DashboardHeader />
 
       <main className="container mx-auto px-4 sm:px-4 py-8">
-        <div className="ml-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-          >
-            <div className="flex items-center gap-4 mb-2">
-              <div className="p-3 rounded-full bg-gradient-to-r from-[#084464] to-[#1e6188]">
-                <Home className="h-6 w-6 text-white" />
-              </div>
-              <h1 className="text-3xl font-semibold text-gray-900 leading-tight">
-                Welcome back,{" "}
-                <span className="bg-gradient-to-r from-[#084464] to-[#1A698F] text-transparent bg-clip-text">
-                  {name}
-                </span>
-                !
-              </h1>
-            </div>
-            <p className="text-gray-700 text-lg leading-relaxed">
-              Craft new stories and manage your existing posts with ease.
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
-          <div className={`relative ${styles.card_transition}`}>
-            <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                <Upload className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
-                <div>
-                  <p className="text-gray-500 font-medium mb-2">
-                    Upload your blog files
-                  </p>
-                  <button
-                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                    onClick={() => setIsOpen(true)}
-                  >
-                    <span className="flex items-center gap-2">
-                      <FaUpload />
-                      <span>Upload</span>
-                    </span>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className={`relative ${styles.card_transition}`}>
-            <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform -rotate-2">
-                <Pen className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
-                <div>
-                  <p className="text-gray-500 font-medium mb-2">
-                    Ready to start writing?
-                  </p>
-                  <button
-                    className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                    onClick={() => navigate("/editor")}
-                  >
-                    <span className="flex items-center gap-2">
-                      <FaRegPenToSquare />
-                      <span>Start Writing</span>
-                    </span>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Visit Blog Card */}
-          <div className={`relative ${styles.card_transition}`}>
-            <div className="absolute -top-5 left-6 z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                <Notebook className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-              <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  Your Blog
-                </h3>
-                <a
-                  href={`/${user.name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                >
-                  Visit Blog
-                </a>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        <BlogPostTable
-          data={data}
-          table={table}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+        <HomePageHeader
+          pgVal={pgVal}
+          name={name}
+          handlePageTabChange={handlePageTabChange}
         />
+
+        {pgVal == "home" && (
+          <div className="home-content">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                className="relative"
+              >
+                <div className="absolute -top-5 left-6 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                    <Upload className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                    <div>
+                      <p className="text-gray-500 font-medium mb-2">
+                        Upload your blog files
+                      </p>
+                      <button
+                        className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
+                        onClick={() => setIsOpen(true)}
+                      >
+                        <span className="flex items-center gap-2">
+                          <FaUpload />
+                          <span>Upload</span>
+                        </span>
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                className="relative"
+              >
+                <div className="absolute -top-5 left-6 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform -rotate-2">
+                    <Pen className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                    <div>
+                      <p className="text-gray-500 font-medium mb-2">
+                        Ready to start writing?
+                      </p>
+                      <button
+                        className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
+                        onClick={() => navigate("/editor")}
+                      >
+                        <span className="flex items-center gap-2">
+                          <FaRegPenToSquare />
+                          <span>Start Writing</span>
+                        </span>
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Visit Blog Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                className="relative"
+              >
+                <div className="absolute -top-5 left-6 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                    <Notebook className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
+                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      Your Blog
+                    </h3>
+                    <a
+                      href={`/${user.name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
+                    >
+                      Visit Blog
+                    </a>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+            <BlogPostTable
+              data={data}
+              table={table}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          </div>
+        )}
+        {pgVal == "analytics" && (
+          <div className="mx-8 mt-10 flex flex-col items-center justify-center h-full">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Analytics Coming Soon!
+            </h2>
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-full shadow-lg transform rotate-3">
+              <BarChart2 className="w-8 h-8 text-white" />
+            </div>
+          </div>
+        )}
       </main>
 
       <Dialog

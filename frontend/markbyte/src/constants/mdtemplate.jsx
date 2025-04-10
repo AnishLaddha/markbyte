@@ -1,8 +1,46 @@
-const mdtemplate = 
-`# Blog Post Title
+const mdtemplates = [
+  // Template 1: Header Only
+  `# Blog Post Title
 
-*Published on: YYYY-MM-DD*  
-*Author: Your Name*  
+*Published on: YYYY-MM-DD*   
+*Author: Your Name*    
+
+![Featured Image Description](/path/to/image.jpg)`,
+
+  // Template 2: Body Only
+  `## Introduction
+
+Briefly introduce your topic.
+
+## Main Content
+
+Use headings and subheadings to organize ideas.
+
+## Conclusion
+
+Summarize your post and invite readers to engage.
+
+`,
+
+  // Template 3: Footer Only
+  `---
+
+### About the Author
+
+Include a brief bio here—2-3 sentences about yourself and your expertise.
+
+### References
+
+- [Link Title 1](https://example.com)
+- [Link Title 2](https://example.com)
+
+> **Note to editors:** Add any notes for the editorial team here. This section will be removed before publishing.`,
+
+  // Template 4: Complete Template (Header + Body + Footer)
+  `# Blog Post Title
+
+*Published on: YYYY-MM-DD*   
+*Author: Your Name*    
 
 ![Featured Image Description](/path/to/image.jpg)
 
@@ -60,6 +98,7 @@ Include a brief bio here—2-3 sentences about yourself and your expertise.
 - [Link Title 1](https://example.com)
 - [Link Title 2](https://example.com)
 
-> **Note to editors:** Add any notes for the editorial team here. This section will be removed before publishing.
-`;
-export default mdtemplate;
+> **Note to editors:** Add any notes for the editorial team here. This section will be removed before publishing.`,
+];
+
+export default mdtemplates;
