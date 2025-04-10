@@ -6,7 +6,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, User, Lock, Mail, IdCard, Upload, X } from "lucide-react";
+import {
+  AlertCircle,
+  User,
+  Lock,
+  Mail,
+  IdCard,
+  Upload,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
@@ -380,6 +389,20 @@ function Auth() {
           </CarouselItem>
           <CarouselItem className="w-full h-auto">
             <Card className="bg-[#011A29]/60 backdrop-blur-md border-[#0e3a56] shadow-xl transition duration-300">
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 border border-gray-200 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                onClick={() => {
+                  api?.scrollPrev();
+                  setProfilePic(null);
+                  setimageFile(null);
+                  setSname("");
+                }}
+              >
+                <ArrowLeft size={16} className="text-gray-600" />
+                <span className="font-medium">Back</span>
+              </Button>
               <CardHeader className="pb-4">
                 <CardTitle className="text-center text-2xl font-bold text-white">
                   Account Set Up
@@ -457,6 +480,9 @@ function Auth() {
                           </div>
                         )}
                       </div>
+                      <p className="text-xs text-white mt-1">
+                        JPG, JPEG or PNG. Max 5MB.
+                      </p>
 
                       <div className="w-full">
                         <input
