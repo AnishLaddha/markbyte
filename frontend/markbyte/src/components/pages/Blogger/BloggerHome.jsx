@@ -15,7 +15,6 @@ import {
   File,
   ArrowUp,
   CheckCircle,
-  BarChart2,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -45,8 +44,8 @@ import {
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
-import BlogPostTable from "@/components/ui/blogposttable";
-import { blogTableStaticCols } from "@/constants/blogTableStaticcols";
+import BlogPostTable from "@/components/ui/bposttable";
+import { blogTableStaticCols } from "@/constants/TableStaticcols";
 import HomePageHeader from "@/components/ui/homepgintro";
 import BloggerAnalytics from "@/components/pages/Blogger/BloggerAnalytics";
 import {

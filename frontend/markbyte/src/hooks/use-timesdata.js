@@ -25,7 +25,7 @@ function useTimesData() {
   const fetchTimestamps = useCallback(() => {
     getViewTimestamps()
       .then((response) => handleData(response.data))
-      .catch((error) => console.error("Error fetching posts:", error));
+      .catch((error) => console.error("Error fetching view timestamps:", error));
   }, [handleData]);
 
   useEffect(() => {

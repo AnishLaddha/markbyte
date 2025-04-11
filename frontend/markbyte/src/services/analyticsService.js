@@ -6,3 +6,7 @@ export const getViewTimestamps = () => {
     withCredentials: true,
   });
 };
+
+export const getAllAnalytics = () => {
+  return axios.get(`${API_URL}/user/analytics`, { withCredentials: true });
+}
