@@ -32,6 +32,7 @@ function useBlogData() {
         version: versionNumbers,
       });
     }
+    transformedData.sort((a, b) => new Date(b.date) - new Date(a.date));
     setData(transformedData);
   }, []);
 

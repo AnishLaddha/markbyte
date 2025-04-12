@@ -15,7 +15,6 @@ import {
   File,
   ArrowUp,
   CheckCircle,
-  BarChart2,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -45,9 +44,10 @@ import {
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
-import BlogPostTable from "@/components/ui/blogposttable";
-import { blogTableStaticCols } from "@/constants/blogTableStaticcols";
+import BlogPostTable from "@/components/ui/bposttable";
+import { blogTableStaticCols } from "@/constants/TableStaticcols";
 import HomePageHeader from "@/components/ui/homepgintro";
+import BloggerAnalytics from "@/components/pages/Blogger/BloggerAnalytics";
 import {
   publishBlogVersion,
   deleteBlogPost,
@@ -504,14 +504,7 @@ function BloggerHome() {
           </div>
         )}
         {pgVal == "analytics" && (
-          <div className="mx-8 mt-10 flex flex-col items-center justify-center h-full">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Analytics Coming Soon!
-            </h2>
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-full shadow-lg transform rotate-3">
-              <BarChart2 className="w-8 h-8 text-white" />
-            </div>
-          </div>
+          <BloggerAnalytics/>
         )}
       </main>
 

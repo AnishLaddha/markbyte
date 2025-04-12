@@ -1,7 +1,19 @@
 import { motion } from "framer-motion";
-import { Home, BarChart2 } from "lucide-react";
+import { Home, ChartArea } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
 
 const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
+  const [activeTab, setActiveTab] = useState(pgVal);
+
+  useEffect(() => {
+    setActiveTab(pgVal);
+  }, [pgVal]);
+
+  const handleTabChange = (val) => {
+    setActiveTab(val);
+    handlePageTabChange(val);
+  };
   return (
     <div className="mx-8 flex justify-between items-center gap-8">
       <motion.div
@@ -12,7 +24,9 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
         <div className="flex items-center gap-4 mb-2">
           <div className="p-3 rounded-full bg-gradient-to-r from-[#084464] to-[#1e6188]">
             {pgVal === "home" && <Home className="h-6 w-6 text-white" />}
-            {pgVal === "analytics" && <BarChart2 className="h-6 w-6 text-white" />}
+            {pgVal === "analytics" && (
+              <ChartArea className="h-6 w-6 text-white" />
+            )}
           </div>
           <h1 className="text-3xl font-semibold text-gray-900 leading-tight">
             Welcome back,{" "}
@@ -40,44 +54,30 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
         transition={{ duration: 1, delay: 0.5 }}
         className="font-['DM_Sans']"
       >
-        <ul className="flex flex-wrap text-sm font-medium border-b border-gray-300">
-          <li className="mr-2">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageTabChange("home");
-              }}
-              aria-current={pgVal === "home" ? "page" : undefined}
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-t-lg transition-all duration-300 ${
-                pgVal === "home"
-                  ? "text-white bg-[#003b5c] border-[#003b5c]"
-                  : "text-gray-600 hover:bg-gray-200 hover:text-[#003b5c]"
-              }`}
-            >
-              <Home size={18} />
-              <span>Home</span>
-            </a>
-          </li>
-          <li className="mr-2">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handlePageTabChange("analytics");
-              }}
-              aria-current={pgVal === "analytics" ? "page" : undefined}
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-t-lg transition-all duration-300 ${
-                pgVal === "analytics"
-                  ? "text-white bg-[#003b5c] border-[#003b5c]"
-                  : "text-gray-600 hover:bg-gray-200 hover:text-[#003b5c]"
-              }`}
-            >
-              <BarChart2 size={18} />
-              <span>Analytics</span>
-            </a>
-          </li>
-        </ul>
+        <div className="w-full">
+          <Tabs
+            defaultValue="home"
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="w-full max-w-[300px] rounded-md"
+          >
+            <TabsList className="grid w-full grid-cols-2 gap-1 bg-gray-200 p-1 rounded-xl h-12">
+              <TabsTrigger
+                value="home"
+                className="py-2.5 flex items-center justify-center transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#084464] data-[state=active]:to-[#0a5977] data-[state=active]:text-white rounded-lg"
+              >
+                <Home className="h-5 w-5" />
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="analytics"
+                className="py-2.5 flex items-center justify-center transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#084464] data-[state=active]:to-[#0a5977] data-[state=active]:text-white rounded-lg"
+              >
+                <ChartArea className="h-5 w-5" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </motion.div>
     </div>
   );
