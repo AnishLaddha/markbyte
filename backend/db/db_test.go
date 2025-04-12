@@ -32,10 +32,11 @@ func TestBlogPostDataStruct(t *testing.T) {
 	// Test BlogPostData struct creation and field access
 	link := "https://example.com/post"
 	directLink := "https://example.com/direct"
+	currentTime := time.Now()
 	post := &BlogPostData{
 		User:         "testuser",
 		Title:        "Test Post",
-		DateUploaded: time.Now(),
+		DateUploaded: currentTime,
 		Version:      "1.0",
 		Link:         &link,
 		IsActive:     true,
@@ -44,6 +45,7 @@ func TestBlogPostDataStruct(t *testing.T) {
 
 	assert.Equal(t, "testuser", post.User)
 	assert.Equal(t, "Test Post", post.Title)
+	assert.Equal(t, currentTime, post.DateUploaded)
 	assert.Equal(t, "1.0", post.Version)
 	assert.Equal(t, "https://example.com/post", *post.Link)
 	assert.True(t, post.IsActive)
