@@ -35,7 +35,12 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 	//5 mb limit
-	r.ParseMultipartForm(5 << 20)
+	err = r.ParseMultipartForm(5 << 20)
+	if err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
+
 	title := r.FormValue("title")
 	//check for special characters in title
 	if strings.ContainsAny(title, `\/:*?"<>|_`) {
