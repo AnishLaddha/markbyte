@@ -63,7 +63,7 @@ type PostAnalytics struct {
 
 type AnalyticsDB interface {
 	CreatePostAnalytics(ctx context.Context, post *PostAnalytics) (string, error)
-	GetPostAnalytics(ctx context.Context, username string, title string, version string) (*PostAnalytics, error)
+	GetPostAnalytics(ctx context.Context, username string, title string, version string) (PostAnalytics, error)
 	IncrementViews(ctx context.Context, username string, title string, version string) error
 	ToggleLike(ctx context.Context, postUsername string, title string, version string, likingUsername string) (bool, error)
 	DeletePostAnalytics(ctx context.Context, username string, title string) (int, error)

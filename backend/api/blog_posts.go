@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
@@ -97,10 +98,27 @@ func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+type BlogPostDataViews struct {
+	Post  db.BlogPostData `json:"post"`
+	Views []time.Time     `json:"views"`
+}
+
+type BlogPostDataResponse struct {
+	Username       string              `json:"username"`
+	ProfilePicture string              `json:"profile_picture"`
+	Posts          []BlogPostDataViews `json:"posts"`
+}
+
 func HandleFetchUserActivePosts(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("user")
 	if username == "" {
 		http.Error(w, "No user provided", http.StatusBadRequest)
+		return
+	}
+
+	user, err := userDB.GetUser(r.Context(), username)
+	if err != nil || user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
@@ -110,7 +128,25 @@ func HandleFetchUserActivePosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := json.Marshal(blogs)
+	blogPostViews := make([]BlogPostDataViews, 0)
+	for _, blog := range blogs {
+		viewsData, err := AnalyticsDataDB.GetPostAnalytics(r.Context(), username, blog.Title, blog.Version)
+		if err != nil {
+			http.Error(w, "Failed to fetch post analytics", http.StatusInternalServerError)
+			return
+		}
+		blogPostViews = append(blogPostViews, BlogPostDataViews{
+			Post:  blog,
+			Views: viewsData.Views,
+		})
+	}
+
+	blogPostDataResponse := BlogPostDataResponse{
+		Username:       username,
+		ProfilePicture: user.ProfilePicture,
+		Posts:          blogPostViews,
+	}
+	resp, err := json.Marshal(blogPostDataResponse)
 	if err != nil {
 		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
 		return

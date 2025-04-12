@@ -65,8 +65,8 @@ func SetupRouter() *chi.Mux {
 
 	r.Get("/static/*", api.HandleStatic)
 	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
-	r.Get("/get_all_posts", api.HandleFetchUserActivePosts)
-	r.Post("/public/analytics", api.HandlePublicPostAnalytics)
+	r.Get("/user/posts", api.HandleFetchUserActivePosts)
+	//r.Post("/public/analytics", api.HandlePublicPostAnalytics)
 	fmt.Println("Server Started.")
 
 	return r

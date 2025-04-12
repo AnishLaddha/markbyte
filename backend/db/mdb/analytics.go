@@ -36,14 +36,14 @@ func (r *MongoAnalyticsRepository) CreatePostAnalytics(ctx context.Context, anal
 	return string(idBytes), err
 }
 
-func (r *MongoAnalyticsRepository) GetPostAnalytics(ctx context.Context, username string, title string, version string) (*db.PostAnalytics, error) {
+func (r *MongoAnalyticsRepository) GetPostAnalytics(ctx context.Context, username string, title string, version string) (db.PostAnalytics, error) {
 	filter := map[string]string{"username": username, "title": title, "version": version}
 	var analytics db.PostAnalytics
 	err := r.collection.FindOne(ctx, filter).Decode(&analytics)
 	if err != nil {
-		return nil, err
+		return db.PostAnalytics{}, err
 	}
-	return &analytics, nil
+	return analytics, nil
 }
 
 func (r *MongoAnalyticsRepository) IncrementViews(ctx context.Context, username string, title string, version string) error {
