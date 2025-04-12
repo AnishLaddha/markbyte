@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/redis/go-redis/v9"
@@ -22,19 +23,22 @@ func SetUserDB(repo db.UserDB) {
 func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 	post := chi.URLParam(r, "post")
-	blogs, err := blogPostDataDB.FetchAllPostVersions(r.Context(), username, post)
+	unprocess_post_title := strings.ReplaceAll(post, "_", " ")
+	var htmlContent string
+
+	active, err := blogPostDataDB.FetchActiveBlog(r.Context(), username, unprocess_post_title)
 	if err != nil {
 		http.Error(w, "No such Blog Post exists", http.StatusNotFound)
 		return
 	}
-	active := blogs.ActiveVersion
-	var htmlContent string
+
 	endpoint := "/" + username + "/" + post
 	//try redis
 	cacheHit := false
 	if redisdb.RedisActive {
 		htmlContent, err = redisdb.GetEndpoint(r.Context(), endpoint)
 		if err == nil && htmlContent != "" {
+			fmt.Printf("Redis cache hit\n")
 			cacheHit = true
 		} else if err == redis.Nil || htmlContent == "" {
 			fmt.Printf("Redis cache miss\n")
@@ -62,12 +66,12 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 		markdown_render.InsertTemplate(&htmlContent, style, username)
 	}
 	if redisdb.RedisActive && !cacheHit {
-		err = redisdb.SetEndpoint(r.Context(), endpoint, &htmlContent)
+		err := redisdb.SetEndpoint(r.Context(), endpoint, &htmlContent)
 		if err != nil {
 			fmt.Printf("Some error with redis set: handlefetchblogpost")
 		}
 	}
-	err = AnalyticsDataDB.IncrementViews(r.Context(), username, post, active)
+	err = AnalyticsDataDB.IncrementViews(r.Context(), username, unprocess_post_title, active)
 	if err != nil {
 		fmt.Printf("Failed to increment views: handlefetchblogpost %v\n", err)
 	}
@@ -99,6 +103,7 @@ func HandleFetchMD(w http.ResponseWriter, r *http.Request) {
 	}
 
 	title := data.Title
+	processed_title := strings.ReplaceAll(title, " ", "_")
 	version := data.Version
 	if title == "" || version == "" {
 		fmt.Printf("title %s or version %s is empty", title, version)
@@ -110,7 +115,7 @@ func HandleFetchMD(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to s3 load credentials", http.StatusInternalServerError)
 		return
 	}
-	mdContent, err := ReadFilefromS3(r.Context(), fmt.Sprintf("%s_%s_%s.md", username, title, version), cred)
+	mdContent, err := ReadFilefromS3(r.Context(), fmt.Sprintf("%s_%s_%s.md", username, processed_title, version), cred)
 	if err != nil {
 		http.Error(w, "Failed to read markdown file", http.StatusInternalServerError)
 		return
