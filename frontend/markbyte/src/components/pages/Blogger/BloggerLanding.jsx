@@ -2,10 +2,9 @@ import { useParams } from "react-router-dom";
 import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, Home } from "lucide-react";
 import React from "react";
 import { motion } from "framer-motion";
-import { Bookmark, Eye, User2 } from "lucide-react";
+import { Bookmark, Eye, User2, CalendarIcon, Home, Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Pagination,
@@ -16,10 +15,16 @@ import {
   PaginationLink,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
+import NotFound from "../404/invalid";
 
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
-  const { data: blogList, fetchPosts } = useBlogList(username);
+  const {
+    postdata: blogList,
+    profilepicture,
+    error,
+    fetchPosts,
+  } = useBlogList(username);
   const nposts = 5;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
@@ -31,6 +36,10 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
     }
     setNPages(Math.ceil((blogList?.length || 0) / nposts));
   }, [username, fetchPosts, blogList, nposts]);
+
+  if (error) {
+    return <NotFound />;
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -81,16 +90,31 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-left mb-10 ml-5 flex justify-between items-center"
+            className="text-left mb-10 ml-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
           >
-            <div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white tracking-tight leading-tight">
-                {username}'s Blog
-              </h1>
-              <p className="text-lg md:text-xl max-w-2xl text-white">
-                Explore {username}'s blog posts and articles.
-              </p>
+            <div className="flex items-center gap-5">
+              <Avatar className="h-28 w-28 border-2 border-white/20 shadow-lg">
+                <AvatarImage
+                  src={profilepicture || "/placeholder.svg"}
+                  alt={username}
+                  className="object-cover w-full h-full"
+                  s
+                />
+                <AvatarFallback className="bg-[#0B5D89] text-white">
+                  {username.charAt(0).toLocaleUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+
+              <div>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white tracking-tight leading-tight">
+                  {username}'s Blog
+                </h1>
+                <p className="text-lg md:text-xl max-w-2xl text-white">
+                  Explore {username}'s blog posts and articles.
+                </p>
+              </div>
             </div>
+
             <div className="flex flex-row items-center gap-4">
               <button
                 className="bg-[#084464] hover:bg-[#0B5D89] rounded-full p-2 shadow-lg transition-all duration-300 ease-in-out flex items-center justify-center"
@@ -110,7 +134,10 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
 
       <main className="container mx-auto mt-16 px-6 mb-24">
         <div className="flex items-center justify-between mb-12">
-          <h2 className="text-3xl font-bold text-gray-800">Recent Posts</h2>
+          <h2 className="text-3xl font-bold text-black">
+            <Globe className="inline-block h-6 w-6 mr-2 mb-1" />
+            Table of Contents
+          </h2>
           <div className="flex items-center text-sm text-[#005a7a]">
             <Bookmark className="h-4 w-4 mr-2" />
             {blogList?.length || 0} Posts
@@ -156,55 +183,36 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
                     duration: 0.2,
                     ease: "easeOut",
                   }}
+                  key={
+                    post.post.user + post.post.title + post.date_uploaded
+                  }
                 >
                   <Card
-                    key={post.user + post.title}
-                    className="overflow-hidden w-full md:w-[80%] cursor-pointer transition-all duration-300 ease-in-out border-0 hover:shadow-xl relative group bg-white"
+                    className="overflow-hidden w-full cursor-pointer transition-all duration-300 ease-in-out border-0 hover:shadow-xl relative group bg-white"
                     onClick={() => {
-                      if (post.link.includes("static")) {
-                        window.open(post.link, "_blank");
+                      if (post.post.link.includes("static")) {
+                        window.open(post.post.link, "_blank");
                       } else {
-                        window.open(post.direct_link, "_blank");
+                        window.open(post.post.direct_link, "_blank");
                       }
                     }}
                   >
                     <div className="flex flex-col md:flex-row h-full">
-                      {!post.image && (
-                        <div className="w-full md:w-64 h-48 md:h-auto flex items-center justify-center overflow-hidden bg-gradient-to-r from-[#084464] to-[#011522]">
-                          <img
-                            src="/assets/markbytealt.png"
-                            alt="MarkByte Logo"
-                            className="h-32 w-32 object-contain opacity-70"
-                          />
-                        </div>
-                      )}
                       <div className="flex-1 flex flex-col justify-between p-6 md:p-8">
                         <div>
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center text-sm text-gray-400">
                               <CalendarIcon className="h-4 w-4 mr-1" />
-                              {formatDate(post.date_uploaded)}
+                              {formatDate(post.post.date_uploaded)}
                             </div>
                             <div className="flex items-center text-sm text-gray-400">
                               <Eye className="h-4 w-4 mr-1" />
-                              <span>0 views</span>
+                              <span>{post.views.length} views</span>
                             </div>
                           </div>
                           <h2 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-[#005a7a] transition-colors duration-300">
-                            {post.title}
+                            {post.post.title}
                           </h2>
-                        </div>
-
-                        <div className="flex items-center pt-4 border-t border-gray-100">
-                          <Avatar className="cursor-pointer bg-gray-200 mr-3 h-9 w-9">
-                            <AvatarImage
-                              src={`https://api.dicebear.com/9.x/initials/svg?seed=${username}&backgroundType=gradientLinear`}
-                            />
-                            <AvatarFallback>{username[0]}</AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm font-medium text-gray-700">
-                            {username}
-                          </span>
                         </div>
                       </div>
                     </div>

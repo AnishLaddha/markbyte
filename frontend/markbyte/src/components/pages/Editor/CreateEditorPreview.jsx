@@ -144,7 +144,7 @@ const EditorPreview = () => {
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
-    uploadMarkdownFile(blob, postTitle + ".md")
+    uploadMarkdownFile(blob, postTitle)
       .then(() => {
         setTimeout(() => {
           toast({

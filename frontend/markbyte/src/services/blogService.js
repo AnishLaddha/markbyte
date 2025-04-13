@@ -16,10 +16,9 @@ export const deleteBlogPost = (title) => {
 export const uploadMarkdownFile = (file, title = null) => {
   const formData = new FormData();
   if (title) {
-    formData.append("file", file, title);
-  } else {
-    formData.append("file", file);
+    formData.append("title", title);
   }
+  formData.append("file", file);
   return axios.post(`${API_URL}/upload`, formData, { withCredentials: true });
 };
 
@@ -59,7 +58,7 @@ export const fetchUserBlogPosts = () => {
 };
 
 export const fetchBlogPosts = (user) => {
-  return axios.get(`${API_URL}/get_all_posts`, {
+  return axios.get(`${API_URL}/user/posts`, {
     params: {
       user: user,
     },
