@@ -31,8 +31,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Search, X } from "lucide-react";
+import { Search, X, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 const chartConfig = {
   view: {
@@ -43,7 +44,8 @@ const chartConfig = {
 
 function BloggerAnalytics() {
   const { timedata: timesData } = useTimesData();
-  const { analyticdata: analyticsData } = useAnalyticData();
+  const { user } = useAuth();
+  const { analyticdata: analyticsData } = useAnalyticData(user?.name);
   const [timeRange, setTimeRange] = useState("30d");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -255,7 +257,9 @@ function BloggerAnalytics() {
                   axisLine={false}
                   tickMargin={8}
                   tickLine={false}
-                  tickFormatter={(value) => `${value}`}
+                  tickFormatter={(value) =>
+                    Number.isInteger(value) ? value : ""
+                  }
                   width={40}
                 />
                 <ChartTooltip
@@ -297,7 +301,6 @@ function BloggerAnalytics() {
           </CardContent>
         </Card>
       </motion.div>
-
       {/* Table containing posts, date, views, and a link to the post's analytics */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -312,6 +315,12 @@ function BloggerAnalytics() {
               <CardDescription>
                 Showing all posts and their viewership
               </CardDescription>
+            </div>
+            <div className="flex items-center gap-1 mr-2 bg-gray-100 rounded-lg px-2 py-1 text-sm text-gray-500">
+              <Eye className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">
+                {timesData.length.toLocaleString()} Total Views
+              </span>
             </div>
             <div className="relative w-full sm:w-64">
               <Search className="h-4 w-4 absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />

@@ -18,7 +18,6 @@ function useTimesData() {
         view: 1,
       });
     }
-    console.log(transformedData);
     setData(transformedData);
   }, []);
 

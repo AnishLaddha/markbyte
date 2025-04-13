@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAllAnalytics } from "@/services/analyticsService";
+import { FRONTEND_URL } from "@/config/api";
 
-function useAnalyticData() {
+function useAnalyticData(username) {
   const [analyticdata, setData] = useState([]);
 
   const handleData = useCallback((newData) => {
@@ -9,7 +10,6 @@ function useAnalyticData() {
       setData([]);
       return;
     }
-    console.log(newData);
     let transformedData = [];
     for (let i = 0; i < newData.length; i++) {
       let date = newData[i].date;
@@ -23,11 +23,13 @@ function useAnalyticData() {
         month: "short",
         day: "numeric",
       });
+      let link = `${FRONTEND_URL}/${username}/${title}/analytics`;
       transformedData.push({
         title: title,
         date: formattedDate,
         version: version,
         views: views,
+        link: link,
       });
     }
     transformedData.sort((a, b) => new Date(b.date) - new Date(a.date));

@@ -12,6 +12,7 @@ import PublishEditorPreview from "./components/pages/Editor/PublishEditorPreview
 import DynamicBlogPost from "./components/pages/Post/DynamicBlogPost";
 import BloggerProfile from "./components/pages/Blogger/BloggerProfile";
 import NotFound from "./components/pages/404/invalid";
+import PostAnalytics from "./components/pages/Post/PostAnalytics";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -67,6 +68,18 @@ function App() {
           }
         />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
+        <Route
+          path="/:user/:post/analytics"
+          element={
+            isLoading ? (
+              null
+            ) : !isAuthenticated ? (
+              <Home />
+            ) : (
+              <PostAnalytics />
+            )
+          }
+        />
         <Route path="/:username" element={<BloggerLandingPage />} />
         <Route
           path="/profile"
