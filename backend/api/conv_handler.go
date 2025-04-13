@@ -105,7 +105,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 			newVersion = verNum + 1
 		}
 		if post.IsActive {
-			err = blogPostDataDB.UpdateActiveStatus(r.Context(), username, baseFilename, post.Version, false)
+			err = blogPostDataDB.UpdateActiveStatus(r.Context(), username, title, post.Version, false)
 			if err != nil {
 				http.Error(w, "Failed to deactivate prev post", http.StatusInternalServerError)
 				return
