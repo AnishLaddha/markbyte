@@ -22,8 +22,11 @@ export const uploadMarkdownFile = (file, title = null) => {
   return axios.post(`${API_URL}/upload`, formData, { withCredentials: true });
 };
 
-export const uploadZipFile = (file) => {
+export const uploadZipFile = (file, title=null) => {
   const formData = new FormData();
+  if (title) {
+    formData.append("title", title);
+  }
   formData.append("zipfile", file);
   return axios.post(`${API_URL}/zipupload`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
