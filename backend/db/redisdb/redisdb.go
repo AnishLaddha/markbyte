@@ -54,7 +54,11 @@ func SetEndpoint(ctx context.Context, endpoint string, htmlContent *string) erro
 
 func GetEndpoint(ctx context.Context, endpoint string) (string, error) {
 	val, err := client.Get(ctx, endpoint).Result()
-	if err != redis.Nil && err != nil {
+	fmt.Printf("value from redis: \n\n\n%s\n\n", val)
+	if err == redis.Nil {
+		fmt.Printf("key does not exist in redis")
+		return "", nil
+	} else if err != redis.Nil && err != nil {
 		fmt.Printf("Error getting value from redis %v", err)
 		return "", err
 	}

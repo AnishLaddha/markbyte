@@ -1,17 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+import { fetchBlogPosts } from "@/services/blogService";
 
-function useBlogList( user ) {
+function useBlogList(user) {
   const [data, setData] = useState([]);
 
   const fetchPosts = useCallback(() => {
-    axios
-      .get(`${API_URL}/get_all_posts`, {
-        params: {
-          user: user,
-        },
-      })
+    fetchBlogPosts(user)
       .then((response) => setData(response.data))
       .catch((error) => console.error("Error fetching posts:", error));
   }, [user]);

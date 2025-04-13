@@ -1,9 +1,2 @@
-To install dependencies, make sure you are inside the "markbyte" folder and run:
-```bash
-npm i 
-```
-
-To host the site locally, run:
-```bash
-npm run dev
-```
+> **Welcome to Markbyte's Frontend App!**  
+> To get started, check out [`/docs/getting-started.md`](./docs/getting-started.md) for setup instructions and usage guidelines.

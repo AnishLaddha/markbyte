@@ -166,7 +166,7 @@ func HandleUserActiveTimestamps(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleAllAnalytics(w http.ResponseWriter, r *http.Request) {
-	all_analytics := []db.PostAnalytics{}
+	all_analytics := make([]db.PostAnalytics, 0)
 	username, ok := r.Context().Value(auth.UsernameKey).(string)
 	if !ok || username == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -181,7 +181,7 @@ func HandleAllAnalytics(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Failed to fetch analytics", http.StatusInternalServerError)
 		}
-		all_analytics = append(all_analytics, *analytics)
+		all_analytics = append(all_analytics, analytics)
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

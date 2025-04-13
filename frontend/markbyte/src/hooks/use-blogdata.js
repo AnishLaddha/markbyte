@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { API_URL, FRONTEND_URL } from "@/config/api";
+import { fetchUserBlogPosts } from "@/services/blogService";
 
 function useBlogData() {
   const [data, setData] = useState([]);
@@ -32,14 +32,16 @@ function useBlogData() {
         version: versionNumbers,
       });
     }
+    transformedData.sort((a, b) => new Date(b.date) - new Date(a.date));
     setData(transformedData);
   }, []);
 
   const fetchData = useCallback(() => {
-    axios
-      .get(`${API_URL}/user/blog_posts`, { withCredentials: true })
+    fetchUserBlogPosts()
       .then((response) => handleData(response.data))
-      .catch((error) => console.error("Error fetching blogger's blog posts:", error));
+      .catch((error) =>
+        console.error("Error fetching blogger's blog posts:", error)
+      );
   }, [handleData]);
 
   useEffect(() => {
