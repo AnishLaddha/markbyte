@@ -34,6 +34,7 @@ import {
   Type,
   Box,
   Layers,
+  Info
 } from "lucide-react";
 import {
   AlertDialog,
@@ -77,7 +78,9 @@ const EditorPreview = () => {
   const [currMarkdownContent, setCurrMarkdownContent] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
   const [activeTab, setActiveTab] = useState("split");
-  const [postTitle, setpostTitle] = useState("");
+  const [postTitle, setPostTitle] = useState("");
+  const [showWarning, setShowWarning] = useState(false);
+  const [warningmsg, setWarningMsg] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const editorPanelRef = useRef(null);
   const previewPanelRef = useRef(null);
@@ -186,6 +189,30 @@ const EditorPreview = () => {
     }
     setRenderMarkdown(true);
   };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    const match = value.match(/[\\/:*?"<>|_]/);
+  
+    if (match) {
+      setShowWarning(true);
+      setWarningMsg("Invalid character in title.");
+      const index = match.index;
+      const valueBeforeInvalidChar = value.slice(0, index);
+      setPostTitle(valueBeforeInvalidChar);
+    }
+    else if (value.length > 100) {
+      setShowWarning(true);
+      setWarningMsg("Title exceeds 100 characters.");
+      const trimmedValue = value.slice(0, 100);
+      setPostTitle(trimmedValue);
+    }
+    else {
+      setShowWarning(false);
+      setWarningMsg("");
+      setPostTitle(value);
+    }
+  };  
 
   const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreenupload = useMediaQuery("(max-width:580px)");
@@ -509,7 +536,7 @@ const EditorPreview = () => {
                 placeholder="Enter post title..."
                 className="w-full border border-slate-700 bg-slate-800/80 p-3 rounded-lg text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder:text-sm"
                 value={postTitle}
-                onChange={(e) => setpostTitle(e.target.value)}
+                onChange={handleInputChange}
               />
               <div className="absolute right-3 top-3 text-gray-500">
                 {postTitle.length > 0 && (
@@ -517,6 +544,13 @@ const EditorPreview = () => {
                 )}
               </div>
             </div>
+
+            {showWarning && (
+              <div className="mt-2 text-red-400 text-sm flex items-center gap-1">
+                <Info className="h-4 w-4" />
+                {warningmsg}
+              </div>
+            )}
           </div>
 
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
