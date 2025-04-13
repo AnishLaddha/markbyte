@@ -1,6 +1,12 @@
 linters:
   enable:
-    - golangci-lint
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
 
 run:
   deadline: 3m
@@ -8,6 +14,7 @@ run:
   skip-dirs:
     - vendor
     - third_party
+  allow-parallel-runners: true
 
 output:
   format: colored-line-number
