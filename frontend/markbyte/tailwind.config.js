@@ -9,17 +9,27 @@ export default {
         pulse2: "pulse 1s ease-in-out infinite 0.2s",
         pulse3: "pulse 1s ease-in-out infinite 0.4s",
         spincustom: "spin 2s linear infinite",
-        gradientFlow: 'gradientFlow 5s linear infinite'
+        gradientFlow: "gradientFlow 5s linear infinite",
+        moveLeftRight: 'moveLeftRight linear infinite',
+        moveTopBottom: 'moveTopBottom linear infinite',
       },
       keyframes: {
         gradientFlow: {
-			'0%': { 
-			  backgroundPosition: '-100% 0%'
-			},
-			'100%': { 
-			  backgroundPosition: '100% 0%'
-			}
-		  },
+          "0%": {
+            backgroundPosition: "-100% 0%",
+          },
+          "100%": {
+            backgroundPosition: "100% 0%",
+          },
+        },
+        moveLeftRight: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        moveTopBottom: {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(100%)" },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
