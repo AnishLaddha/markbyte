@@ -106,6 +106,7 @@ type BlogPostDataViews struct {
 type BlogPostDataResponse struct {
 	Username       string              `json:"username"`
 	ProfilePicture string              `json:"profile_picture"`
+	Style          string              `json:"style"`
 	Posts          []BlogPostDataViews `json:"posts"`
 }
 
@@ -144,6 +145,7 @@ func HandleFetchUserActivePosts(w http.ResponseWriter, r *http.Request) {
 	blogPostDataResponse := BlogPostDataResponse{
 		Username:       username,
 		ProfilePicture: user.ProfilePicture,
+		Style:          user.Style,
 		Posts:          blogPostViews,
 	}
 	resp, err := json.Marshal(blogPostDataResponse)
