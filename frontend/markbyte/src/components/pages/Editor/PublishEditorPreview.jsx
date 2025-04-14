@@ -78,7 +78,6 @@ const PublishEditorPreview = () => {
   const [spin, setSpin] = useState(false);
   const [renderMarkdown, setRenderMarkdown] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
-  const [isOpen, setIsOpen] = useState(false);
   const editorPanelRef = useRef(null);
   const previewPanelRef = useRef(null);
   const [currTheme, setCurrTheme] = useState("vscodeDark");
@@ -140,7 +139,7 @@ const PublishEditorPreview = () => {
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
-    uploadMarkdownFile(blob, title + ".md")
+    uploadMarkdownFile(blob, title)
       .then(() => {
         setTimeout(() => {
           toast({
@@ -154,7 +153,7 @@ const PublishEditorPreview = () => {
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
           });
-        }, 3000);
+        }, 1500);
       })
       .catch((error) => {
         console.error("File upload error:", error);
@@ -164,7 +163,7 @@ const PublishEditorPreview = () => {
       });
   };
 
-  const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
 
   return (
