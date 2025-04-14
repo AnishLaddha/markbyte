@@ -38,6 +38,13 @@ import {
   uploadProfilePicture,
   updateStyle,
 } from "@/services/userService";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 function BloggerProfile() {
   const { user, name, profilepicture, email, style, fetchUserInfo } = useAuth();
@@ -209,7 +216,7 @@ function BloggerProfile() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           transition={{ duration: 0.5 }}
-          className="w-11/12 max-w-xl border border-gray-200 shadow-xl rounded-xl overflow-hidden bg-white"
+          className="w-13/14 max-w-2xl border border-gray-200 shadow-xl rounded-xl overflow-hidden bg-white"
         >
           <Card className="border-none shadow-none">
             <div className="h-24 bg-gradient-to-r from-[#084464] to-[#011522] relative">
@@ -298,11 +305,14 @@ function BloggerProfile() {
             <Separator />
             <CardContent className="py-8 space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col items-start justify-between">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Palette className="h-5 w-5 text-[#003b5c]" />
-                    Post Styles
+                    Styles
                   </h3>
+                  <p className="text-sm text-gray-500">
+                    Choose your preferred style for your posts and landing page.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -372,30 +382,60 @@ function BloggerProfile() {
                       <div className="h-px flex-1 bg-gray-100"></div>
                     </div>
 
-                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="aspect-video w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
-                        <img
-                          src={
-                            cssStyle === "default"
-                              ? "/assets/defaultview.png"
-                              : cssStyle === "old"
-                              ? "/assets/oldview.png"
-                              : cssStyle === "futuristic"
-                              ? "/assets/futuristicview.png"
-                              : ""
-                          }
-                          alt="Interface preview"
-                          className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                      </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+                      <Carousel key={cssStyle} className="w-full max-w-3xl">
+                        <CarouselContent>
+                          <CarouselItem className="basis-full">
+                            <div className="aspect-[3/2] w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
+                              <img
+                                src={
+                                  cssStyle === "default"
+                                    ? "/assets/defaultview.png"
+                                    : cssStyle === "old"
+                                    ? "/assets/classicview.png"
+                                    : cssStyle === "futuristic"
+                                    ? "/assets/futuristicview.png"
+                                    : ""
+                                }
+                                alt="Interface preview"
+                                className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
+                              />
+                              <div className="absolute bottom-2 left-3 bg-white text-black text-sm px-3 py-1 rounded-full opacity-60">
+                                Post Preview
+                              </div>
+                            </div>
+                          </CarouselItem>
+                          <CarouselItem className="basis-full">
+                            <div className="aspect-[3/2] w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
+                              <img
+                                src={
+                                  cssStyle === "default"
+                                    ? "/assets/defaultlanding.png"
+                                    : cssStyle === "old"
+                                    ? "/assets/classiclanding.png"
+                                    : cssStyle === "futuristic"
+                                    ? "/assets/futuristiclanding.png"
+                                    : ""
+                                }
+                                alt="Interface preview"
+                                className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
+                              />
+                              <div className="absolute bottom-2 left-3 bg-white text-black text-sm px-3 py-1 rounded-full opacity-60">
+                                Landing Preview
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        </CarouselContent>
+                        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/70 hover:bg-white rounded-full shadow p-2" />
+                        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/70 hover:bg-white rounded-full shadow p-2" />
+                      </Carousel>
                       <div className="mt-3 text-xs text-gray-500 flex items-center gap-2">
                         <InfoIcon className="h-3 w-3 min-w-[1rem] flex-shrink-0" />
 
                         {cssStyle === "default"
-                          ? "Modern, clean interface, with table of contents"
+                          ? "Modern, clean interface"
                           : cssStyle === "old"
-                          ? "Classic interface with neutral gray tones"
+                          ? "Classic interface"
                           : cssStyle === "futuristic"
                           ? "Futuristic interface with neon accents and holographic effects"
                           : ""}
