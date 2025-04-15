@@ -9,7 +9,11 @@ import FuturisticLandingPage from "./BloggerLanding/Futuristic";
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
   const {
-   style
+    postdata: blogList,
+    profilepicture,
+    error,
+    style,
+    fetchPosts,
   } = useBlogList(username);
 
   if (!username) {
@@ -17,15 +21,35 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   }
 
   if (style === "old") {
-    return <ClassicLandingPage username={username} />
-  }
-
-  else if (style === "default") {
-    return <DefaultLandingPage username={username} />
-  }
-
-  else if (style === "futuristic") {
-    return <FuturisticLandingPage username={username} />
+    return (
+      <ClassicLandingPage
+        username={username}
+        blogList={blogList}
+        profilepicture={profilepicture}
+        error={error}
+        fetchPosts={fetchPosts}
+      />
+    );
+  } else if (style === "default") {
+    return (
+      <DefaultLandingPage
+        username={username}
+        blogList={blogList}
+        profilepicture={profilepicture}
+        error={error}
+        fetchPosts={fetchPosts}
+      />
+    );
+  } else if (style === "futuristic") {
+    return (
+      <FuturisticLandingPage
+        username={username}
+        blogList={blogList}
+        profilepicture={profilepicture}
+        error={error}
+        fetchPosts={fetchPosts}
+      />
+    );
   }
 });
 
