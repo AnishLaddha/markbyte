@@ -16,6 +16,10 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
     fetchPosts,
   } = useBlogList(username);
 
+  if (error) {
+    return <NotFound />;
+  }
+
   if (!username) {
     return <NotFound />;
   }
@@ -26,7 +30,6 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
         username={username}
         blogList={blogList}
         profilepicture={profilepicture}
-        error={error}
         fetchPosts={fetchPosts}
       />
     );
@@ -36,7 +39,6 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
         username={username}
         blogList={blogList}
         profilepicture={profilepicture}
-        error={error}
         fetchPosts={fetchPosts}
       />
     );
@@ -46,7 +48,6 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
         username={username}
         blogList={blogList}
         profilepicture={profilepicture}
-        error={error}
         fetchPosts={fetchPosts}
       />
     );

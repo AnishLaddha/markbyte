@@ -21,14 +21,12 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
-import NotFound from "../../404/invalid";
 import { motion } from "framer-motion";
 
 function DefaultLandingPage({
   username,
   blogList,
   profilepicture,
-  error,
   fetchPosts,
 }) {
   const nposts = 5;
@@ -45,10 +43,6 @@ function DefaultLandingPage({
   useEffect(() => {
     setNPages(Math.ceil((blogList?.length || 0) / nposts));
   }, [blogList, nposts]);
-
-  if (error) {
-    return <NotFound />;
-  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
