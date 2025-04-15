@@ -12,10 +12,11 @@ function useBlogList(user) {
       .then((response) => {
         const posts = response.data?.posts || [];
         const profilePic = response.data?.profile_picture;
-
         if (posts.length === 0) {
           setData([]);
           setProfilePicture(profilePic ? profilePic + "?t=" + Date.now() : null);
+          setStyle(response.data?.style || "");
+          setError(null);
           return;
         }
 
