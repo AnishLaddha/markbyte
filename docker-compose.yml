@@ -7,7 +7,7 @@ services:
     depends_on:
       - backend
     environment:
-      - VITE_API_URL=http://localhost:8080
+      - VITE_API_URL=https://markbyte.xyz/api
       - VITE_FRONTEND_URL=http://localhost:5173
 
   backend:
