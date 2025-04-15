@@ -27,6 +27,8 @@ import {
   X,
   ChevronLeft,
   User,
+  Download,
+  FileText,
 } from "lucide-react";
 import {
   Dialog,
@@ -605,6 +607,33 @@ function BloggerProfile() {
                         <Upload className="w-4 h-4" />
                         {about ? "Update About Page" : "Upload About Page"}
                       </Button>
+                    </div>
+                    <div className="flex flex-col items-center mt-4">
+                      <div className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <FileText className="h-5 w-5 text-blue-500" />
+                            <div>
+                              <span className="text-gray-800 font-medium block">
+                                About Page Template
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Get started with our pre-formatted template
+                              </span>
+                            </div>
+                          </div>
+                          <a href="/assets/abouttemplate.md" download>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-[#005a7a] border-[#005a7a] hover:text-[#084464]"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download
+                            </Button>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
