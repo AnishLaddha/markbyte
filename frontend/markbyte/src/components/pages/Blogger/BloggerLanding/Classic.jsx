@@ -1,4 +1,3 @@
-import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
@@ -23,30 +22,27 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
-import NotFound from "../../404/invalid";
 
-function ClassicLandingPage({ username }) {
-  const {
-    postdata: blogList,
-    profilepicture,
-    error,
-    fetchPosts,
-  } = useBlogList(username);
+function ClassicLandingPage({
+  username,
+  blogList,
+  profilepicture,
+  fetchPosts,
+}) {
   const nposts = 5;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!blogList || blogList.length === 0) {
+    if (blogList === null || blogList.length === 0) {
       fetchPosts();
     }
-    setNPages(Math.ceil((blogList?.length || 0) / nposts));
-  }, [username, fetchPosts, blogList, nposts]);
+  }, [username, fetchPosts]);
 
-  if (error) {
-    return <NotFound />;
-  }
+  useEffect(() => {
+    setNPages(Math.ceil((blogList?.length || 0) / nposts));
+  }, [blogList, nposts]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -131,7 +127,12 @@ function ClassicLandingPage({ username }) {
               >
                 <Home className="h-8 w-8 text-white" />
               </button>
-              <button className="px-6 py-3 text-lg font-medium text-white bg-[#084464] hover:bg-[#0B5D89] rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center">
+              <button
+                className="px-6 py-3 text-lg font-medium text-white bg-[#084464] hover:bg-[#0B5D89] rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center"
+                onClick={() => {
+                  navigate(`/${username}/about`);
+                }}
+              >
                 <User2 className="mr-2" /> About
               </button>
             </div>
@@ -151,7 +152,7 @@ function ClassicLandingPage({ username }) {
           </div>
         </div>
         <div className="space-y-10">
-          {!blogList && (
+          {blogList.length === 0 && (
             <Card className="w-full py-20 bg-gradient-to-br from-gray-50 to-white border-0">
               <CardContent className="text-center">
                 <div className="flex flex-col items-center">

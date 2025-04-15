@@ -1,4 +1,3 @@
-import useBlogList from "@/hooks/use-bloglist";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
@@ -22,31 +21,28 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
-import NotFound from "../../404/invalid";
 import { motion } from "framer-motion";
 
-function DefaultLandingPage({ username }) {
-  const {
-    postdata: blogList,
-    profilepicture,
-    error,
-    fetchPosts,
-  } = useBlogList(username);
+function DefaultLandingPage({
+  username,
+  blogList,
+  profilepicture,
+  fetchPosts,
+}) {
   const nposts = 5;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!blogList || blogList.length === 0) {
+    if (blogList === null || blogList.length === 0) {
       fetchPosts();
     }
-    setNPages(Math.ceil((blogList?.length || 0) / nposts));
-  }, [username, fetchPosts, blogList, nposts]);
+  }, [username, fetchPosts]);
 
-  if (error) {
-    return <NotFound />;
-  }
+  useEffect(() => {
+    setNPages(Math.ceil((blogList?.length || 0) / nposts));
+  }, [blogList, nposts]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -91,17 +87,20 @@ function DefaultLandingPage({ username }) {
             className="text-left mb-10 ml-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
           >
             <div className="flex items-center gap-8">
-              {/* Enhanced Avatar Component */}
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-gray-100 to-blue-300 rounded-full blur-sm opacity-70"></div>
                 <Avatar className="h-32 w-32 border-2 border-white shadow-xl relative">
                   <AvatarImage
-                    src={profilepicture || "/placeholder.svg"}
-                    alt={username}
+                    src={
+                      profilepicture ||
+                      `https://api.dicebear.com/9.x/initials/svg?seed=${
+                        username || "User"
+                      }&backgroundType=gradientLinear`
+                    }
                     className="object-cover w-full h-full"
                   />
-                  <AvatarFallback className="bg-white text-white text-2xl">
-                    {username.charAt(0).toUpperCase()}
+                  <AvatarFallback className="bg-white text-black text-2xl">
+                    {(username || "U").slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -125,7 +124,12 @@ function DefaultLandingPage({ username }) {
               >
                 <Home className="h-8 w-8 text-black" />
               </button>
-              <button className="px-6 py-3 text-lg font-medium text-black bg-white hover:bg-gray-100 rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center">
+              <button
+                className="px-6 py-3 text-lg font-medium text-black bg-white hover:bg-gray-100 rounded-lg shadow-lg transition-all duration-300 ease-in-out flex items-center"
+                onClick={() => {
+                  navigate(`/${username}/about`);
+                }}
+              >
                 <User2 className="mr-2" /> About
               </button>
             </div>
@@ -147,7 +151,7 @@ function DefaultLandingPage({ username }) {
         </div>
 
         <div className="space-y-10">
-          {!blogList && (
+          {blogList.length == 0 && (
             <div className="opacity-100">
               <Card className="w-full py-20 bg-gradient-to-br from-gray-800 to-gray-900 border-0 shadow-xl">
                 <CardContent className="text-center">
