@@ -12,8 +12,24 @@ import (
 )
 
 func CORS(next http.Handler) http.Handler {
+
+	allowedOrigins := map[string]bool{
+		"http://localhost:5173":    true,
+		"https://markbyte.xyz":     true,
+		"https://www.markbyte.xyz": true,
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+
+		origin := r.Header.Get("Origin")
+		if allowedOrigins[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			http.Error(w, "Origin not allowed", http.StatusForbidden)
+			return
+		}
+
+		//w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
