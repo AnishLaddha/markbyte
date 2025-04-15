@@ -22,8 +22,12 @@ func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		origin := r.Header.Get("Origin")
-		if allowedOrigins[origin] {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
+		if origin == "" || allowedOrigins[origin] {
+			if origin != "" {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+			} else {
+				w.Header().Set("Access-Control-Allow-Origin", "https://markbyte.xyz")
+			}
 		} else {
 			http.Error(w, "Origin not allowed", http.StatusForbidden)
 			return

@@ -7,6 +7,13 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+ARG VITE_FRONTEND_URL
+ENV VITE_FRONTEND_URL=$VITE_FRONTEND_URL
+
 RUN npm run build
 
 # Stage 2: Serve static files with `serve`

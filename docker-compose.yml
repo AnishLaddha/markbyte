@@ -2,13 +2,16 @@ services:
   frontend:
     build:
       context: ./frontend/markbyte
+      args:
+        VITE_API_URL: "https://markbyte.xyz/api"
+        VITE_FRONTEND_URL: "https://markbyte.xyz"
     ports:
       - "5173:5173"
     depends_on:
       - backend
     environment:
       - VITE_API_URL=https://markbyte.xyz/api
-      - VITE_FRONTEND_URL=http://localhost:5173
+      - VITE_FRONTEND_URL=https://markbyte.xyz
 
   backend:
     build:
