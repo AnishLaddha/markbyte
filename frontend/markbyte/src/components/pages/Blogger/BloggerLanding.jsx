@@ -5,6 +5,7 @@ import NotFound from "../404/invalid";
 import ClassicLandingPage from "./BloggerLanding/Classic";
 import DefaultLandingPage from "./BloggerLanding/Default";
 import FuturisticLandingPage from "./BloggerLanding/Futuristic";
+import PinkLandingPage from "./BloggerLanding/Pink";
 
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
@@ -45,6 +46,15 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   } else if (style === "futuristic") {
     return (
       <FuturisticLandingPage
+        username={username}
+        blogList={blogList}
+        profilepicture={profilepicture}
+        fetchPosts={fetchPosts}
+      />
+    );
+  } else if (style === "pink") {
+    return (
+      <PinkLandingPage
         username={username}
         blogList={blogList}
         profilepicture={profilepicture}
