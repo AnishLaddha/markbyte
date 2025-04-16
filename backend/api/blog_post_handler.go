@@ -59,11 +59,23 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to read HTML file", http.StatusInternalServerError)
 			return
 		}
-		style, err := userDB.GetUserStyle(r.Context(), username)
+		user_details, err := userDB.GetUser(r.Context(), username)
 		if err != nil {
-			style = "default"
+			http.Error(w, "Failed to get user details", http.StatusInternalServerError)
+			return
 		}
-		markdown_render.InsertTemplate(&htmlContent, style, username)
+		if user_details == nil {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+		if user_details.Name == "" {
+			user_details.Name = username
+		}
+		if user_details.Style == "" {
+			user_details.Style = "default"
+		}
+		style := user_details.Style
+		markdown_render.InsertTemplate(&htmlContent, style, username, user_details.Name)
 	}
 	if redisdb.RedisActive && !cacheHit {
 		err := redisdb.SetEndpoint(r.Context(), endpoint, &htmlContent)

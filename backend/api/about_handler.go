@@ -107,16 +107,23 @@ func HandleAboutPageGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error reading file from S3", http.StatusInternalServerError)
 		return
 	}
-	style, err := userDB.GetUserStyle(r.Context(), username)
+	user_details, err := userDB.GetUser(r.Context(), username)
 	if err != nil {
-		http.Error(w, "Error getting user style", http.StatusInternalServerError)
+		http.Error(w, "Failed to get user details", http.StatusInternalServerError)
 		return
 	}
-
-	if style == "" {
-		style = "default"
+	if user_details == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
 	}
-	markdown_render.InsertTemplate(&html_content, style, username)
+	if user_details.Name == "" {
+		user_details.Name = username
+	}
+	if user_details.Style == "" {
+		user_details.Style = "default"
+	}
+	style := user_details.Style
+	markdown_render.InsertTemplate(&html_content, style, username, user_details.Name)
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
