@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { basicSetup } from "codemirror";
@@ -34,7 +34,7 @@ import {
   Type,
   Box,
   Layers,
-  Info
+  Info,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -126,24 +126,33 @@ const EditorPreview = () => {
   useEffect(() => {
     if (renderMarkdown) {
       setMarkdownContent(currMarkdownContent);
-      setRenderMarkdown(false); // Reset renderMarkdown to false after initial render
+      setRenderMarkdown(false);
     }
   }, [renderMarkdown]);
 
-  const handleRenderClick = () => {
+  const handleRenderClick = useCallback(() => {
     setMarkdownContent(currMarkdownContent);
     setRenderMarkdown(true);
-    setTimeout(() => {
-      setSpin(true);
-    }, 0);
-    setTimeout(() => {
-      setSpin(false);
-    }, 500);
-  };
+    setTimeout(() => setSpin(true), 0);
+    setTimeout(() => setSpin(false), 500);
+  }, [currMarkdownContent]);
 
-  const handlePreviewClick = () => {
-    setIsOpen(true);
-  };
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+      const isR = e.key.toLowerCase() === "r";
+
+      if (isCmdOrCtrl && isR) {
+        e.preventDefault();
+        handleRenderClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleRenderClick]);
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
@@ -193,26 +202,24 @@ const EditorPreview = () => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     const match = value.match(/[\\/:*?"<>|_]/);
-  
+
     if (match) {
       setShowWarning(true);
       setWarningMsg("Invalid character in title.");
       const index = match.index;
       const valueBeforeInvalidChar = value.slice(0, index);
       setPostTitle(valueBeforeInvalidChar);
-    }
-    else if (value.length > 100) {
+    } else if (value.length > 100) {
       setShowWarning(true);
       setWarningMsg("Title exceeds 100 characters.");
       const trimmedValue = value.slice(0, 100);
       setPostTitle(trimmedValue);
-    }
-    else {
+    } else {
       setShowWarning(false);
       setWarningMsg("");
       setPostTitle(value);
     }
-  };  
+  };
 
   const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreenupload = useMediaQuery("(max-width:580px)");
@@ -369,7 +376,7 @@ const EditorPreview = () => {
           </DropdownMenu>
           <button
             className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
-            onClick={() => handlePreviewClick()}
+            onClick={() => setIsOpen(true)}
           >
             <Upload className="h-4 w-4" />
             {!isSmallScreenupload && <span className="font-bold">Publish</span>}
