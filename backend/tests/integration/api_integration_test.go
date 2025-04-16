@@ -138,7 +138,14 @@ func startDockerContainer(containerName, image, ports string) (string, error) {
 	}
 
 	// Start the container
-	cmd = exec.Command("docker", "run", "-d", "--name", containerName, "-p", ports, image)
+	// For MongoDB, add a unique named volume to make cleanup easier
+	if strings.Contains(image, "mongo") {
+		cmd = exec.Command("docker", "run", "-d", "--name", containerName,
+			"-v", "mongodb_test_data:/data/db", "-p", ports, image)
+	} else {
+		cmd = exec.Command("docker", "run", "-d", "--name", containerName, "-p", ports, image)
+	}
+
 	output, err = cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("failed to start container: %v", err)
@@ -200,6 +207,16 @@ func teardownTestEnvironment() error {
 			stopContainer(redisContainerID)
 		}
 
+		// Remove Docker volumes if KEEP_VOLUMES is not set to true
+		if os.Getenv("KEEP_VOLUMES") != "true" {
+			fmt.Println("Removing Docker volumes...")
+			// We'll remove the named volume we created for MongoDB
+			exec.Command("docker", "volume", "rm", "mongodb_test_data").Run()
+
+			// Additionally, find and remove any dangling volumes created by these containers
+			findAndRemoveDanglingVolumes()
+		}
+
 		// Remove Docker images if KEEP_IMAGES is not set to true
 		if os.Getenv("KEEP_IMAGES") != "true" {
 			fmt.Println("Removing Docker images...")
@@ -218,6 +235,26 @@ func stopContainer(containerID string) {
 	fmt.Printf("Stopping and removing container %s...\n", containerID)
 	exec.Command("docker", "stop", containerID).Run()
 	exec.Command("docker", "rm", containerID).Run()
+}
+
+// Helper function to find and remove any dangling volumes
+func findAndRemoveDanglingVolumes() {
+	// Find dangling volumes (not referenced by any container)
+	cmd := exec.Command("docker", "volume", "ls", "-qf", "dangling=true")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("Failed to list dangling volumes: %v\n", err)
+		return
+	}
+
+	// Split output into lines and remove each volume
+	volumes := strings.Split(strings.TrimSpace(string(output)), "\n")
+	for _, volume := range volumes {
+		if volume != "" {
+			fmt.Printf("Removing dangling volume: %s\n", volume)
+			exec.Command("docker", "volume", "rm", volume).Run()
+		}
+	}
 }
 
 // TestMain handles setup and teardown for all tests
