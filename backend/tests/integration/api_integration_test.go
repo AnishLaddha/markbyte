@@ -211,7 +211,9 @@ func teardownTestEnvironment() error {
 		if os.Getenv("KEEP_VOLUMES") != "true" {
 			fmt.Println("Removing Docker volumes...")
 			// We'll remove the named volume we created for MongoDB
-			exec.Command("docker", "volume", "rm", "mongodb_test_data").Run()
+			if err := exec.Command("docker", "volume", "rm", "mongodb_test_data").Run(); err != nil {
+				fmt.Printf("Warning: Failed to remove MongoDB volume: %v\n", err)
+			}
 
 			// Additionally, find and remove any dangling volumes created by these containers
 			findAndRemoveDanglingVolumes()
@@ -221,9 +223,13 @@ func teardownTestEnvironment() error {
 		if os.Getenv("KEEP_IMAGES") != "true" {
 			fmt.Println("Removing Docker images...")
 			// Remove MongoDB image
-			exec.Command("docker", "rmi", "mongo:latest").Run()
+			if err := exec.Command("docker", "rmi", "mongo:latest").Run(); err != nil {
+				fmt.Printf("Warning: Failed to remove MongoDB image: %v\n", err)
+			}
 			// Remove Redis image
-			exec.Command("docker", "rmi", "redis:alpine").Run()
+			if err := exec.Command("docker", "rmi", "redis:alpine").Run(); err != nil {
+				fmt.Printf("Warning: Failed to remove Redis image: %v\n", err)
+			}
 		}
 	}
 
@@ -233,8 +239,12 @@ func teardownTestEnvironment() error {
 // Helper function to stop and remove a container
 func stopContainer(containerID string) {
 	fmt.Printf("Stopping and removing container %s...\n", containerID)
-	exec.Command("docker", "stop", containerID).Run()
-	exec.Command("docker", "rm", containerID).Run()
+	if err := exec.Command("docker", "stop", containerID).Run(); err != nil {
+		fmt.Printf("Warning: Failed to stop container %s: %v\n", containerID, err)
+	}
+	if err := exec.Command("docker", "rm", containerID).Run(); err != nil {
+		fmt.Printf("Warning: Failed to remove container %s: %v\n", containerID, err)
+	}
 }
 
 // Helper function to find and remove any dangling volumes
@@ -252,7 +262,9 @@ func findAndRemoveDanglingVolumes() {
 	for _, volume := range volumes {
 		if volume != "" {
 			fmt.Printf("Removing dangling volume: %s\n", volume)
-			exec.Command("docker", "volume", "rm", volume).Run()
+			if err := exec.Command("docker", "volume", "rm", volume).Run(); err != nil {
+				fmt.Printf("Warning: Failed to remove volume %s: %v\n", volume, err)
+			}
 		}
 	}
 }
