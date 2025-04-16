@@ -215,3 +215,40 @@ const futuristic_template = "" +
 	"    </script>\n" +
 	"</body>\n" +
 	"</html>"
+
+const pink_template = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markbyte</title>
+    <link rel="stylesheet" href="https://markbyteblogfiles.s3.us-east-1.amazonaws.com/pinkstyle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <div class="leaf left"></div>
+            <a href="{{BLOG_LINK}}" target="_blank" class="site-title-link">
+                <h1 class="site-title">{{NAME}}</h1>
+            </a>
+            <div class="leaf right"></div>
+        </header>
+        
+        <main class="content">
+            <div class="markdown-content">
+                {{CONTENT}}
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer-pattern"></div>
+            <div class="footer-text">Made with 🌸 and <a href="https://markbyte.xyz" target="_blank" class="markbyte-link">markbyte</a></div>
+        </footer>
+    </div>
+</body>
+</html>
+`
