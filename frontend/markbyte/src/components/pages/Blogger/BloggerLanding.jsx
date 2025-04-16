@@ -51,6 +51,15 @@ const BloggerLandingPage = React.memo(function BloggerLandingPage() {
         fetchPosts={fetchPosts}
       />
     );
+  } else {
+    return (
+      <DefaultLandingPage
+        username={username}
+        blogList={blogList}
+        profilepicture={profilepicture}
+        fetchPosts={fetchPosts}
+      />
+    );
   }
 });
 
