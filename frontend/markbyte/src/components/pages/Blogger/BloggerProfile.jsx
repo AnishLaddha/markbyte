@@ -29,6 +29,7 @@ import {
   User,
   Download,
   FileText,
+  Flower,
 } from "lucide-react";
 import {
   Dialog,
@@ -75,6 +76,7 @@ function BloggerProfile() {
     { value: "default", label: "Default", icon: Sparkles },
     { value: "old", label: "Classic", icon: History },
     { value: "futuristic", label: "Futuristic", icon: CircuitBoard },
+    { value: "pink", label: "Flowery Pink", icon: Flower },
   ];
 
   const handleSaveName = async () => {
@@ -445,6 +447,8 @@ function BloggerProfile() {
                                     ? "/assets/classicview.png"
                                     : cssStyle === "futuristic"
                                     ? "/assets/futuristicview.png"
+                                    : cssStyle === "pink"
+                                    ? "/assets/pinkview.png"
                                     : ""
                                 }
                                 alt="Interface preview"
@@ -465,6 +469,8 @@ function BloggerProfile() {
                                     ? "/assets/classiclanding.png"
                                     : cssStyle === "futuristic"
                                     ? "/assets/futuristiclanding.png"
+                                    : cssStyle === "pink"
+                                    ? "/assets/pinklanding.png"
                                     : ""
                                 }
                                 alt="Interface preview"
@@ -488,6 +494,8 @@ function BloggerProfile() {
                           ? "Classic interface"
                           : cssStyle === "futuristic"
                           ? "Futuristic interface with neon accents and holographic effects"
+                          : cssStyle === "pink"
+                          ? "Flowery pink interface with floral elements and soft colors"
                           : ""}
                       </div>
                     </div>
