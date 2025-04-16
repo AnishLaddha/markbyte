@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,21 +27,42 @@ import (
 )
 
 var (
-	testRouter  http.Handler
-	mongoClient *mongo.Client
-	testUserDB  db.UserDB
+	testRouter       http.Handler
+	mongoClient      *mongo.Client
+	testUserDB       db.UserDB
+	mongoContainerID string
+	redisContainerID string
 )
 
 // Setup function to initialize test environment
 func setupTestEnvironment() error {
-	// Use test MongoDB URL - using in-memory MongoDB for testing
-	mongoURL := "mongodb://localhost:27017"
-	if os.Getenv("TEST_MONGO_URL") != "" {
-		mongoURL = os.Getenv("TEST_MONGO_URL")
+	var err error
+
+	// Start MongoDB container if not already running
+	mongoContainerID, err = startDockerContainer("mongodb-test", "mongo:latest", "27017:27017")
+	if err != nil {
+		return err
 	}
 
+	// Start Redis container if not already running
+	redisContainerID, err = startDockerContainer("redis-test", "redis:alpine", "6379:6379")
+	if err != nil {
+		return err
+	}
+
+	// Wait for services to be ready
+	if err = waitForMongoDB(); err != nil {
+		return err
+	}
+
+	if err = waitForRedis(); err != nil {
+		return err
+	}
+
+	// Use test MongoDB URL
+	mongoURL := "mongodb://localhost:27017"
+
 	// Connect to MongoDB
-	var err error
 	mongoClient, err = mongo.Connect(
 		context.Background(),
 		options.Client().ApplyURI(mongoURL),
@@ -84,21 +107,137 @@ func setupTestEnvironment() error {
 	return nil
 }
 
+// Helper function to start a Docker container
+func startDockerContainer(containerName, image, ports string) (string, error) {
+	// Check if container is already running
+	cmd := exec.Command("docker", "ps", "-q", "-f", fmt.Sprintf("name=%s", containerName))
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if container exists: %v", err)
+	}
+
+	if len(output) > 0 {
+		// Container is already running, return its ID
+		return strings.TrimSpace(string(output)), nil
+	}
+
+	// Check if container exists but is not running
+	cmd = exec.Command("docker", "ps", "-aq", "-f", fmt.Sprintf("name=%s", containerName))
+	output, err = cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if container exists: %v", err)
+	}
+
+	if len(output) > 0 {
+		// Container exists but is not running, remove it
+		containerId := strings.TrimSpace(string(output))
+		cmd = exec.Command("docker", "rm", containerId)
+		if err := cmd.Run(); err != nil {
+			return "", fmt.Errorf("failed to remove existing container: %v", err)
+		}
+	}
+
+	// Start the container
+	cmd = exec.Command("docker", "run", "-d", "--name", containerName, "-p", ports, image)
+	output, err = cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to start container: %v", err)
+	}
+
+	return strings.TrimSpace(string(output)), nil
+}
+
+// Helper function to wait for MongoDB to be ready
+func waitForMongoDB() error {
+	for i := 0; i < 30; i++ {
+		cmd := exec.Command("docker", "exec", "mongodb-test", "mongosh", "--eval", "db.adminCommand('ping')")
+		if err := cmd.Run(); err == nil {
+			fmt.Println("MongoDB is ready")
+			return nil
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return fmt.Errorf("timeout waiting for MongoDB to be ready")
+}
+
+// Helper function to wait for Redis to be ready
+func waitForRedis() error {
+	for i := 0; i < 10; i++ {
+		cmd := exec.Command("docker", "exec", "redis-test", "redis-cli", "ping")
+		if err := cmd.Run(); err == nil {
+			fmt.Println("Redis is ready")
+			return nil
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return fmt.Errorf("timeout waiting for Redis to be ready")
+}
+
 // Teardown function to clean up test resources
 func teardownTestEnvironment() error {
 	// Drop test database
-	err := mongoClient.Database("markbyte_test").Drop(context.Background())
-	if err != nil {
-		return fmt.Errorf("failed to drop test database: %v", err)
+	if mongoClient != nil {
+		err := mongoClient.Database("markbyte_test").Drop(context.Background())
+		if err != nil {
+			return fmt.Errorf("failed to drop test database: %v", err)
+		}
+
+		// Close MongoDB connection
+		err = mongoClient.Disconnect(context.Background())
+		if err != nil {
+			return fmt.Errorf("failed to disconnect from MongoDB: %v", err)
+		}
 	}
 
-	// Close MongoDB connection
-	err = mongoClient.Disconnect(context.Background())
-	if err != nil {
-		return fmt.Errorf("failed to disconnect from MongoDB: %v", err)
+	// Only stop containers if the KEEP_CONTAINERS environment variable is not set
+	if os.Getenv("KEEP_CONTAINERS") != "true" {
+		// Stop and remove containers
+		if mongoContainerID != "" {
+			stopContainer(mongoContainerID)
+		}
+
+		if redisContainerID != "" {
+			stopContainer(redisContainerID)
+		}
+
+		// Remove Docker images if KEEP_IMAGES is not set to true
+		if os.Getenv("KEEP_IMAGES") != "true" {
+			fmt.Println("Removing Docker images...")
+			// Remove MongoDB image
+			exec.Command("docker", "rmi", "mongo:latest").Run()
+			// Remove Redis image
+			exec.Command("docker", "rmi", "redis:alpine").Run()
+		}
 	}
 
 	return nil
+}
+
+// Helper function to stop and remove a container
+func stopContainer(containerID string) {
+	fmt.Printf("Stopping and removing container %s...\n", containerID)
+	exec.Command("docker", "stop", containerID).Run()
+	exec.Command("docker", "rm", containerID).Run()
+}
+
+// TestMain handles setup and teardown for all tests
+func TestMain(m *testing.M) {
+	fmt.Println("Setting up test environment...")
+
+	if err := setupTestEnvironment(); err != nil {
+		fmt.Printf("Failed to set up test environment: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Running tests...")
+	code := m.Run()
+
+	fmt.Println("Cleaning up test environment...")
+	if err := teardownTestEnvironment(); err != nil {
+		fmt.Printf("Failed to tear down test environment: %v\n", err)
+	}
+
+	os.Exit(code)
 }
 
 // Helper to create a test user
@@ -150,22 +289,6 @@ func createAuthRequest(method, url, token string, body interface{}) (*http.Reque
 	}
 	req.Header.Set("Content-Type", "application/json")
 	return req, nil
-}
-
-// TestMain handles setup and teardown for all tests
-func TestMain(m *testing.M) {
-	if err := setupTestEnvironment(); err != nil {
-		fmt.Printf("Failed to set up test environment: %v\n", err)
-		os.Exit(1)
-	}
-
-	code := m.Run()
-
-	if err := teardownTestEnvironment(); err != nil {
-		fmt.Printf("Failed to tear down test environment: %v\n", err)
-	}
-
-	os.Exit(code)
 }
 
 // Test user registration and login flow
