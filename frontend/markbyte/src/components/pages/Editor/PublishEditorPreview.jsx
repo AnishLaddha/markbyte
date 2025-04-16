@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { basicSetup } from "codemirror";
@@ -46,10 +46,7 @@ import { FaMarkdown } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
-import {
-  uploadMarkdownFile,
-  getMarkdownVersion,
-} from "@/services/blogService";
+import { uploadMarkdownFile, getMarkdownVersion } from "@/services/blogService";
 
 const PublishEditorPreview = () => {
   // Set the initial content
@@ -78,7 +75,6 @@ const PublishEditorPreview = () => {
   const [spin, setSpin] = useState(false);
   const [renderMarkdown, setRenderMarkdown] = useState(true);
   const [activeTab, setActiveTab] = useState("split");
-  const [isOpen, setIsOpen] = useState(false);
   const editorPanelRef = useRef(null);
   const previewPanelRef = useRef(null);
   const [currTheme, setCurrTheme] = useState("vscodeDark");
@@ -127,20 +123,33 @@ const PublishEditorPreview = () => {
     }
   }, [renderMarkdown]);
 
-  const handleRenderClick = () => {
+  const handleRenderClick = useCallback(() => {
     setMarkdownContent(currMarkdownContent);
     setRenderMarkdown(true);
-    setTimeout(() => {
-      setSpin(true);
-    }, 0);
-    setTimeout(() => {
-      setSpin(false);
-    }, 500);
-  };
+    setTimeout(() => setSpin(true), 0);
+    setTimeout(() => setSpin(false), 500);
+  }, [currMarkdownContent]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+      const isR = e.key.toLowerCase() === "r";
+
+      if (isCmdOrCtrl && isR) {
+        e.preventDefault();
+        handleRenderClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleRenderClick]);
 
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
-    uploadMarkdownFile(blob, title + ".md")
+    uploadMarkdownFile(blob, title)
       .then(() => {
         setTimeout(() => {
           toast({
@@ -154,7 +163,7 @@ const PublishEditorPreview = () => {
               "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
             duration: 3000,
           });
-        }, 3000);
+        }, 1500);
       })
       .catch((error) => {
         console.error("File upload error:", error);
@@ -164,7 +173,7 @@ const PublishEditorPreview = () => {
       });
   };
 
-  const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
 
   return (

@@ -38,11 +38,23 @@ func HandleRender(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to convert markdown", http.StatusInternalServerError)
 		return
 	}
-	style, err := userDB.GetUserStyle(r.Context(), username)
+	user_details, err := userDB.GetUser(r.Context(), username)
 	if err != nil {
-		style = "default"
+		http.Error(w, "Failed to get user details", http.StatusInternalServerError)
+		return
 	}
-	InsertTemplate(&output_html, style, username)
+	if user_details == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+	if user_details.Name == "" {
+		user_details.Name = username
+	}
+	if user_details.Style == "" {
+		user_details.Style = "default"
+	}
+	style := user_details.Style
+	InsertTemplate(&output_html, style, username, user_details.Name)
 	w.Header().Set("Content-Type", "text/html")
 	_, err = w.Write([]byte(output_html))
 	if err != nil {
@@ -51,7 +63,7 @@ func HandleRender(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func InsertTemplate(output_html *string, template_name string, username string) {
+func InsertTemplate(output_html *string, template_name string, username string, name string) {
 	if template_name == "old" {
 		*output_html = strings.ReplaceAll(old_template, "{{CONTENT}}", *output_html)
 		fmt.Println("old template")
@@ -59,6 +71,11 @@ func InsertTemplate(output_html *string, template_name string, username string) 
 		*output_html = strings.ReplaceAll(futuristic_template, "{{CONTENT}}", *output_html)
 		*output_html = strings.ReplaceAll(*output_html, "{{USERNAME}}", username)
 		fmt.Println("futuristic template")
+	} else if template_name == "pink" {
+		*output_html = strings.ReplaceAll(pink_template, "{{CONTENT}}", *output_html)
+		*output_html = strings.ReplaceAll(*output_html, "{{BLOG_LINK}}", "https://markbyte.xyz/"+username)
+		*output_html = strings.ReplaceAll(*output_html, "{{NAME}}", name)
+		fmt.Println("pink template")
 	} else {
 		*output_html = strings.ReplaceAll(default_template, "{{CONTENT}}", *output_html)
 		fmt.Println("default template")

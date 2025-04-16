@@ -13,6 +13,7 @@ import DynamicBlogPost from "./components/pages/Post/DynamicBlogPost";
 import BloggerProfile from "./components/pages/Blogger/BloggerProfile";
 import NotFound from "./components/pages/404/invalid";
 import PostAnalytics from "./components/pages/Post/PostAnalytics";
+import DynamicAboutPage from "./components/pages/Blogger/BloggerAbout";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -67,6 +68,7 @@ function App() {
             )
           }
         />
+        <Route path="/:user/about" element={<DynamicAboutPage />} />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
         <Route
           path="/:user/:post/analytics"

@@ -15,6 +15,7 @@ import {
   File,
   ArrowUp,
   CheckCircle,
+  Info,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -54,6 +55,7 @@ import {
   uploadMarkdownFile,
   uploadZipFile,
 } from "@/services/blogService";
+import { Input } from "@/components/ui/input";
 
 function BloggerHome() {
   const { data, fetchData } = useBlogData();
@@ -64,12 +66,18 @@ function BloggerHome() {
   const { toast } = useToast();
   const [mdFileName, setMdFileName] = useState("");
   const [zipFileName, setZipFileName] = useState("");
+  const [mdPostTitle, setMdPostTitle] = useState("");
+  const [zipPostTitle, setZipPostTitle] = useState("");
   const mdFileInputRef = useRef(null);
   const zipFileInputRef = useRef(null);
   const [selectedVersions, setSelectedVersions] = useState({});
   const [isalertOpen, setIsAlertOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState("");
   const [pgVal, setpgVal] = useState("home");
+  const [showmdWarning, setShowmdWarning] = useState(false);
+  const [mdwarningMsg, setmdWarningMsg] = useState("");
+  const [showzipWarning, setShowzipWarning] = useState(false);
+  const [zipwarningMsg, setzipWarningMsg] = useState("");
 
   useEffect(() => {
     setSelectedVersions(
@@ -229,11 +237,13 @@ function BloggerHome() {
   const handleRemoveFile = (fileType) => {
     if (fileType === "md") {
       setMdFileName("");
+      setMdPostTitle("");
       if (mdFileInputRef.current) {
         mdFileInputRef.current.value = "";
       }
     } else {
       setZipFileName("");
+      setZipPostTitle("");
       if (zipFileInputRef.current) {
         zipFileInputRef.current.value = "";
       }
@@ -253,21 +263,23 @@ function BloggerHome() {
     // Reset file input value when switching tabs
     if (value === "zip") {
       setMdFileName("");
+      setMdPostTitle("");
       if (mdFileInputRef.current) {
         mdFileInputRef.current.value = "";
       }
     } else if (value === "markdown") {
       setZipFileName("");
+      setZipPostTitle("");
       if (zipFileInputRef.current) {
         zipFileInputRef.current.value = "";
       }
     }
   };
 
-  const createUploadToast = (fileType, fileName) => {
+  const createUploadToast = (posttitle) => {
     return toast({
       title: <div className="flex items-center">File Uploaded</div>,
-      description: `Your ${fileType} file, "${fileName}", has been uploaded successfully.`,
+      description: `Your post, "${posttitle}", has been uploaded successfully.`,
       variant: "success",
       action: <CheckCircle size={30} className="text-white" />,
       className:
@@ -315,14 +327,13 @@ function BloggerHome() {
   const handleUploadFile = (fileType) => {
     const fileInput = fileType === "md" ? mdFileInputRef : zipFileInputRef;
     const file = fileInput.current.files[0];
-    const formData = new FormData();
     if (fileType == "md") {
       // refactor with service
-      uploadMarkdownFile(file)
+      uploadMarkdownFile(file, mdPostTitle)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
-            createUploadToast(fileType, mdFileName);
+            createUploadToast(mdPostTitle);
           }, 500);
           fetchData();
         })
@@ -335,16 +346,17 @@ function BloggerHome() {
         })
         .finally(() => {
           setMdFileName("");
+          setMdPostTitle("");
           if (mdFileInputRef.current) {
             mdFileInputRef.current.value = "";
           }
         });
     } else {
-      uploadZipFile(file)
+      uploadZipFile(file, zipPostTitle)
         .then(() => {
           setIsOpen(false);
           setTimeout(() => {
-            createUploadToast(fileType, zipFileName);
+            createUploadToast(zipPostTitle);
           }, 500);
           fetchData();
         })
@@ -357,6 +369,7 @@ function BloggerHome() {
         })
         .finally(() => {
           setZipFileName("");
+          setZipPostTitle("");
           if (zipFileInputRef.current) {
             zipFileInputRef.current.value = "";
           }
@@ -386,6 +399,43 @@ function BloggerHome() {
   useEffect(() => {
     table.setPageIndex(0);
   }, [data, searchTerm]);
+
+  const handleInputChange = (e, type) => {
+    const value = e.target.value;
+    const match = value.match(/[\\/:*?"<>|_]/);
+
+    let setTitle, setShowWarning, setWarningMsg;
+
+    if (type === "md") {
+      setTitle = setMdPostTitle;
+      setShowWarning = setShowmdWarning;
+      setWarningMsg = setmdWarningMsg;
+    } else if (type === "zip") {
+      setTitle = setZipPostTitle;
+      setShowWarning = setShowzipWarning;
+      setWarningMsg = setzipWarningMsg;
+    }
+
+    if (match) {
+      setShowWarning(true);
+      setWarningMsg("Invalid character in title.");
+      const index = match.index;
+      const valueBeforeInvalidChar = value.slice(0, index);
+      setTitle(valueBeforeInvalidChar);
+    } else if (value.length > 100) {
+      setShowWarning(true);
+      setWarningMsg("Title exceeds 100 characters.");
+      const trimmedValue = value.slice(0, 100);
+      setTitle(trimmedValue);
+    } else {
+      setShowWarning(false);
+      setWarningMsg("");
+      setTitle(value);
+    }
+  };
+
+  const handleMdInputChange = (e) => handleInputChange(e, "md");
+  const handleZipInputChange = (e) => handleInputChange(e, "zip");
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100">
@@ -503,9 +553,7 @@ function BloggerHome() {
             />
           </div>
         )}
-        {pgVal == "analytics" && (
-          <BloggerAnalytics/>
-        )}
+        {pgVal == "analytics" && <BloggerAnalytics />}
       </main>
 
       <Dialog
@@ -515,6 +563,8 @@ function BloggerHome() {
           if (!open) {
             setMdFileName("");
             setZipFileName("");
+            setMdPostTitle("");
+            setZipPostTitle("");
           }
         }}
       >
@@ -604,9 +654,36 @@ function BloggerHome() {
                       <X size={16} />
                     </Button>
                   </div>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Enter blog title"
+                      className="w-full max-w-[320px] mb-2"
+                      onChange={handleMdInputChange}
+                      value={mdPostTitle}
+                    />
+                    <div className="absolute right-3 top-3 text-gray-500">
+                      {mdPostTitle.length > 0 && (
+                        <span className="text-xs">
+                          {mdPostTitle.length}/100
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {showmdWarning && (
+                    <div className="text-red-400 text-sm flex items-center gap-1 mb-2 mt-2">
+                      <Info className="h-4 w-4" />
+                      {mdwarningMsg}
+                    </div>
+                  )}
                   <Button
-                    className="w-full bg-gradient-to-r from-[#084464] to-[#0a5a7c] text-white"
+                    className={`w-full text-white ${
+                      mdPostTitle.length < 1
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-[#084464] to-[#0a5a7c]"
+                    }`}
                     onClick={() => handleUploadFile("md")}
+                    disabled={mdPostTitle.length < 1}
                   >
                     <ArrowUp size={16} className="mr-2" />
                     Upload File
@@ -671,12 +748,39 @@ function BloggerHome() {
                       <X size={16} />
                     </Button>
                   </div>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Enter blog title"
+                      className="mb-2 w-full max-w-[320px]"
+                      onChange={handleZipInputChange}
+                      value={zipPostTitle}
+                    />
+                    <div className="absolute right-3 top-3 text-gray-500">
+                      {zipPostTitle.length > 0 && (
+                        <span className="text-xs">
+                          {zipPostTitle.length}/100
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {showzipWarning && (
+                    <div className="text-red-400 text-sm flex items-center gap-1 mb-2 mt-2">
+                      <Info className="h-4 w-4" />
+                      {zipwarningMsg}
+                    </div>
+                  )}
                   <Button
-                    className="w-full bg-gradient-to-r from-[#084464] to-[#0a5a7c] text-white"
+                    className={`w-full text-white ${
+                      zipPostTitle.length < 1
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-[#084464] to-[#0a5a7c]"
+                    }`}
                     onClick={() => handleUploadFile("zip")}
+                    disabled={zipPostTitle.length < 1}
                   >
                     <ArrowUp size={16} className="mr-2" />
-                    Upload File
+                    Upload Zip
                   </Button>
                 </div>
               )}

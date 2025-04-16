@@ -26,6 +26,9 @@ import {
   Upload,
   X,
   ChevronLeft,
+  User,
+  Download,
+  FileText,
 } from "lucide-react";
 import {
   Dialog,
@@ -37,10 +40,20 @@ import {
   updateName,
   uploadProfilePicture,
   updateStyle,
+  uploadUserAbout,
 } from "@/services/userService";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import useUserAbout from "@/hooks/use-userabout";
 
 function BloggerProfile() {
   const { user, name, profilepicture, email, style, fetchUserInfo } = useAuth();
+  const { about, error, fetchAbout } = useUserAbout(user.name);
   const { toast } = useToast();
   const [usercssStyle, setUserCssStyle] = useState(style);
   const [cssStyle, setCssStyle] = useState(style);
@@ -53,6 +66,8 @@ function BloggerProfile() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [aboutFileName, setAboutFileName] = useState(null);
+  const aboutFileRef = useRef(null);
   const inputRef = useRef(null);
   const checkRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -139,6 +154,35 @@ function BloggerProfile() {
     }
   };
 
+  const handleUploadAboutPage = async () => {
+    if (!aboutFileName) return;
+    try {
+      const file = aboutFileRef.current.files[0];
+      if (!file) return;
+      await uploadUserAbout(file);
+      // call fetchAbout to refresh the about page data
+      await fetchAbout();
+      setAboutFileName(null);
+      if (aboutFileRef.current) aboutFileRef.current.value = "";
+      toast({
+        title: "Success",
+        description: "About page uploaded successfully.",
+        variant: "success",
+        action: <CheckCircle size={30} color="green" />,
+        className: "bg-green-100 text-green-800",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload about page.",
+        variant: "destructive",
+        className: "bg-red-100 text-red-800",
+        duration: 3000,
+      });
+    }
+  };
+
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -150,6 +194,18 @@ function BloggerProfile() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAboutFileName(file.name);
+    }
+  };
+
+  const handleRemoveAboutFile = () => {
+    setAboutFileName(null);
+    if (aboutFileRef.current) aboutFileRef.current.value = "";
   };
 
   const triggerFileInput = () => {
@@ -209,7 +265,7 @@ function BloggerProfile() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           transition={{ duration: 0.5 }}
-          className="w-11/12 max-w-xl border border-gray-200 shadow-xl rounded-xl overflow-hidden bg-white"
+          className="w-13/14 max-w-2xl border border-gray-200 shadow-xl rounded-xl overflow-hidden bg-white"
         >
           <Card className="border-none shadow-none">
             <div className="h-24 bg-gradient-to-r from-[#084464] to-[#011522] relative">
@@ -298,11 +354,15 @@ function BloggerProfile() {
             <Separator />
             <CardContent className="py-8 space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col items-start justify-between">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                     <Palette className="h-5 w-5 text-[#003b5c]" />
-                    Post Styles
+                    Styles
                   </h3>
+                  <p className="text-sm text-gray-500">
+                    Choose your preferred style for your posts, landing page,
+                    and about page.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -372,33 +432,207 @@ function BloggerProfile() {
                       <div className="h-px flex-1 bg-gray-100"></div>
                     </div>
 
-                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="aspect-video w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
-                        <img
-                          src={
-                            cssStyle === "default"
-                              ? "/assets/defaultview.png"
-                              : cssStyle === "old"
-                              ? "/assets/oldview.png"
-                              : cssStyle === "futuristic"
-                              ? "/assets/futuristicview.png"
-                              : ""
-                          }
-                          alt="Interface preview"
-                          className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                      </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+                      <Carousel key={cssStyle} className="w-full max-w-3xl">
+                        <CarouselContent>
+                          <CarouselItem className="basis-full">
+                            <div className="aspect-[3/2] w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
+                              <img
+                                src={
+                                  cssStyle === "default"
+                                    ? "/assets/defaultview.png"
+                                    : cssStyle === "old"
+                                    ? "/assets/classicview.png"
+                                    : cssStyle === "futuristic"
+                                    ? "/assets/futuristicview.png"
+                                    : ""
+                                }
+                                alt="Interface preview"
+                                className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
+                              />
+                              <div className="absolute bottom-2 left-3 bg-white text-black text-sm px-3 py-1 rounded-full opacity-60">
+                                Post Preview
+                              </div>
+                            </div>
+                          </CarouselItem>
+                          <CarouselItem className="basis-full">
+                            <div className="aspect-[3/2] w-full overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md relative group">
+                              <img
+                                src={
+                                  cssStyle === "default"
+                                    ? "/assets/defaultlanding.png"
+                                    : cssStyle === "old"
+                                    ? "/assets/classiclanding.png"
+                                    : cssStyle === "futuristic"
+                                    ? "/assets/futuristiclanding.png"
+                                    : ""
+                                }
+                                alt="Interface preview"
+                                className="w-full h-full object-cover object-center transform transition-transform duration-300 hover:scale-105"
+                              />
+                              <div className="absolute bottom-2 left-3 bg-white text-black text-sm px-3 py-1 rounded-full opacity-60">
+                                Landing Preview
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        </CarouselContent>
+                        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/70 hover:bg-white rounded-full shadow p-2" />
+                        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/70 hover:bg-white rounded-full shadow p-2" />
+                      </Carousel>
                       <div className="mt-3 text-xs text-gray-500 flex items-center gap-2">
                         <InfoIcon className="h-3 w-3 min-w-[1rem] flex-shrink-0" />
 
                         {cssStyle === "default"
-                          ? "Modern, clean interface, with table of contents"
+                          ? "Modern, clean interface"
                           : cssStyle === "old"
-                          ? "Classic interface with neutral gray tones"
+                          ? "Classic interface"
                           : cssStyle === "futuristic"
                           ? "Futuristic interface with neon accents and holographic effects"
                           : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* About page upload section */}
+              <Separator />
+              <div className="space-y-6">
+                <div className="flex flex-col items-start justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <User className="h-5 w-5 text-[#003b5c]" />
+                    About Page
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Upload your .md file for the about page.
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
+                  <div className="flex flex-col space-y-4">
+                    {about ? (
+                      <div className="flex flex-col space-y-3">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-200">
+                          <div className="flex items-center space-x-3">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            <span className="text-gray-800 font-medium">
+                              About page uploaded
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs bg-white hover:bg-gray-50"
+                              onClick={() =>
+                                window.open(`/${user.name}/about`, "_blank")
+                              }
+                            >
+                              <Eye className="h-3.5 w-3.5 mr-1" />
+                              Preview
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200">
+                        <div className="flex items-center space-x-3">
+                          <InfoIcon className="h-5 w-5 text-amber-500" />
+                          <span className="text-gray-800 font-medium">
+                            No about page uploaded yet
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-all duration-200 hover:border-blue-400 bg-white">
+                      {aboutFileName && (
+                        <button
+                          className="absolute -top-3 -right-3 z-10 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-red-600 transition-all duration-200"
+                          onClick={() => {
+                            handleRemoveAboutFile();
+                          }}
+                        >
+                          ✕
+                        </button>
+                      )}
+                      <Input
+                        type="file"
+                        id="about-file"
+                        ref={aboutFileRef}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        accept=".md"
+                        onChange={(e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                      {!aboutFileName && (
+                        <div className="flex flex-col items-center justify-center text-center">
+                          <Upload className="h-10 w-10 text-gray-400 mb-2" />
+                          <p className="text-sm font-medium text-gray-700">
+                            Drag and drop your markdown file here
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            or click to browse
+                          </p>
+                          <p className="text-xs text-gray-400 mt-3">
+                            Supports .md files up to 1MB
+                          </p>
+                        </div>
+                      )}
+                      {aboutFileName && (
+                        <div className="flex flex-col items-center justify-center text-center">
+                          <Upload className="h-10 w-10 text-gray-400 mb-2" />
+                          <p className="text-sm font-medium text-gray-700">
+                            {aboutFileName}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Click to change file
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-center mt-2">
+                      <Button
+                        disabled={!aboutFileName}
+                        className={`relative flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200
+    ${
+      !aboutFileName
+        ? "text-gray-400 cursor-not-allowed bg-gray-100"
+        : "text-white bg-[#005a7a] hover:bg-[#084464]"
+    }`}
+                        onClick={() => {
+                          handleUploadAboutPage();
+                        }}
+                      >
+                        <Upload className="w-4 h-4" />
+                        {about ? "Update About Page" : "Upload About Page"}
+                      </Button>
+                    </div>
+                    <div className="flex flex-col items-center mt-4">
+                      <div className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <FileText className="h-5 w-5 text-blue-500" />
+                            <div>
+                              <span className="text-gray-800 font-medium block">
+                                About Page Template
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Get started with our pre-formatted template
+                              </span>
+                            </div>
+                          </div>
+                          <a href="/assets/abouttemplate.md" download>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-[#005a7a] border-[#005a7a] hover:text-[#084464]"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download
+                            </Button>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
