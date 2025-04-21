@@ -23,9 +23,9 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
       >
         <div className="flex items-center gap-4 mb-2">
           <div className="p-3 rounded-full bg-gradient-to-r from-[#084464] to-[#1e6188]">
-            {pgVal === "home" && <Home className="h-6 w-6 text-white" />}
+            {pgVal === "home" && <Home className="h-6 w-6 text-white min-w-6 flex-shrink-0" />}
             {pgVal === "analytics" && (
-              <ChartArea className="h-6 w-6 text-white" />
+              <ChartArea className="h-6 w-6 text-white min-w-6 flex-shrink-0" />
             )}
           </div>
           <h1 className="text-3xl font-semibold text-gray-900 leading-tight">
@@ -66,14 +66,14 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
                 value="home"
                 className="py-2.5 flex items-center justify-center transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#084464] data-[state=active]:to-[#0a5977] data-[state=active]:text-white rounded-lg"
               >
-                <Home className="h-5 w-5" />
+                <Home className="h-5 w-5 min-h-5 min-w-5 flex-shrink-0" />
               </TabsTrigger>
 
               <TabsTrigger
                 value="analytics"
                 className="py-2.5 flex items-center justify-center transition-all duration-200 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#084464] data-[state=active]:to-[#0a5977] data-[state=active]:text-white rounded-lg"
               >
-                <ChartArea className="h-5 w-5" />
+                <ChartArea className="h-5 w-5 min-h-5 min-w-5 flex-shrink-0" />
               </TabsTrigger>
             </TabsList>
           </Tabs>

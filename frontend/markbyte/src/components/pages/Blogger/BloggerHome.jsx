@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
 import React from "react";
-import { FaFileUpload, FaUpload } from "react-icons/fa";
-import { FaRegPenToSquare } from "react-icons/fa6";
+import { FaFileUpload } from "react-icons/fa";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Pen,
@@ -16,6 +15,8 @@ import {
   ArrowUp,
   CheckCircle,
   Info,
+  ArrowRight,
+  PenSquare,
 } from "lucide-react";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
@@ -457,28 +458,31 @@ function BloggerHome() {
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 className="relative"
               >
-                <div className="absolute -top-5 left-6 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                <div className="absolute -top-6 left-8 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
                     <Upload className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
                     <div>
-                      <p className="text-gray-500 font-medium mb-2">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                        Import Content
+                      </h3>
+                      <p className="text-gray-600 text-sm">
                         Upload your blog files
                       </p>
-                      <button
-                        className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                        onClick={() => setIsOpen(true)}
-                      >
-                        <span className="flex items-center gap-2">
-                          <FaUpload />
-                          <span>Upload</span>
-                        </span>
-                      </button>
                     </div>
+
+                    <button
+                      onClick={() => setIsOpen(true)}
+                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                    >
+                      <span className="mr-2">Upload Files</span>
+                      <Upload className="h-5 w-5" />
+                    </button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -489,58 +493,73 @@ function BloggerHome() {
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 className="relative"
               >
-                <div className="absolute -top-5 left-6 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform -rotate-2">
+                <div className="absolute -top-6 left-8 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
                     <Pen className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
+                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+
+                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
                     <div>
-                      <p className="text-gray-500 font-medium mb-2">
-                        Ready to start writing?
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                        Ready to Create
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        Start writing your next great story
                       </p>
-                      <button
-                        className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
-                        onClick={() => navigate("/editor")}
-                      >
-                        <span className="flex items-center gap-2">
-                          <FaRegPenToSquare />
-                          <span>Start Writing</span>
-                        </span>
-                      </button>
                     </div>
+
+                    <button
+                      onClick={() => navigate("/editor")}
+                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap "
+                    >
+                      <span className="mr-2">Start Writing</span>
+                      <PenSquare className="h-5 w-5" />
+                    </button>
                   </CardContent>
                 </Card>
               </motion.div>
 
-              {/* Visit Blog Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                 className="relative"
               >
-                <div className="absolute -top-5 left-6 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-r from-[#005a7a] to-[#084464] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
+                <div className="absolute -top-6 left-8 z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
                     <Notebook className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                <Card className="bg-white relative pt-10 h-[220px] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-out border border-gray-100 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-50 opacity-50 rounded-bl-full"></div>
-                  <CardContent className="px-7 pb-7 flex flex-col justify-end h-full">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                      Your Blog
-                    </h3>
-                    <a
-                      href={`/${user.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 bg-gradient-to-r from-[#005a7a] to-[#084464] text-white font-medium py-3.5 px-6 rounded-xl transition-all duration-300 w-full flex items-center justify-center gap-2 hover:shadow-md hover:translate-y-[-2px] active:translate-y-[0px]"
+                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                        Your Blog
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        Share your thoughts with the world
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        window.open(
+                          `/${user.name}`,
+                          "_blank",
+                          "noopener,noreferrer"
+                        )
+                      }
+                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
                     >
-                      Visit Blog
-                    </a>
+                      <span className="mr-2">Visit Blog</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </button>
                   </CardContent>
                 </Card>
               </motion.div>

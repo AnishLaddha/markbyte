@@ -1,7 +1,12 @@
 import React from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { markdown } from "@codemirror/lang-markdown";
+import {
+  markdown,
+  markdownLanguage,
+} from "@codemirror/lang-markdown";
+import { html } from "@codemirror/lang-html";
+import { languages } from "@codemirror/language-data";
 import { basicSetup } from "codemirror";
 import {
   aura,
@@ -380,7 +385,17 @@ const PublishEditorPreview = () => {
               value={currMarkdownContent}
               height="100%"
               width="100%"
-              extensions={[basicSetup, markdown(), EditorView.lineWrapping]}
+              extensions={[
+                basicSetup,
+                markdown({
+                  base: markdownLanguage,
+                  completeHTMLTags: true,
+                  htmlTagLanguage: html(),
+                  codeLanguages: languages,
+                  addKeymap: true,
+                }),
+                EditorView.lineWrapping,
+              ]}
               theme={themeOptions[currTheme] || tokyoNight}
               onChange={(value) => handleMarkdownChange(value)}
               className="h-full text-lg font-['JetBrains Mono',monospace]"
