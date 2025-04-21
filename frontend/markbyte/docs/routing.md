@@ -19,8 +19,9 @@ The app uses **React Router DOM** for client-side routing. Routing is handled in
 | `/editor`                    | Yes            | `EditorPreview`                | Redirects to `Home` if unauthenticated |
 | `/editor/:title/:version`    | Yes           | `PublishEditorPreview`         | Uses dynamic params                    |
 | `/:user/:post`               | No           | `DynamicBlogPost`              | Dynamic blog post URL                  |
-| `/:user/:post/analytics`               | Yes           | `PostAnalytics`              | Dynamic blog post analytics URL                  |
-| `/:username`                 | No           | `BloggerLandingPage`           | Blogger’s public profile               |
+| `/:user/about`               | No           | `BloggerAbout`              | Blogger's about page URL                 |
+| `/:user/:post/analytics`               | No           | `PostAnalytics`              | Dynamic blog post analytics URL                  |
+| `/:username`                 | No           | `BloggerLandingPage`           | Blogger’s public landing page (blog)              |
 | `/profile`                   | Yes           | `BloggerProfile`               | Requires authentication                |
 | `/auth`                      | No/Yes         | `Auth` / `BloggerHome`         | Redirects if already logged in         |
 | `*`                          | No            | `NotFound`                     | Catch-all route                        |
@@ -31,7 +32,7 @@ The app uses **React Router DOM** for client-side routing. Routing is handled in
 
 Some routes conditionally render based on authentication:
 
-```tsx
+```jsx
 element={
   isLoading ? null : !isAuthenticated ? <Home /> : <BloggerHome />
 }
