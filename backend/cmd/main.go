@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/shrijan-swaminathan/markbyte/backend/api"
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/shrijan-swaminathan/markbyte/backend/db/mdb"
@@ -14,9 +15,16 @@ import (
 )
 
 func main() {
+	_ = godotenv.Load()
+
 	var MONGO_URL string
 	if os.Getenv("RUNNING_IN_DOCKER") == "true" {
-		MONGO_URL = "mongodb://mongo:27017"
+		env_mongo_url := os.Getenv("MONGO_URL")
+		if env_mongo_url != "" {
+			MONGO_URL = env_mongo_url
+		} else {
+			MONGO_URL = "mongodb://mongo:27017"
+		}
 	} else {
 		MONGO_URL = "mongodb://localhost:27017"
 	}

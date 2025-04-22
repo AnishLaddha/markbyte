@@ -3,7 +3,13 @@
 import usePostAnalyticData from "@/hooks/use-postanalytics";
 import { useParams } from "react-router-dom";
 import DashboardHeader from "@/components/ui/dashboardheader";
-import { Calendar, Eye, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Calendar,
+  Eye,
+  TrendingUp,
+  TrendingDown,
+  MoveRight,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -226,7 +232,11 @@ function PostAnalytics() {
                   </div>
                   <div
                     className={`flex items-center mt-1 ${
-                      monthuptick > 0 ? "text-emerald-500" : "text-red-500"
+                      monthuptick > 0
+                        ? "text-emerald-500"
+                        : monthuptick < 0
+                        ? "text-red-500"
+                        : "text-gray-500"
                     }`}
                   >
                     {monthuptick > 0 ? (
@@ -236,12 +246,17 @@ function PostAnalytics() {
                           +{monthuptick}% from last month
                         </span>
                       </>
-                    ) : (
+                    ) : monthuptick < 0 ? (
                       <>
                         <TrendingDown className="h-4 w-4 mr-1" />
                         <span className="font-medium">
                           {monthuptick}% from last month
                         </span>
+                      </>
+                    ) : (
+                      <>
+                        <MoveRight className="h-4 w-4 mr-1" />
+                        <span className="font-medium">0% from last month</span>
                       </>
                     )}
                   </div>
@@ -271,7 +286,11 @@ function PostAnalytics() {
                   </div>
                   <div
                     className={`flex items-center mt-1 ${
-                      weekuptick > 0 ? "text-emerald-500" : "text-red-500"
+                      weekuptick > 0
+                        ? "text-emerald-500"
+                        : weekuptick < 0
+                        ? "text-red-500"
+                        : "text-gray-500"
                     }`}
                   >
                     {weekuptick > 0 ? (
@@ -281,12 +300,17 @@ function PostAnalytics() {
                           +{weekuptick}% from last week
                         </span>
                       </>
-                    ) : (
+                    ) : weekuptick < 0 ? (
                       <>
                         <TrendingDown className="h-4 w-4 mr-1" />
                         <span className="font-medium">
                           {weekuptick}% from last week
                         </span>
+                      </>
+                    ) : (
+                      <>
+                        <MoveRight className="h-4 w-4 mr-1" />
+                        <span className="font-medium">0% from last week</span>
                       </>
                     )}
                   </div>
