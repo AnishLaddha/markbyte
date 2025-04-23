@@ -44,7 +44,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
 import BlogPostTable from "@/components/ui/bposttable";
 import { blogTableStaticCols } from "@/constants/TableStaticcols";
@@ -449,130 +449,140 @@ function BloggerHome() {
           handlePageTabChange={handlePageTabChange}
         />
 
-        {pgVal == "home" && (
-          <div className="home-content">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Upload className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Import Content
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Upload your blog files
-                      </p>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={pgVal}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {pgVal == "home" && (
+              <div className="home-content">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Upload className="w-8 h-8 text-white" />
+                      </div>
                     </div>
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Import Content
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Upload your blog files
+                          </p>
+                        </div>
 
-                    <button
-                      onClick={() => setIsOpen(true)}
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
-                    >
-                      <span className="mr-2">Upload Files</span>
-                      <Upload className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                        <button
+                          onClick={() => setIsOpen(true)}
+                          className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                        >
+                          <span className="mr-2">Upload Files</span>
+                          <Upload className="h-5 w-5" />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Pen className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
-
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Ready to Create
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Start writing your next great story
-                      </p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Pen className="w-8 h-8 text-white" />
+                      </div>
                     </div>
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
 
-                    <button
-                      onClick={() => navigate("/editor")}
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap "
-                    >
-                      <span className="mr-2">Start Writing</span>
-                      <PenSquare className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Ready to Create
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Start writing your next great story
+                          </p>
+                        </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Notebook className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Your Blog
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Share your thoughts with the world
-                      </p>
+                        <button
+                          onClick={() => navigate("/editor")}
+                          className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap "
+                        >
+                          <span className="mr-2">Start Writing</span>
+                          <PenSquare className="h-5 w-5" />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Notebook className="w-8 h-8 text-white" />
+                      </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        window.open(
-                          `/${user.name}`,
-                          "_blank",
-                          "noopener,noreferrer"
-                        )
-                      }
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
-                    >
-                      <span className="mr-2">Visit Blog</span>
-                      <ArrowRight className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-            <BlogPostTable
-              data={data}
-              table={table}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          </div>
-        )}
-        {pgVal == "analytics" && <BloggerAnalytics />}
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Your Blog
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            Share your thoughts with the world
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            window.open(
+                              `/${user.name}`,
+                              "_blank",
+                              "noopener,noreferrer"
+                            )
+                          }
+                          className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                        >
+                          <span className="mr-2">Visit Blog</span>
+                          <ArrowRight className="h-5 w-5" />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </div>
+                <BlogPostTable
+                  data={data}
+                  table={table}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
+              </div>
+            )}
+            {pgVal == "analytics" && <BloggerAnalytics />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <Dialog

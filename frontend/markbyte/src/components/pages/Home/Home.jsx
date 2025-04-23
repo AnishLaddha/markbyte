@@ -40,6 +40,13 @@ const Home = React.memo(function Home() {
         {!isSmallScreen2 && (
           <div className="flex gap-6 items-center">
             <a
+              href="/discover"
+              className="text-white font-semibold rounded text-lg transition-all duration-300 relative group"
+            >
+              Discover
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a
               href="/about"
               className="text-white font-semibold rounded text-lg transition-all duration-300 relative group"
             >
@@ -77,6 +84,12 @@ const Home = React.memo(function Home() {
                   onClick={() => navigate("/about")}
                 >
                   <span className="flex items-center gap-2">About</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="focus:bg-blue-800/50 hover:bg-blue-800/30 cursor-pointer"
+                  onClick={() => navigate("/discover")}
+                >
+                  <span className="flex items-center gap-2">Discover</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="focus:bg-blue-800/50 hover:bg-blue-800/30 cursor-pointer"
@@ -138,11 +151,11 @@ const Home = React.memo(function Home() {
                   <FaArrowRight size={13} />
                 </a>
                 <a
-                  href="/about"
+                  href="/discover"
                   className="flex items-center justify-center cursor-pointer group relative py-3 px-6 border border-blue-400/30 hover:bg-blue-900/20 transition-all duration-300 rounded-full"
                 >
                   <span className="relative inline-flex items-center">
-                    Learn More
+                    Start Reading
                     <FaArrowRight size={13} className="ml-2" />
                   </span>
                 </a>

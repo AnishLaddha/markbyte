@@ -25,7 +25,7 @@ const UserDropdown = React.memo(() => {
         transition={{ duration: 0.2}}
       >
         <DropdownMenuTrigger className="cursor-pointer rounded-full overflow-hidden">
-          <Avatar className="w-10 h-10 rounded-full overflow-hidden">
+          <Avatar className="w-11 h-11 rounded-full overflow-hidden">
             <AvatarImage
               src={
                 profilepicture ||
