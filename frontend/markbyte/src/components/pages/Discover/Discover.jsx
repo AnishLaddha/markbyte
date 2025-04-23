@@ -10,7 +10,7 @@ import {
   Eye,
   ArrowRight,
   CalendarIcon,
-  User
+  User,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -39,36 +39,15 @@ function Discover() {
   };
 
   // Sample data for popular content
-  const popularContent = [
-    {
-      post: {
-        title: "Understanding React Hooks",
-        user: "jane_smith",
-        date_uploaded: "2023-04-15T10:30:00Z",
-        link: "static/blog/understanding-react-hooks",
-        direct_link: "https://example.com/blog/understanding-react-hooks",
-      },
-      views: Array(1204).fill(0),
-      date_uploaded: "2023-04-15T10:30:00Z",
-    },
-  ];
+  const popularContent = [];
+  const newContent = [];
+  let blogList = [];
 
-  // Sample data for new content
-  const newContent = [
-    {
-      post: {
-        title: "Getting Started with React Server Components",
-        user: "emily_johnson",
-        date_uploaded: "2023-04-16T18:30:00Z",
-        link: "static/blog/react-server-components",
-        direct_link: "https://example.com/blog/react-server-components",
-      },
-      views: Array(342).fill(0),
-      date_uploaded: "2023-04-16T18:30:00Z",
-    },
-  ];
-
-  const blogList = view === "popular" ? popularContent : newContent;
+  if (!newContent && !popularContent) {
+    blogList = [];
+  } else {
+    blogList = view === "popular" ? popularContent : newContent;
+  }
 
   // Calculate total pages whenever blogList changes
   useEffect(() => {
@@ -102,19 +81,19 @@ function Discover() {
             "
             >
               Disc
-              <Compass className="h-8 w-8 sm:h-10 sm:w-10 text-[#084464] mx-0.5" />
+              <Compass className="h-7 w-7 sm:h-9 sm:w-9 text-[#084464] mx-0.5" />
               ver
             </h2>
             <p className="text-gray-500 text-lg sm:text-xl">
-                Explore the latest and most popular blog posts from our community.
+              Explore the latest and most popular blog posts from our community.
             </p>
           </div>
 
           <div className="flex flex-row space-x-4 bg-white p-1.5 rounded-full shadow-sm border border-gray-200">
             <button
               onClick={() => {
-                setView("popular")
-                setCurrentPage(0)
+                setView("popular");
+                setCurrentPage(0);
               }}
               className={`
                 rounded-full
@@ -135,8 +114,8 @@ function Discover() {
 
             <button
               onClick={() => {
-                setView("new")
-                setCurrentPage(0)
+                setView("new");
+                setCurrentPage(0);
               }}
               className={`
                 rounded-full
@@ -158,70 +137,84 @@ function Discover() {
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div
-            key={view}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-          >
-            {blogList && blogList.length > 0 && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mx-8 mt-8">
-                {blogList.slice(currentPage * nposts, (currentPage + 1) * nposts).map((post, index) => {
-                  return (
-                    <motion.div
-                      key={post.post.user + post.post.title + post.date_uploaded}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
+          {blogList && blogList.length > 0 ? (
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mx-8 mt-8"
+            >
+              {blogList
+                .slice(currentPage * nposts, (currentPage + 1) * nposts)
+                .map((post, index) => (
+                  <motion.div
+                    key={post.post.user + post.post.title + post.date_uploaded}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    className="h-full"
+                  >
+                    <Card
+                      className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden"
+                      onClick={() => {
+                        const url = post.post.link.includes("static")
+                          ? post.post.link
+                          : post.post.direct_link;
+                        window.open(url, "_blank");
+                      }}
                     >
-                      <Card
-                        className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden"
-                        onClick={() => {
-                          console.log("check!")
-                          if (post.post.link.includes("static")) {
-                            window.open(post.post.link, "_blank")
-                          } else {
-                            window.open(post.post.direct_link, "_blank")
-                          }
-                        }}
-                      >
-                        <CardContent className="p-6 flex flex-col flex-grow">
-                          <h3 className="text-xl font-bold mb-4 text-gray-800 group-hover:text-[#084464] transition-colors duration-300 line-clamp-2">
-                            {post.post.title}
-                          </h3>
-
-                          <div className="mt-auto">
-                            <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                              <div className="flex items-center">
-                                <User className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                                <span>{post.post.user}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <Eye className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                                <span>{post.views.length}</span>
-                              </div>
+                      <div className="h-2 bg-[#084464]/10 group-hover:bg-[#084464] transition-colors duration-300" />
+                      <CardContent className="p-6 flex flex-col flex-grow">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800 group-hover:text-[#084464] transition-colors duration-300 line-clamp-2">
+                          {post.post.title}
+                        </h3>
+                        <div className="mt-auto">
+                          <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                            <div className="flex items-center">
+                              <User className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+                              <span>{post.post.user}</span>
                             </div>
-
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center text-sm text-gray-500">
-                                <CalendarIcon className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                                {formatDate(post.post.date_uploaded)}
-                              </div>
-
-                              <div className="flex items-center font-medium text-[#084464]">
-                                Read <ArrowRight className="ml-1.5 h-4 w-4" />
-                              </div>
+                            <div className="flex items-center">
+                              <Eye className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+                              <span>{post.views.length}</span>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            )}
-          </motion.div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <CalendarIcon className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+                              {formatDate(post.post.date_uploaded)}
+                            </div>
+                            <div className="flex items-center font-medium text-[#084464]">
+                              Read <ArrowRight className="ml-1.5 h-4 w-4" />
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center justify-center py-16 text-center mx-8 mt-8"
+            >
+              <Compass className="h-16 w-16 text-[#084464]/30 mb-4" />
+              <h3 className="text-xl font-medium text-gray-700 mb-2">
+                No posts found
+              </h3>
+              <p className="text-gray-500 max-w-md">
+                There are no posts available in this category at the moment.
+                Check back later or try a different category.
+              </p>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Pagination controls */}

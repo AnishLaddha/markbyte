@@ -15,7 +15,7 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
     handlePageTabChange(val);
   };
   return (
-    <div className="mx-8 flex justify-between items-center gap-8">
+    <div className="mx-8 flex flex-col sm:flex-row justify-between items-center gap-8">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
