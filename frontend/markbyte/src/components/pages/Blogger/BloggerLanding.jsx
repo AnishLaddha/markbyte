@@ -1,3 +1,5 @@
+// This component is responsible for rendering the landing page of a blogger's profile.
+// Using the current style, it fetches the blog list and displays with the appropriate layout
 import { useParams } from "react-router-dom";
 import useBlogList from "@/hooks/use-bloglist";
 import React from "react";
@@ -9,6 +11,7 @@ import PinkLandingPage from "./BloggerLanding/Pink";
 
 const BloggerLandingPage = React.memo(function BloggerLandingPage() {
   const { username } = useParams();
+  // Fetch the blog list and profile picture using the custom hook
   const {
     postdata: blogList,
     profilepicture,

@@ -1,4 +1,7 @@
-// Reused layout structure from ShadCN UI Area Chart - Interactive example:
+/* This component is used to display the analytics of a blogger's posts. 
+It shows a graph of the views over time and a table of the posts with their respective views. */
+
+// NOTE: Reused layout structure from ShadCN UI Area Chart - Interactive example:
 // https://ui.shadcn.com/charts
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -68,6 +71,7 @@ function BloggerAnalytics() {
     },
   });
 
+  // Reset the table to the first page when the data or search term changes
   useEffect(() => {
     table.setPageIndex(0);
   }, [analyticsData, searchTerm]);
@@ -84,7 +88,7 @@ function BloggerAnalytics() {
   };
 
   // Filter the timesData based on the selected time range
-  // (makes use of function given by shadcn)
+  // (builds on function given by shadcn)
   const filteredData = (timesData ?? []).filter((item) => {
     const date = new Date(item.date);
     const now = new Date();
@@ -301,6 +305,7 @@ function BloggerAnalytics() {
           </CardContent>
         </Card>
       </motion.div>
+      
       {/* Table containing posts, date, views, and a link to the post's analytics */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

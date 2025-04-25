@@ -1,3 +1,4 @@
+/* This component is the central hub for the Blogger dashboard. It allows users to upload .md files, manage their blog posts, and view analytics. */
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -113,7 +114,6 @@ function BloggerHome() {
       cell: ({ row }) => {
         const rowId = row.original.id || row.original.title;
 
-        // Get selected version from parent state
         const selectedVersion =
           selectedVersions[rowId] || row.original.latestVersion;
 
@@ -233,6 +233,7 @@ function BloggerHome() {
     },
   ];
 
+  // Static columns for the table + dynamic columns
   const blogTablecols = [...blogTableStaticCols, ...blogTableDynamiccols];
 
   const handleIconButtonClick = (fileType) => {
@@ -252,6 +253,7 @@ function BloggerHome() {
     }
   };
 
+  // Handles the removal of the selected file
   const handleRemoveFile = (fileType) => {
     if (fileType === "md") {
       setMdFileName("");
@@ -294,6 +296,7 @@ function BloggerHome() {
     }
   };
 
+  // Functions to create success and failure toasts
   const createUploadToast = (posttitle) => {
     return toast({
       title: <div className="flex items-center">File Uploaded</div>,
@@ -315,8 +318,8 @@ function BloggerHome() {
     });
   };
 
+  // Handle the deletion of a blog post
   const handleDeletePost = () => {
-    // refactor with service
     deleteBlogPost(postToDelete)
       .then(() => {
         toast({
@@ -342,11 +345,11 @@ function BloggerHome() {
       });
   };
 
+  // Handle the upload of markdown and zip files
   const handleUploadFile = (fileType) => {
     const fileInput = fileType === "md" ? mdFileInputRef : zipFileInputRef;
     const file = fileInput.current.files[0];
     if (fileType == "md") {
-      // refactor with service
       uploadMarkdownFile(file, mdPostTitle)
         .then(() => {
           setIsOpen(false);
@@ -502,6 +505,7 @@ function BloggerHome() {
           handlePageTabChange={handlePageTabChange}
         />
 
+        {/* Cards to upload files, edit, upload git repo, and visit blog */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={pgVal}
@@ -731,6 +735,7 @@ function BloggerHome() {
                     </Card>
                   </motion.div>
                 </div>
+                {/* Table to display blog posts and their versions. Also allows for version publishing */}
                 <BlogPostTable
                   data={data}
                   table={table}
@@ -743,7 +748,8 @@ function BloggerHome() {
           </motion.div>
         </AnimatePresence>
       </main>
-
+      
+      {/* Dialog for uploading files (Markdown and ZIP) */}
       <Dialog
         open={isOpen}
         onOpenChange={(open) => {
@@ -976,7 +982,8 @@ function BloggerHome() {
           </Tabs>
         </DialogContent>
       </Dialog>
-
+      
+      {/* Dialog for uploading GitHub repository details */}
       <Dialog
         open={isGithubOpen}
         onOpenChange={(open) => {
@@ -1066,7 +1073,8 @@ function BloggerHome() {
           </div>
         </DialogContent>
       </Dialog>
-
+      
+      {/* Alert dialog for confirming post deletion */}
       <ConfirmDeleteDialog
         isOpen={isalertOpen}
         onOpenChange={setIsAlertOpen}

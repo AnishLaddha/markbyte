@@ -1,3 +1,4 @@
+/* This is the discover page where readers/bloggers can discover new and popular blog posts. */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
@@ -40,7 +41,7 @@ function Discover() {
     }).format(date);
   };
 
-  // Sample data for popular content
+  // Fetches top and new posts from hooks
   const { topPosts: popularContent } = useDiscoverTop();
   const { newPosts: newContent } = useDiscoverNew();
   let blogList = [];
@@ -56,7 +57,6 @@ function Discover() {
     setNPages(Math.ceil((blogList?.length || 0) / nposts));
   }, [blogList, nposts]);
 
-  // Handle page navigation
   const handleNextPage = () => {
     if ((currentPage + 1) * nposts < blogList.length) {
       setCurrentPage(currentPage + 1);
@@ -156,7 +156,8 @@ function Discover() {
             </button>
           </div>
         </div>
-
+        
+        {/* Blog posts grid */}
         <AnimatePresence mode="wait">
           {blogList && blogList.length > 0 ? (
             <motion.div
@@ -200,7 +201,7 @@ function Discover() {
                               <Avatar
                                 className="h-8 w-8 shadow-xl cursor-pointer mr-2"
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Prevent card click from triggering
+                                  e.stopPropagation();
                                   window.open(
                                     `/${post.blog.user}`,
                                     "_blank"
