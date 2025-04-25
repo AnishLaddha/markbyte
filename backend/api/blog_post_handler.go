@@ -32,6 +32,13 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	b_p, err := blogPostDataDB.FetchBlogPost(r.Context(), username, unprocess_post_title, active)
+	if err != nil {
+		http.Error(w, "No such Blog Post exists", http.StatusNotFound)
+		return
+	}
+	date_str := b_p.DateUploaded.Format("01/02/2006")
+
 	endpoint := "/" + username + "/" + post
 	//try redis
 	cacheHit := false
@@ -75,7 +82,7 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 			user_details.Style = "default"
 		}
 		style := user_details.Style
-		markdown_render.InsertTemplate(&htmlContent, style, username, user_details.Name)
+		markdown_render.InsertTemplate(&htmlContent, style, username, user_details.Name, date_str)
 	}
 	if redisdb.RedisActive && !cacheHit {
 		err := redisdb.SetEndpoint(r.Context(), endpoint, &htmlContent)

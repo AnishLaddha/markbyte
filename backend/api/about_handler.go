@@ -123,7 +123,7 @@ func HandleAboutPageGet(w http.ResponseWriter, r *http.Request) {
 		user_details.Style = "default"
 	}
 	style := user_details.Style
-	markdown_render.InsertTemplate(&html_content, style, username, user_details.Name)
+	markdown_render.InsertTemplate(&html_content, style, username, user_details.Name, "")
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
