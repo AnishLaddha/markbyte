@@ -1,9 +1,6 @@
 const mdtemplates = [
   // Template 1: Header Only
-  `# Blog Post Title
-
-*Published on: YYYY-MM-DD*   
-*Author: Your Name*    
+  `# Blog Post Title  
 
 ![Featured Image Description](/path/to/image.jpg)`,
 
@@ -37,10 +34,7 @@ Include a brief bio here—2-3 sentences about yourself and your expertise.
 > **Note to editors:** Add any notes for the editorial team here. This section will be removed before publishing.`,
 
   // Template 4: Complete Template (Header + Body + Footer)
-  `# Blog Post Title
-
-*Published on: YYYY-MM-DD*   
-*Author: Your Name*    
+  `# Blog Post Title  
 
 ![Featured Image Description](/path/to/image.jpg)
 

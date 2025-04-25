@@ -102,6 +102,12 @@ function Discover() {
             <p className="text-gray-500 text-lg sm:text-xl">
               Explore the latest and most popular blog posts from our community.
             </p>
+            <motion.div
+              className="h-1 w-24 bg-gradient-to-r from-[#084464] to-[#1A698F] rounded-full mt-2"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 96, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            />
           </div>
 
           <div className="flex flex-row space-x-4 bg-white p-1.5 rounded-full shadow-sm border border-gray-200">
@@ -191,7 +197,16 @@ function Discover() {
                         <div className="mt-auto">
                           <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                             <div className="flex items-center">
-                              <Avatar className="h-8 w-8 shadow-xl cursor-pointer mr-1.5">
+                              <Avatar
+                                className="h-8 w-8 shadow-xl cursor-pointer mr-2"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent card click from triggering
+                                  window.open(
+                                    `/${post.blog.user}`,
+                                    "_blank"
+                                  );
+                                }}
+                              >
                                 <AvatarImage
                                   src={
                                     post.pfp
@@ -202,7 +217,18 @@ function Discover() {
                                   className="object-cover w-full h-full"
                                 />
                               </Avatar>
-                              <span>{post.blog.user}</span>
+                              <span
+                                className="hover:text-[#084464] hover:underline cursor-pointer text-md"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(
+                                    `/${post.blog.user}`,
+                                    "_blank"
+                                  );
+                                }}
+                              >
+                                {post.blog.user}
+                              </span>
                             </div>
                             <div className="flex items-center">
                               <Eye className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
