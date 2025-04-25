@@ -116,31 +116,25 @@ func HandleDiscoverTopPosts(w http.ResponseWriter, r *http.Request) {
 		if len(postData) >= 50 {
 			break
 		}
-		active, err := blogPostDataDB.IsPostActive(r.Context(), analytics.Username, analytics.Title, analytics.Version)
-		if err != nil || !active {
+		blog_post, err := blogPostDataDB.FetchBlogPost(r.Context(), analytics.Username, analytics.Title, analytics.Version)
+		if err != nil || !blog_post.IsActive {
 			continue
 		}
-		blog := db.BlogPostData{
-			User:         analytics.Username,
-			Title:        analytics.Title,
-			Version:      analytics.Version,
-			DateUploaded: analytics.Date,
-			IsActive:     true,
-		}
-		pfp, ok := pfpMap[blog.User]
+
+		pfp, ok := pfpMap[blog_post.User]
 		if !ok {
-			userData, err := userDB.GetUser(r.Context(), blog.User)
+			userData, err := userDB.GetUser(r.Context(), blog_post.User)
 			if err != nil {
 				pfp = ""
 			} else {
 				pfp = userData.ProfilePicture
 			}
-			pfpMap[blog.User] = pfp
+			pfpMap[blog_post.User] = pfp
 		}
 
 		postData = append(postData, PostData{
 			Pfp:       pfp,
-			Blog:      blog,
+			Blog:      blog_post,
 			ViewCount: analytics.ViewCount,
 		})
 	}
