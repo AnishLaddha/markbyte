@@ -252,7 +252,7 @@ function BloggerProfile() {
   return (
     <div className="BloggerProfile min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 text-gray-200 overflow-hidden transition-colors duration-300">
       <DashboardHeader />
-      <div className="absolute top-20 left-4 z-10">
+      {/* <div className="absolute top-20 left-4 z-10">
         <a
           href="/"
           className="inline-flex items-center gap-2.5 py-2 px-4 text-sm font-medium text-[#003b5c] bg-white rounded-lg border border-blue-200 shadow-sm hover:bg-blue-50 hover:border-blue-300 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50"
@@ -260,7 +260,7 @@ function BloggerProfile() {
           <ChevronLeft className="h-4 w-4 stroke-[2.5px]" />
           <span>Back to Home</span>
         </a>
-      </div>
+      </div> */}
       <div className="flex-1 flex justify-center items-center p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -50 }}

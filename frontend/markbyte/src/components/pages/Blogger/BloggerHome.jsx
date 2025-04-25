@@ -17,7 +17,18 @@ import {
   Info,
   ArrowRight,
   PenSquare,
+  Link,
+  User,
+  Loader2,
 } from "lucide-react";
+import { GoGitBranch } from "react-icons/go";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { SiGithub } from "react-icons/si";
 import { IconButton } from "@mui/material";
 import useBlogData from "@/hooks/use-blogdata";
 import {
@@ -44,7 +55,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
 import BlogPostTable from "@/components/ui/bposttable";
 import { blogTableStaticCols } from "@/constants/TableStaticcols";
@@ -55,6 +66,7 @@ import {
   deleteBlogPost,
   uploadMarkdownFile,
   uploadZipFile,
+  uploadGitHubRepo,
 } from "@/services/blogService";
 import { Input } from "@/components/ui/input";
 
@@ -63,6 +75,10 @@ function BloggerHome() {
   const navigate = useNavigate();
   const { user, name } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isGithubOpen, setIsGithubOpen] = useState(false);
+  const [gitOwner, setGitOwner] = useState("");
+  const [gitRepo, setGitRepo] = useState("");
+  const [gitBranch, setGitBranch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const [mdFileName, setMdFileName] = useState("");
@@ -79,6 +95,7 @@ function BloggerHome() {
   const [mdwarningMsg, setmdWarningMsg] = useState("");
   const [showzipWarning, setShowzipWarning] = useState(false);
   const [zipwarningMsg, setzipWarningMsg] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     setSelectedVersions(
@@ -378,6 +395,42 @@ function BloggerHome() {
     }
   };
 
+  const handleGitUpload = () => {
+    if (!gitOwner || !gitRepo || !gitBranch || isUploading) {
+      return;
+    }
+
+    setIsUploading(true);
+
+    uploadGitHubRepo(gitOwner, gitRepo, gitBranch)
+      .then(() => {
+        setIsGithubOpen(false);
+        fetchData();
+        setGitOwner("");
+        setGitRepo("");
+        setGitBranch("");
+        toast({
+          variant: "default",
+          title: "GitHub Repo Uploaded",
+          description: `Your GitHub repo has been uploaded successfully.`,
+          action: <CheckCircle size={30} className="text-white" />,
+          className:
+            "bg-[#084464] text-white font-['DM Sans'] border-none shadow-lg w-auto backdrop-blur-md transition-all duration-300 ease-in-out",
+          duration: 3000,
+        });
+      })
+      .catch((error) => {
+        console.error("GitHub upload error:", error);
+        createFailureToast(
+          "Upload Failed",
+          "There was an error uploading your GitHub repo."
+        );
+      })
+      .finally(() => {
+        setIsUploading(false);
+      });
+  };
+
   const filteredData = useMemo(() => {
     return data.filter((item) =>
       item.title?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -449,130 +502,246 @@ function BloggerHome() {
           handlePageTabChange={handlePageTabChange}
         />
 
-        {pgVal == "home" && (
-          <div className="home-content">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-8 mt-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Upload className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Import Content
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Upload your blog files
-                      </p>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={pgVal}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {pgVal == "home" && (
+              <div className="home-content">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mx-4 sm:mx-8 mt-6 sm:mt-10">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative mb-4"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Upload className="w-8 h-8 text-white" />
+                      </div>
                     </div>
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-16 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
 
-                    <button
-                      onClick={() => setIsOpen(true)}
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
-                    >
-                      <span className="mr-2">Upload Files</span>
-                      <Upload className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                      {/* Info Icon */}
+                      <div className="absolute top-4 right-4 z-10">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-5 w-5 text-gray-400 hover:text-gray-700 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-white text-gray-800 border border-gray-200 shadow-md max-w-[180px]"
+                              side="top"
+                              align="end"
+                            >
+                              <p className="text-sm whitespace-normal break-words">
+                                Upload your blog files and migrate easily.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Pen className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Import Content
+                          </h3>
+                        </div>
+                        <button
+                          onClick={() => setIsOpen(true)}
+                          className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                        >
+                          <span className="mr-2">Upload Files</span>
+                          <Upload className="h-5 w-5" />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
 
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Ready to Create
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Start writing your next great story
-                      </p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative mb-4"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Pen className="w-8 h-8 text-white" />
+                      </div>
                     </div>
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-16 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
 
-                    <button
-                      onClick={() => navigate("/editor")}
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap "
-                    >
-                      <span className="mr-2">Start Writing</span>
-                      <PenSquare className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                      {/* Info Icon (Top Right) */}
+                      <div className="absolute top-4 right-4 z-10">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-5 w-5 text-gray-400 hover:text-gray-700 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-white text-gray-800 border border-gray-200 shadow-md max-w-[180px]"
+                              side="top"
+                              align="end"
+                            >
+                              <p className="text-sm whitespace-normal break-words">
+                                Start writing your next great story in our
+                                interactive editor.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-                className="relative"
-              >
-                <div className="absolute -top-6 left-8 z-10">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
-                    <Notebook className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <Card className="bg-white/80 backdrop-blur-sm relative pt-12 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
-                  <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                        Your Blog
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Share your thoughts with the world
-                      </p>
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full grow">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                          Ready to Create
+                        </h3>
+                        <div className="mt-auto pt-4">
+                          <button
+                            onClick={() => navigate("/editor")}
+                            className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                          >
+                            <span className="mr-2">Start Writing</span>
+                            <PenSquare className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative mb-4"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-1 hover:rotate-0 transition-all duration-300">
+                        <SiGithub className="w-9 h-9 text-white" />
+                      </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        window.open(
-                          `/${user.name}`,
-                          "_blank",
-                          "noopener,noreferrer"
-                        )
-                      }
-                      className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
-                    >
-                      <span className="mr-2">Visit Blog</span>
-                      <ArrowRight className="h-5 w-5" />
-                    </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-            <BlogPostTable
-              data={data}
-              table={table}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          </div>
-        )}
-        {pgVal == "analytics" && <BloggerAnalytics />}
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-16 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+
+                      {/* Info Icon (Top Right) */}
+                      <div className="absolute top-4 right-4 z-10">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-5 w-5 text-gray-400 hover:text-gray-700 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-white text-gray-800 border border-gray-200 shadow-md max-w-[180px]"
+                              side="top"
+                              align="end"
+                            >
+                              <p className="text-sm whitespace-normal break-words">
+                                Sync markdown documentation directly from your
+                                GitHub repo.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full grow">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                          Your Docs, Auto-Published
+                        </h3>
+                        <div className="mt-auto pt-4">
+                          <button
+                            type="button"
+                            onClick={() => setIsGithubOpen(true)}
+                            className="bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                          >
+                            <span className="mr-2">Upload Details</span>
+                            <ArrowRight className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="relative mb-4"
+                  >
+                    <div className="absolute -top-6 left-8 z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#005a7a] to-[#084464] rounded-xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-all duration-300">
+                        <Notebook className="w-8 h-8 text-white" />
+                      </div>
+                    </div>
+                    <Card className="bg-white/80 backdrop-blur-sm relative pt-16 h-[240px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100/60 flex flex-col overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100/30 rounded-bl-full pointer-events-none"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#005a7a]/5 rounded-tr-full pointer-events-none"></div>
+
+                      {/* Info Icon */}
+                      <div className="absolute top-4 right-4 z-10">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-5 w-5 text-gray-400 hover:text-gray-700 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-white text-gray-800 border border-gray-200 shadow-md max-w-[180px]"
+                              side="top"
+                              align="end"
+                            >
+                              <p className="text-sm whitespace-normal break-words">
+                                Share your thoughts with the world.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <CardContent className="px-8 pb-8 flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Your Blog
+                          </h3>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            window.open(
+                              `/${user.name}`,
+                              "_blank",
+                              "noopener,noreferrer"
+                            )
+                          }
+                          className="mt-4 bg-[#084464] hover:bg-[#0a5178] text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 ease-in-out w-full flex items-center justify-center whitespace-nowrap"
+                        >
+                          <span className="mr-2">Visit Blog</span>
+                          <ArrowRight className="h-5 w-5" />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </div>
+                <BlogPostTable
+                  data={data}
+                  table={table}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
+              </div>
+            )}
+            {pgVal == "analytics" && <BloggerAnalytics />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <Dialog
@@ -805,6 +974,96 @@ function BloggerHome() {
               )}
             </TabsContent>
           </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isGithubOpen}
+        onOpenChange={(open) => {
+          setIsGithubOpen(open);
+          if (!open) {
+            setGitOwner("");
+            setGitRepo("");
+            setGitBranch("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[480px] rounded-xl p-0 overflow-hidden border-0 shadow-lg">
+          <div className="bg-gradient-to-r from-[#003b5c] to-[#0a5a7c] p-8 text-white">
+            <DialogHeader className="flex flex-col items-center space-y-2">
+              <SiGithub className="h-12 w-12 mb-2" />
+              <DialogTitle className="text-center text-3xl font-bold font-['DM Sans']">
+                Upload Your GitHub Repo
+              </DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-8 flex flex-col items-center justify-center bg-white">
+            <div className="relative w-full max-w-[360px] mb-4">
+              <Input
+                type="text"
+                placeholder="Repository Owner"
+                className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
+                onChange={(e) => setGitOwner(e.target.value)}
+                value={gitOwner}
+              />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            <div className="relative w-full max-w-[360px] mb-4">
+              <Input
+                type="text"
+                placeholder="Repository Name"
+                className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
+                onChange={(e) => setGitRepo(e.target.value)}
+                value={gitRepo}
+              />
+              <SiGithub className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            <div className="relative w-full max-w-[360px] mb-4">
+              <Input
+                type="text"
+                placeholder="Repository Branch"
+                className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
+                onChange={(e) => setGitBranch(e.target.value)}
+                value={gitBranch}
+              />
+              <GoGitBranch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            <Button
+              disabled={
+                isUploading ||
+                gitRepo.length < 1 ||
+                gitOwner.length < 1 ||
+                gitBranch.length < 1
+              }
+              className={`w-full max-w-[360px] py-6 text-white font-medium text-base transition-all ${
+                isUploading
+                  ? "bg-gray-400 cursor-wait"
+                  : gitRepo.length < 1 ||
+                    gitOwner.length < 1 ||
+                    gitBranch.length < 1
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#003b5c] to-[#0a5a7c] hover:from-[#084464] hover:to-[#0b6b92] shadow-md"
+              }`}
+              onClick={handleGitUpload}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <ArrowUp size={18} className="mr-2" />
+                  Upload Repository
+                </>
+              )}
+            </Button>
+
+            <p className="mt-4 text-xs text-gray-500 text-center max-w-[360px]">
+              Parsing time can take up to 20 seconds depending on the size of
+              the repository. Please keep the size of the repository under 50MB.
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
 

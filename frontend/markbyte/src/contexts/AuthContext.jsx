@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       const response = await loginUser(username, password);
       if (response.status === 200) {
         await fetchUserInfo();
+        localStorage.clear();
         return true;
       } else {
         return false;
