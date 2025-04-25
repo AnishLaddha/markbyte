@@ -9,6 +9,7 @@ import (
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoAnalyticsRepository struct {
@@ -48,7 +49,10 @@ func (r *MongoAnalyticsRepository) GetPostAnalytics(ctx context.Context, usernam
 
 func (r *MongoAnalyticsRepository) IncrementViews(ctx context.Context, username string, title string, version string) error {
 	filter := bson.M{"username": username, "title": title, "version": version}
-	update := bson.M{"$push": bson.M{"views": time.Now()}}
+	update := bson.M{
+		"$push": bson.M{"views": time.Now()},
+		"$inc":  bson.M{"view_count": 1},
+	}
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -117,4 +121,30 @@ func (r *MongoAnalyticsRepository) GetAllPostTimeStamps(ctx context.Context, use
 		post_timestamps = append(post_timestamps, analytics.Views...)
 	}
 	return post_timestamps, nil
+}
+
+func (r *MongoAnalyticsRepository) GetPostViewCount(ctx context.Context, username string, title string, version string) (int, error) {
+	filter := bson.M{"username": username, "title": title, "version": version}
+	var analytics db.PostAnalytics
+	err := r.collection.FindOne(ctx, filter).Decode(&analytics)
+	if err != nil {
+		return 0, err
+	}
+	return analytics.ViewCount, nil
+}
+
+func (r *MongoAnalyticsRepository) GetMostViewedPosts(ctx context.Context, limit int) ([]db.PostAnalytics, error) {
+	opts := options.Find().
+		SetSort(bson.D{{Key: "view_count", Value: -1}}).
+		SetLimit(int64(limit))
+	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var posts []db.PostAnalytics
+	if err := cursor.All(ctx, &posts); err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
