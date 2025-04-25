@@ -1,10 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import {
-  markdown,
-  markdownLanguage,
-} from "@codemirror/lang-markdown";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { html } from "@codemirror/lang-html";
 import { languages } from "@codemirror/language-data";
 import { basicSetup } from "codemirror";
@@ -59,10 +56,12 @@ const PublishEditorPreview = () => {
   const { title, version } = useParams();
   const [currMarkdownContent, setCurrMarkdownContent] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
+  const [originalMarkdownContent, setOriginalMarkdownContent] = useState("");
 
   const revert = () => {
     getMarkdownVersion(title, version)
       .then((response) => {
+        setOriginalMarkdownContent(response.data);
         setCurrMarkdownContent(response.data);
         setMarkdownContent(response.data);
         setRenderMarkdown(true);
@@ -285,7 +284,11 @@ const PublishEditorPreview = () => {
             className="bg-gradient-to-r from-green-800 to-green-600 hover:from-green-900 hover:to-green-700 
              text-white font-semibold p-2 rounded-full flex items-center justify-center 
              transition-all duration-300 shadow-lg shadow-green-800/20 hover:shadow-green-900/30"
-            onClick={() => revert()}
+            onClick={() => {
+              setCurrMarkdownContent(originalMarkdownContent);
+              setMarkdownContent(originalMarkdownContent);
+              setRenderMarkdown(true);
+            }}
             title="Revert to original"
           >
             <Undo2 className="h-4 w-4" />
