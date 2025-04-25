@@ -52,6 +52,7 @@ type BlogPostDataDB interface {
 	FetchActiveBlog(ctx context.Context, username string, title string) (string, error)
 	FetchFiftyNewestPosts(ctx context.Context) ([]BlogPostData, error)
 	IsPostActive(ctx context.Context, username string, title string, version string) (bool, error)
+	FetchBlogPost(ctx context.Context, username string, title string, version string) (BlogPostData, error)
 }
 
 type PostAnalytics struct {
