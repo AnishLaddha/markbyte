@@ -164,12 +164,13 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newPostAnalytics := db.PostAnalytics{
-		Username: username,
-		Title:    title,
-		Version:  fmt.Sprintf("%d", newVersion),
-		Date:     post_time,
-		Views:    []time.Time{},
-		Likes:    []string{},
+		Username:  username,
+		Title:     title,
+		Version:   fmt.Sprintf("%d", newVersion),
+		Date:      post_time,
+		Views:     []time.Time{},
+		ViewCount: 0,
+		Likes:     []string{},
 	}
 
 	_, err = AnalyticsDataDB.CreatePostAnalytics(r.Context(), &newPostAnalytics)

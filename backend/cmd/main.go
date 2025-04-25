@@ -53,6 +53,8 @@ func main() {
 		fmt.Printf("\nFailed to create Redis Instance\n")
 	}
 
+	api.SetGithubToken(os.Getenv("GITHUB_TOKEN"))
+
 	port := ":8080"
 	fmt.Printf("Starting server on %s\n", port)
 	err = http.ListenAndServe(port, server.SetupRouter())
