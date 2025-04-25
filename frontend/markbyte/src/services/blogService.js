@@ -67,3 +67,11 @@ export const fetchBlogPosts = (user) => {
     },
   });
 };
+
+export const fetchDiscoverNewPosts = () => {
+  return axios.get(`${API_URL}/discover/new`);
+}
+
+export const fetchDiscoverTopPosts = () => {
+  return axios.get(`${API_URL}/discover/top`);
+};

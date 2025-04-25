@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/ui/dashboardheader";
 import NoAuthDashboardHeader from "@/components/ui/noauthheader";
 import { useAuth } from "@/contexts/AuthContext";
+import useDiscoverNew from "@/hooks/use-discovernew";
+import useDiscoverTop from "@/hooks/use-discovertop";
 import {
   TrendingUp,
   MessageSquarePlus,
@@ -39,8 +41,8 @@ function Discover() {
   };
 
   // Sample data for popular content
-  const popularContent = [];
-  const newContent = [];
+  const { topPosts: popularContent } = useDiscoverTop();
+  const { newPosts: newContent } = useDiscoverNew();
   let blogList = [];
 
   if (!newContent && !popularContent) {
@@ -150,7 +152,9 @@ function Discover() {
                 .slice(currentPage * nposts, (currentPage + 1) * nposts)
                 .map((post, index) => (
                   <motion.div
-                    key={post.post.user + post.post.title + post.date_uploaded}
+                    key={
+                      post.blog.user + post.blog.title + post.blog.date_uploaded
+                    }
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -159,32 +163,32 @@ function Discover() {
                     <Card
                       className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden"
                       onClick={() => {
-                        const url = post.post.link.includes("static")
-                          ? post.post.link
-                          : post.post.direct_link;
+                        const url = post.blog.link.includes("static")
+                          ? post.blog.link
+                          : post.blog.direct_link;
                         window.open(url, "_blank");
                       }}
                     >
                       <div className="h-2 bg-[#084464]/10 group-hover:bg-[#084464] transition-colors duration-300" />
                       <CardContent className="p-6 flex flex-col flex-grow">
                         <h3 className="text-xl font-bold mb-4 text-gray-800 group-hover:text-[#084464] transition-colors duration-300 line-clamp-2">
-                          {post.post.title}
+                          {post.blog.title}
                         </h3>
                         <div className="mt-auto">
                           <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                             <div className="flex items-center">
                               <User className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                              <span>{post.post.user}</span>
+                              <span>{post.blog.user}</span>
                             </div>
                             <div className="flex items-center">
                               <Eye className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                              <span>{post.views.length}</span>
+                              <span>{post.view_count}</span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center text-sm text-gray-500">
                               <CalendarIcon className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
-                              {formatDate(post.post.date_uploaded)}
+                              {formatDate(post.blog.date_uploaded)}
                             </div>
                             <div className="flex items-center font-medium text-[#084464]">
                               Read <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -215,42 +219,42 @@ function Discover() {
               </p>
             </motion.div>
           )}
+
+          {/* Pagination controls */}
+          {blogList && blogList.length > nposts && (
+            <div className="mt-16 flex justify-center">
+              <Pagination>
+                <PaginationContent className="flex items-center gap-4">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={handlePrevPage}
+                      className={`cursor-pointer ${
+                        currentPage === 0
+                          ? "pointer-events-none opacity-50"
+                          : "hover:bg-gray-100"
+                      }`}
+                    />
+                  </PaginationItem>
+
+                  <div className="text-[#084464] font-medium">
+                    Page {currentPage + 1} of {npages}
+                  </div>
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={handleNextPage}
+                      className={`cursor-pointer ${
+                        (currentPage + 1) * nposts >= blogList.length
+                          ? "pointer-events-none opacity-50"
+                          : "hover:bg-gray-100"
+                      }`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </AnimatePresence>
-
-        {/* Pagination controls */}
-        {blogList && blogList.length > nposts && (
-          <div className="mt-16 flex justify-center">
-            <Pagination>
-              <PaginationContent className="flex items-center gap-4">
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={handlePrevPage}
-                    className={`cursor-pointer ${
-                      currentPage === 0
-                        ? "pointer-events-none opacity-50"
-                        : "hover:bg-gray-100"
-                    }`}
-                  />
-                </PaginationItem>
-
-                <div className="text-[#084464] font-medium">
-                  Page {currentPage + 1} of {npages}
-                </div>
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={handleNextPage}
-                    className={`cursor-pointer ${
-                      (currentPage + 1) * nposts >= blogList.length
-                        ? "pointer-events-none opacity-50"
-                        : "hover:bg-gray-100"
-                    }`}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
       </main>
     </div>
   );
