@@ -26,9 +26,7 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 	unprocess_post_title := strings.ReplaceAll(post, "_", " ")
 	var htmlContent string
 
-	fmt.Println(unprocess_post_title)
 	active, err := blogPostDataDB.FetchActiveBlog(r.Context(), username, unprocess_post_title)
-	fmt.Println(active)
 	if err != nil {
 		http.Error(w, "No such Blog Post exists", http.StatusNotFound)
 		return
@@ -61,7 +59,6 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to read HTML file", http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("HTML content: ", htmlContent)
 		user_details, err := userDB.GetUser(r.Context(), username)
 		if err != nil {
 			http.Error(w, "Failed to get user details", http.StatusInternalServerError)
