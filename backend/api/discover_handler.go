@@ -20,11 +20,9 @@ type HandleDiscoverPostsResponse struct {
 }
 
 func HandleDiscoverNewPosts(w http.ResponseWriter, r *http.Request) {
-	didHit := false
 	if redisdb.RedisActive {
 		cacheHit, err := redisdb.GetEndpoint(r.Context(), "discover:new")
 		if err == nil && cacheHit != "" {
-			didHit = true
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, err = w.Write([]byte(cacheHit))
@@ -73,7 +71,7 @@ func HandleDiscoverNewPosts(w http.ResponseWriter, r *http.Request) {
 		Posts: post_data,
 	}
 
-	if redisdb.RedisActive && !didHit {
+	if redisdb.RedisActive {
 		respJSON, err := json.Marshal(response)
 		if err == nil {
 			str := string(respJSON)
@@ -91,11 +89,9 @@ func HandleDiscoverNewPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDiscoverTopPosts(w http.ResponseWriter, r *http.Request) {
-	didHit := false
 	if redisdb.RedisActive {
 		cacheHit, err := redisdb.GetEndpoint(r.Context(), "discover:top")
 		if err == nil && cacheHit != "" {
-			didHit = true
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, err = w.Write([]byte(cacheHit))
@@ -152,7 +148,7 @@ func HandleDiscoverTopPosts(w http.ResponseWriter, r *http.Request) {
 		Posts: postData,
 	}
 
-	if redisdb.RedisActive && !didHit {
+	if redisdb.RedisActive {
 		respJSON, err := json.Marshal(response)
 		if err == nil {
 			str := string(respJSON)
