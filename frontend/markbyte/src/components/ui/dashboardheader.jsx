@@ -36,13 +36,6 @@ function DashboardHeader() {
           Discover
           <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
         </a>
-        <a
-          href="/about"
-          className="text-white text-md px-2 py-1 transition-all duration-300 relative group"
-        >
-            About
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
-        </a>
         <UserDropdown />
       </div>
     </header>

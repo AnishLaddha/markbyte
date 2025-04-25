@@ -273,7 +273,7 @@ const PublishEditorPreview = () => {
               className="h-12 w-auto"
             />
             {!isSmallScreen && (
-              <span className="text-xl font-semibold">arkByte</span>
+              <span className="text-xl font-semibold">arkEditor</span>
             )}
           </div>
         </motion.div>

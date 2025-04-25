@@ -9,6 +9,7 @@ import {
   TrendingUp,
   TrendingDown,
   MoveRight,
+  Rocket,
 } from "lucide-react";
 import {
   Card,
@@ -153,9 +154,14 @@ function PostAnalytics() {
 
       <div className="container mx-auto py-8 px-4">
         <div className="mx-8 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 relative inline-block">
-            Post Performance
-            <span className="absolute -bottom-1 left-0 w-1/3 h-1 bg-gradient-to-r from-blue-900 to-blue-200 rounded-full"></span>
+          <h1 className="text-4xl font-bold text-gray-800 relative inline-block">
+            Post Performance <Rocket className="inline-block ml-1 h-9 w-9" />
+            <motion.div
+              className="h-1 w-24 bg-gradient-to-r from-[#084464] to-[#1A698F] rounded-full"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 96, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            />
           </h1>
 
           <p className="text-gray-500 mt-2">
@@ -171,7 +177,7 @@ function PostAnalytics() {
           className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-8"
         >
           {/* Main Post Card */}
-          <Card className="bg-gradient-to-br from-purple-50 to-blue-50 shadow-md border-2 border-gray-300">
+          <Card className="bg-white shadow-md border-2 border-gray-300">
             <CardHeader className="pb-2">
               <div className="flex flex-col space-y-2">
                 <div className="flex flex-wrap items-start justify-between gap-2">
@@ -212,7 +218,7 @@ function PostAnalytics() {
           </Card>
 
           {/* Monthly Uptick Card */}
-          <Card className="bg-gradient-to-br from-purple-50 to-blue-50 shadow-md border-2 border-gray-300">
+          <Card className="bg-white shadow-md border-2 border-gray-300">
             <CardHeader className="pb-2">
               <CardTitle className="text-gray-800 text-base">
                 Monthly Growth
@@ -266,7 +272,7 @@ function PostAnalytics() {
           </Card>
 
           {/* Weekly Uptick Card */}
-          <Card className="bg-gradient-to-br from-purple-50 to-blue-50 shadow-md border-2 border-gray-300">
+          <Card className="bg-white shadow-md border-2 border-gray-300">
             <CardHeader className="pb-2">
               <CardTitle className="text-gray-800 text-base">
                 Weekly Growth

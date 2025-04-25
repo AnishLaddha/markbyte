@@ -326,7 +326,7 @@ const EditorPreview = () => {
               className="h-12 w-auto"
             />
             {!isSmallScreenlogo && (
-              <span className="text-xl font-semibold">arkByte</span>
+              <span className="text-xl font-semibold">arkEditor</span>
             )}
           </div>
         </motion.div>

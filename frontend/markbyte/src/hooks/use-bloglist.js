@@ -14,7 +14,7 @@ function useBlogList(user) {
         const profilePic = response.data?.profile_picture;
         if (posts.length === 0) {
           setData([]);
-          setProfilePicture(profilePic ? profilePic + "?t=" + Date.now() : null);
+          setProfilePicture(profilePic ? profilePic : null);
           setStyle(response.data?.style || "");
           setError(null);
           return;

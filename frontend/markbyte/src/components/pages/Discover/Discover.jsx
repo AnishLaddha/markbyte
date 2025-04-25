@@ -76,16 +76,29 @@ function Discover() {
       <main className="container mx-auto px-4 sm:px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between mx-4 sm:mx-8 mb-4">
           <div className="mb-6 sm:mb-0 gap-4 items-center">
-            <h2
+            <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               className="
                 text-4xl sm:text-5xl font-bold text-[#084464]
                 flex items-center relative inline-block
-            "
+              "
             >
               Disc
-              <Compass className="h-7 w-7 sm:h-9 sm:w-9 text-[#084464] mx-0.5" />
+              <motion.div
+                initial={{ opacity: 0, rotate: -180 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: -180 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="inline-flex items-center justify-center"
+              >
+                <Compass className="h-7 w-7 sm:h-9 sm:w-9 text-[#084464] mx-0.5" />
+              </motion.div>
               ver
-            </h2>
+            </motion.h2>
+
             <p className="text-gray-500 text-lg sm:text-xl">
               Explore the latest and most popular blog posts from our community.
             </p>
@@ -178,9 +191,7 @@ function Discover() {
                         <div className="mt-auto">
                           <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                             <div className="flex items-center">
-                              <Avatar
-                                className="h-8 w-8 shadow-xl cursor-pointer mr-1.5"
-                              >
+                              <Avatar className="h-8 w-8 shadow-xl cursor-pointer mr-1.5">
                                 <AvatarImage
                                   src={
                                     post.pfp
