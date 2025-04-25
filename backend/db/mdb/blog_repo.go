@@ -147,3 +147,30 @@ func (r *MongoBlogPostDataRepository) FetchActiveBlog(ctx context.Context, usern
 
 	return blog.Version, nil
 }
+
+func (r *MongoBlogPostDataRepository) FetchFiftyNewestPosts(ctx context.Context) ([]db.BlogPostData, error) {
+	filter := bson.M{"is_active": true}
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{Key: "date_uploaded", Value: -1}})
+	findOptions.SetLimit(50)
+	cursor, err := r.collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var blogs []db.BlogPostData
+	if err = cursor.All(ctx, &blogs); err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}
+
+func (r *MongoBlogPostDataRepository) IsPostActive(ctx context.Context, username string, post string, version string) (bool, error) {
+	filter := bson.M{"user": username, "title": post, "version": version}
+	var blog db.BlogPostData
+	err := r.collection.FindOne(ctx, filter).Decode(&blog)
+	if err != nil {
+		return false, err
+	}
+	return blog.IsActive, nil
+}

@@ -328,7 +328,8 @@ function Auth() {
                                 type="email"
                                 value={semail}
                                 onChange={(e) => setSemail(e.target.value)}
-                                placeholder="Email (optional)"
+                                placeholder="Email"
+                                required
                                 className="pl-10 bg-[#0e3a56]/30 border-[#1e5b82] focus:border-[#1e88e5] text-white placeholder:text-white/50"
                               />
                             </div>

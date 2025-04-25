@@ -146,12 +146,13 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newPostAnalytics := db.PostAnalytics{
-		Username: username,
-		Title:    zip_file_data.post_name,
-		Version:  fmt.Sprintf("%d", new_version),
-		Date:     post_time,
-		Views:    []time.Time{},
-		Likes:    []string{},
+		Username:  username,
+		Title:     zip_file_data.post_name,
+		Version:   fmt.Sprintf("%d", new_version),
+		Date:      post_time,
+		Views:     []time.Time{},
+		ViewCount: 0,
+		Likes:     []string{},
 	}
 
 	_, err = AnalyticsDataDB.CreatePostAnalytics(r.Context(), &newPostAnalytics)
