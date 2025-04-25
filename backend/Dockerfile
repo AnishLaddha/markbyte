@@ -11,7 +11,7 @@ RUN go mod download
 # Now this COPY will respect .dockerignore
 COPY . .
 
-RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o backend/markbyte ./cmd/main.go
+RUN CGO_ENABLED=0 go build -o backend/markbyte ./cmd/main.go
 
 FROM gcr.io/distroless/base-debian11
 
