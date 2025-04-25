@@ -11,7 +11,7 @@ const BlogPostTable = ({ data, table, searchTerm, setSearchTerm }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="bg-white shadow-xl rounded-2xl p-6 mx-4 sm:mx-8 mt-12 h-auto w-auto overflow-hidden mb-12 hover:shadow-2xl transition-shadow duration-300 ease-in-out border border-gray-100">
+      <div className="bg-white shadow-xl rounded-2xl p-6 mx-4 sm:mx-8 mt-8 h-auto w-auto overflow-hidden mb-12 hover:shadow-2xl transition-shadow duration-300 ease-in-out border border-gray-100">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold text-[#003b5c] inline-flex items-center gap-2 whitespace-nowrap">
             <Notebook className="h-6 w-6" />

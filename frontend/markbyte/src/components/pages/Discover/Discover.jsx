@@ -12,7 +12,6 @@ import {
   Eye,
   ArrowRight,
   CalendarIcon,
-  User,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
