@@ -24,7 +24,6 @@ function useDiscoverNew() {
     }
     fetchDiscoverNewPosts()
       .then((response) => {
-        console.log(response.data);
         handleData(response.data);
       })
       .catch((error) => console.error("Error fetching new discover data:", error));

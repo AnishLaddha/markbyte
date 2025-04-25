@@ -24,7 +24,6 @@ function useDiscoverTop() {
     }
     fetchDiscoverTopPosts()
       .then((response) => {
-        console.log(response.data);
         handleData(response.data);
       })
       .catch((error) => console.error("Error fetching top discover data:", error));

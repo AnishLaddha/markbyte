@@ -22,6 +22,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 function Discover() {
   const { isAuthenticated } = useAuth();
@@ -163,6 +164,7 @@ function Discover() {
                     <Card
                       className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden"
                       onClick={() => {
+                        if (!post.blog.link) return;
                         const url = post.blog.link.includes("static")
                           ? post.blog.link
                           : post.blog.direct_link;
@@ -177,7 +179,19 @@ function Discover() {
                         <div className="mt-auto">
                           <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                             <div className="flex items-center">
-                              <User className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+                              <Avatar
+                                className="h-8 w-8 shadow-xl cursor-pointer mr-1.5"
+                              >
+                                <AvatarImage
+                                  src={
+                                    post.pfp
+                                      ? `${post.pfp}`
+                                      : `https://api.dicebear.com/9.x/initials/svg?seed=${usersName}&backgroundType=gradientLinear`
+                                  }
+                                  alt="Profile preview"
+                                  className="object-cover w-full h-full"
+                                />
+                              </Avatar>
                               <span>{post.blog.user}</span>
                             </div>
                             <div className="flex items-center">
