@@ -1,3 +1,4 @@
+/* Pink Flower Landing Page Component */
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
@@ -19,8 +20,6 @@ import {
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
-  PaginationLink,
-  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
 

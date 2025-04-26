@@ -1,3 +1,4 @@
+/* Futuristic Landing Page Component */
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
@@ -23,6 +24,8 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
+import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
+import { cn } from "@/lib/utils";
 
 function FuturisticLandingPage({
   username,
@@ -63,44 +66,38 @@ function FuturisticLandingPage({
   };
 
   // Generate a random icon for each post
-  const getRandomIcon = (index) => {
-    const icons = [
-      <Hexagon key="hexagon" className="h-10 w-10" />,
-      <Layers key="layers" className="h-10 w-10" />,
-      <Zap key="zap" className="h-10 w-10" />,
-    ];
-    return icons[Math.floor(Math.random() * icons.length)];
-  };
+  const iconOptions = [
+    <Hexagon key="hexagon" className="h-10 w-10" />,
+    <Layers key="layers" className="h-10 w-10" />,
+    <Zap key="zap" className="h-10 w-10" />,
+  ];
+
+  const memoizedIcons = React.useMemo(
+    () =>
+      blogList.map(
+        () => iconOptions[Math.floor(Math.random() * iconOptions.length)]
+      ),
+    [blogList]
+  );
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-[#170B2B] via-[#0F2A3D] to-[#0B3B30] text-white overflow-x-hidden">
-      <div className="w-full bg-[#0A1A20]/80 backdrop-blur-lg py-20 relative overflow-hidden border-b border-[#4A97FF]/20">
+      <div className="w-full bg-[#0A1A20]/80 py-20 relative overflow-hidden border-b border-[#4A97FF]/20">
         <div className="absolute inset-0 bg-gradient-to-r from-[#6A3AFF]/10 via-[#00FDCF]/10 to-[#34DA9D]/10"></div>
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-moveLeftRight h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent w-full opacity-30"
-              style={{
-                top: `${20 + i * 15}%`,
-                left: 0,
-                animationDuration: `${3 + i * 0.5}s`,
-                animationDelay: `${i * 0.2}s`,
-              }}
-            ></div>
-          ))}
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-moveTopBottom w-px bg-gradient-to-b from-transparent via-indigo-500 to-transparent h-full opacity-30"
-              style={{
-                left: `${20 + i * 15}%`,
-                top: 0,
-                animationDuration: `${3 + i * 0.5}s`,
-                animationDelay: `${i * 0.2}s`,
-              }}
-            ></div>
-          ))}
+          {/* Animated Lines Background */}
+          <div className="absolute inset-0 h-full w-full overflow-hidden pointer-events-none">
+            <AnimatedGridPattern
+              numSquares={20}
+              maxOpacity={0.1}
+              duration={3}
+              repeatDelay={1}
+              className={cn(
+                "[mask-image:radial-gradient(700px_circle_at_center,white,transparent)]",
+                "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12"
+              )}
+            />
+          </div>
         </div>
 
         <div className="container mx-auto px-8 relative z-10">
@@ -112,9 +109,10 @@ function FuturisticLandingPage({
           >
             <div className="flex items-center gap-8">
               <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#6A3AFF] via-[#00FDCF] to-[#34DA9D] rounded-full blur-sm opacity-70 animate-pulse"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#6A3AFF] via-[#00FDCF] to-[#34DA9D] rounded-full blur-sm opacity-70"></div>
                 <Avatar className="h-32 w-32 border-2 border-[#00FDCF]/50 shadow-xl relative">
                   <AvatarImage
+                    loading="lazy"
                     src={
                       profilepicture ||
                       `https://api.dicebear.com/9.x/initials/svg?seed=${
@@ -184,7 +182,7 @@ function FuturisticLandingPage({
         <div className="space-y-10">
           {blogList.length == 0 && (
             <div className="opacity-100">
-              <Card className="w-full py-20 bg-[#1A2E45]/50 backdrop-blur-sm border border-[#4A97FF]/20 rounded-xl shadow-xl">
+              <Card className="w-full py-20 bg-[#1A2E45]/50 border border-[#4A97FF]/20 rounded-xl shadow-xl">
                 <CardContent className="text-center">
                   <div className="flex flex-col items-center">
                     <div className="rounded-full bg-[#2A4060] p-8 mb-6 border border-[#4A97FF]/30 shadow-lg shadow-indigo-500/20">
@@ -206,59 +204,52 @@ function FuturisticLandingPage({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, staggerChildren: 0.1 }}
+              transition={{ duration: 0.8 }}
               className="grid md:grid-cols-2 gap-8"
             >
               {blogList
                 .slice(currentPage * nposts, (currentPage + 1) * nposts)
                 .map((post, index) => (
-                  <motion.div
-                    key={post.post.user + post.post.title + post.date_uploaded}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  <Card
+                    className="overflow-hidden border border-[#4A97FF]/20 bg-[#1A2E45]/50 backdrop-blur-sm hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 group cursor-pointer rounded-xl"
+                    onClick={() => {
+                      if (post.post.link.includes("static")) {
+                        window.open(post.post.link, "_blank");
+                      } else {
+                        window.open(post.post.direct_link, "_blank");
+                      }
+                    }}
                   >
-                    <Card
-                      className="overflow-hidden border border-[#4A97FF]/20 bg-[#1A2E45]/50 backdrop-blur-sm hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 group cursor-pointer rounded-xl"
-                      onClick={() => {
-                        if (post.post.link.includes("static")) {
-                          window.open(post.post.link, "_blank");
-                        } else {
-                          window.open(post.post.direct_link, "_blank");
-                        }
-                      }}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center text-sm text-[#B4EFD6]">
-                            <CalendarIcon className="h-4 w-4 mr-1 text-[#00FDCF]" />
-                            {formatDate(post.post.date_uploaded)}
-                          </div>
-                          <div className="flex items-center text-sm text-[#B4EFD6]">
-                            <Eye className="h-4 w-4 mr-1 text-[#00FDCF]" />
-                            <span>{post.views.length} views</span>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center text-sm text-[#B4EFD6]">
+                          <CalendarIcon className="h-4 w-4 mr-1 text-[#00FDCF]" />
+                          {formatDate(post.post.date_uploaded)}
+                        </div>
+                        <div className="flex items-center text-sm text-[#B4EFD6]">
+                          <Eye className="h-4 w-4 mr-1 text-[#00FDCF]" />
+                          <span>{post.views.length} views</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-4">
+                        <div className="bg-[#2A4060]/50 p-4 rounded-lg border border-[#4A97FF]/30">
+                          <div className="text-[#00FDCF]">
+                            {memoizedIcons[index]}
                           </div>
                         </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#00FDCF] transition-colors duration-300">
+                            {post.post.title}
+                          </h3>
 
-                        <div className="flex items-start gap-4">
-                          <div className="bg-[#2A4060]/50 p-4 rounded-lg border border-[#4A97FF]/30">
-                            <div className="text-[#00FDCF]">
-                              {getRandomIcon(index)}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#00FDCF] transition-colors duration-300">
-                              {post.post.title}
-                            </h3>
-
-                            <div className="flex items-center text-[#00FDCF] font-medium group-hover:text-[#34DA9D] transition-colors duration-300">
-                              Read more <ArrowRight className="ml-2 h-4 w-4" />
-                            </div>
+                          <div className="flex items-center text-[#00FDCF] font-medium group-hover:text-[#34DA9D] transition-colors duration-300">
+                            Read more <ArrowRight className="ml-2 h-4 w-4" />
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
             </motion.div>
           )}
