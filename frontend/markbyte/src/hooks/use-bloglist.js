@@ -1,3 +1,5 @@
+/* This custom hook fetches and transforms all public data for a given user.
+This includes all the user's posts, their profile picture, and the style of the blog.*/
 import { useState, useEffect, useCallback } from "react";
 import { fetchBlogPosts } from "@/services/blogService";
 

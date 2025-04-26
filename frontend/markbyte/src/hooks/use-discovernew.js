@@ -1,3 +1,5 @@
+/* This custom hook fetches all the new posts from the server and transforms it into a format suitable for display.
+This includes caching the data for performance.*/
 import { useState, useEffect, useCallback } from "react";
 import { fetchDiscoverNewPosts } from "@/services/blogService";
 import { setCache, getCache } from "@/utils/cache";

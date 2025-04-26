@@ -1,3 +1,5 @@
+/* This custom hook fetches all the timestamps of views across all posts and returns the data in a format suitable for charting.*/
+
 import { useState, useEffect, useCallback } from "react";
 import { getViewTimestamps } from "@/services/analyticsService";
 

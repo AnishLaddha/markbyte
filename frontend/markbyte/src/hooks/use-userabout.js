@@ -1,3 +1,4 @@
+/* This hook is used to fetch the user's about information from the server. Primarily used to see if the user has a bio or not. */
 import { useState, useEffect, useCallback } from "react";
 import { getUserAbout } from "@/services/userService";
 

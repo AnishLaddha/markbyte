@@ -1,3 +1,4 @@
+/* This custom hook fetches and transforms all blog data from the server into a format suitable for display.*/
 import { useState, useEffect, useCallback } from "react";
 import { API_URL, FRONTEND_URL } from "@/config/api";
 import { fetchUserBlogPosts } from "@/services/blogService";

@@ -1,3 +1,4 @@
+/* This component handles the routing for the application. It uses React Router to define the routes and their corresponding components.*/
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
