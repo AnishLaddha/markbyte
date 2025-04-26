@@ -1,3 +1,4 @@
+/* This component handles the routing for the application. It uses React Router to define the routes and their corresponding components.*/
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import BloggerProfile from "./components/pages/Blogger/BloggerProfile";
 import NotFound from "./components/pages/404/invalid";
 import PostAnalytics from "./components/pages/Post/PostAnalytics";
 import DynamicAboutPage from "./components/pages/Blogger/BloggerAbout";
+import Discover from "./components/pages/Discover/Discover";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -44,6 +46,7 @@ function App() {
           }
         />
         <Route path="/about" element={<About />} />
+        <Route path="/discover" element={<Discover />} />
         <Route
           path="/editor"
           element={

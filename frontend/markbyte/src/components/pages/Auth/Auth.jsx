@@ -1,3 +1,4 @@
+/* This is a componenet for the authentication page. It handles both login and signup functionality. */
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -53,6 +54,7 @@ function Auth() {
     }
   }, [searchParams]);
 
+  // Function to handle tab changes
   const handleTabChange = (value) => {
     setActiveTab(value);
     navigate(`/auth?tab=${value}`);
@@ -68,6 +70,7 @@ function Auth() {
     }
   };
 
+  // Function to handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -97,11 +100,14 @@ function Auth() {
     }
   };
 
+  // Function to handle sign up continuation
   const continueSignUp = async (e) => {
     e.preventDefault();
     api?.scrollNext();
   };
 
+  // Function to handle sign up
+  // This function signs up the user and then logs them in. It also handles updating the user's name and profile picture if provided.
   const handleSignUp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -162,6 +168,7 @@ function Auth() {
     }
   };
 
+  // Function to handle profile picture file upload
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -173,13 +180,15 @@ function Auth() {
       reader.readAsDataURL(file);
     }
   };
-
+  
+  // Function to remove the profile picture
   const removeProfilePic = () => {
     setProfilePic(null);
     setimageFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Function to trigger the file input click event
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };

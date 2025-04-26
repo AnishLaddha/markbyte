@@ -1,3 +1,5 @@
+/* This component is used to display the user's profile information, including their name, email, and profile picture. 
+It also allows the user to update their profile information, including their name, profile picture, style, and about page */
 import DashboardHeader from "@/components/ui/dashboardheader";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +81,7 @@ function BloggerProfile() {
     { value: "pink", label: "Flowery Pink", icon: Flower },
   ];
 
+  // Handles a change to the user's name input field
   const handleSaveName = async () => {
     if (Name.trim() === usersName.trim()) {
       setIsEditingName(false);
@@ -107,6 +110,7 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the upload of the profile picture
   const handlePfpUpload = async () => {
     if (!imagefile) return;
     try {
@@ -136,6 +140,7 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the update of the user's style preference
   const handleUpdateStyle = async () => {
     try {
       await updateStyle(cssStyle);
@@ -156,6 +161,7 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the upload of the about page file
   const handleUploadAboutPage = async () => {
     if (!aboutFileName) return;
     try {
@@ -185,6 +191,7 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the file upload for the profile picture
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -198,6 +205,7 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the file change for the about page upload
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -205,25 +213,27 @@ function BloggerProfile() {
     }
   };
 
+  // Handles the removal of the about page file name
   const handleRemoveAboutFile = () => {
     setAboutFileName(null);
     if (aboutFileRef.current) aboutFileRef.current.value = "";
   };
 
+  // Triggers the file input for profile picture upload
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
+  // Removes the profile picture preview
   const removeProfilePic = () => {
-    // Reset preview only, not the actual profile picture
     setPreviewPicture(null);
     setimageFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Handles the click outside to close the name editing input
   useEffect(() => {
     function handleClickOutside(event) {
-      // Make sure the click is not on input or check icon
       if (
         inputRef.current &&
         !inputRef.current.contains(event.target) &&
@@ -252,15 +262,6 @@ function BloggerProfile() {
   return (
     <div className="BloggerProfile min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 text-gray-200 overflow-hidden transition-colors duration-300">
       <DashboardHeader />
-      <div className="absolute top-20 left-4 z-10">
-        <a
-          href="/"
-          className="inline-flex items-center gap-2.5 py-2 px-4 text-sm font-medium text-[#003b5c] bg-white rounded-lg border border-blue-200 shadow-sm hover:bg-blue-50 hover:border-blue-300 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-opacity-50"
-        >
-          <ChevronLeft className="h-4 w-4 stroke-[2.5px]" />
-          <span>Back to Home</span>
-        </a>
-      </div>
       <div className="flex-1 flex justify-center items-center p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -291,8 +292,6 @@ function BloggerProfile() {
                   />
 
                   <AvatarFallback>{usersName?.charAt(0)}</AvatarFallback>
-
-                  {/* Overlay with image icon on hover */}
                   <div
                     className={`absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-semibold transition-opacity duration-300 rounded-full ${
                       isHovered ? "opacity-100" : "opacity-0"
@@ -342,7 +341,6 @@ function BloggerProfile() {
                     {userEmail && (
                       <>
                         <span className="mx-2">|</span>{" "}
-                        {/* Add the separator here */}
                         <div className="flex items-center gap-1">
                           <Mail className="w-4 h-4"></Mail>
                           <span>{userEmail}</span>
@@ -354,7 +352,9 @@ function BloggerProfile() {
               </div>
             </CardHeader>
             <Separator />
+            {/* Style selection and about page upload section */}
             <CardContent className="py-8 space-y-6">
+              {/* Style Selection Section */}
               <div className="space-y-6">
                 <div className="flex flex-col items-start justify-between">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -502,8 +502,8 @@ function BloggerProfile() {
                   </div>
                 </div>
               </div>
-              {/* About page upload section */}
               <Separator />
+              {/* About page upload section */}
               <div className="space-y-6">
                 <div className="flex flex-col items-start justify-between">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -603,11 +603,11 @@ function BloggerProfile() {
                       <Button
                         disabled={!aboutFileName}
                         className={`relative flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200
-    ${
-      !aboutFileName
-        ? "text-gray-400 cursor-not-allowed bg-gray-100"
-        : "text-white bg-[#005a7a] hover:bg-[#084464]"
-    }`}
+                          ${
+                            !aboutFileName
+                              ? "text-gray-400 cursor-not-allowed bg-gray-100"
+                              : "text-white bg-[#005a7a] hover:bg-[#084464]"
+                          }`}
                         onClick={() => {
                           handleUploadAboutPage();
                         }}
@@ -650,6 +650,8 @@ function BloggerProfile() {
           </Card>
         </motion.div>
       </div>
+      
+      {/* Profile Picture Upload Dialog */}
       <Dialog
         open={imageDialogOpen}
         onOpenChange={(open) => {

@@ -1,3 +1,4 @@
+/* This component will take in raw markdown content, fetch the rendered HTML from the server, and display it in an iframe. */
 import React, { useRef, useEffect } from "react";
 import { renderMarkdownPreview } from "@/services/blogService";
 

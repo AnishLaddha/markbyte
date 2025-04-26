@@ -1,3 +1,5 @@
+/* This is a component for loading the about page of a user dynamically. It fetches raw HTML from backend 
+and renders it on the front end */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "../404/invalid";

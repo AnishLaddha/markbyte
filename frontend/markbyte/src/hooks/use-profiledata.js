@@ -1,3 +1,4 @@
+/* This custom hook fetches the user's profile data from the server and transforms it into a format suitable for display.*/
 import { useState, useCallback, useEffect } from "react";
 import { getUserInfo } from "@/services/userService";
 

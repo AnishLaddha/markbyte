@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -30,7 +31,7 @@ func main() {
 	}
 	userDB, err := mdb.NewUserDB(MONGO_URL, "markbyte", "users")
 	if err != nil {
-		fmt.Printf("Failed to create userDB: %v\n", err)
+		log.Fatalf("Failed to create userDB: %v\n", err)
 	}
 	auth.SetUserDB(userDB)
 	api.SetUserDB(userDB)
@@ -38,13 +39,13 @@ func main() {
 
 	blogPostDataDB, err := mdb.NewBlogPostDataDB(MONGO_URL, "markbyte", "blog_post_data")
 	if err != nil {
-		fmt.Printf("Failed to create blogPostDataDB: %v\n", err)
+		log.Fatalf("Failed to create blogPostDataDB: %v\n", err)
 	}
 	api.SetBlogPostDataDB(blogPostDataDB)
 
 	analyticsDB, err := mdb.NewMongoAnalyticsDB(MONGO_URL, "markbyte", "analytics")
 	if err != nil {
-		fmt.Printf("Failed to create analyticsDB: %v\n", err)
+		log.Fatalf("Failed to create analyticsDB: %v\n", err)
 	}
 	api.SetAnalyticsDB(analyticsDB)
 
@@ -52,6 +53,8 @@ func main() {
 	if err != nil {
 		fmt.Printf("\nFailed to create Redis Instance\n")
 	}
+
+	api.SetGithubToken(os.Getenv("GITHUB_TOKEN"))
 
 	port := ":8080"
 	fmt.Printf("Starting server on %s\n", port)

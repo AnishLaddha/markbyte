@@ -1,3 +1,4 @@
+/* Pink Flower Landing Page Component */
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
@@ -19,14 +20,12 @@ import {
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
-  PaginationLink,
-  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
 
 // Add global style for scrollbar
 function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
-  const nposts = 5;
+  const nposts = 6;
   const [currentPage, setCurrentPage] = React.useState(0);
   const [npages, setNPages] = React.useState(0);
   const navigate = useNavigate();
@@ -46,31 +45,16 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
     return isNaN(date) ? "Date Unknown" : date.toLocaleDateString();
   };
 
-  const getPageNumbers = () => {
-    const totalPages = npages;
-    const current = currentPage;
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, i) => i);
+  const handleNextPage = () => {
+    if ((currentPage + 1) * nposts < blogList.length) {
+      setCurrentPage(currentPage + 1);
     }
-    let pages = [];
-    pages.push(0);
-    const rangeStart = Math.max(1, current - 1);
-    const rangeEnd = Math.min(totalPages - 2, current + 1);
+  };
 
-    if (rangeStart > 1) {
-      pages.push(null);
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
     }
-    for (let i = rangeStart; i <= rangeEnd; i++) {
-      pages.push(i);
-    }
-    if (rangeEnd < totalPages - 2) {
-      pages.push(null);
-    }
-    if (totalPages > 1) {
-      pages.push(totalPages - 1);
-    }
-
-    return pages;
   };
 
   return (
@@ -242,9 +226,7 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
                   <PaginationContent className="flex items-center gap-2">
                     <PaginationItem>
                       <PaginationPrevious
-                        onClick={() =>
-                          setCurrentPage(Math.max(currentPage - 1, 0))
-                        }
+                        onClick={handlePrevPage}
                         className={`cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                           currentPage === 0
                             ? "pointer-events-none opacity-50"
@@ -253,32 +235,13 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
                       />
                     </PaginationItem>
 
-                    {getPageNumbers().map((pageNum, index) =>
-                      pageNum === null ? (
-                        <PaginationItem key={`ellipsis-${index}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      ) : (
-                        <PaginationItem key={`page-${pageNum}`}>
-                          <PaginationLink
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`cursor-pointer px-4 py-2 rounded-md transition-colors ${
-                              currentPage === pageNum
-                                ? "bg-[#ff7f9e] text-white font-medium shadow-md"
-                                : "bg-white border border-[#ffd1dc] text-[#ff7f9e] hover:bg-[#fff0f3]"
-                            }`}
-                          >
-                            {pageNum + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
+                    <div className="font-medium">
+                      Page {currentPage + 1} of {npages}
+                    </div>
 
                     <PaginationItem>
                       <PaginationNext
-                        onClick={() =>
-                          setCurrentPage(Math.min(currentPage + 1, npages - 1))
-                        }
+                        onClick={handleNextPage}
                         className={`cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                           currentPage >= npages - 1
                             ? "pointer-events-none opacity-50"
