@@ -85,7 +85,7 @@ function FuturisticLandingPage({
       <div className="w-full bg-[#0A1A20]/80 py-20 relative overflow-hidden border-b border-[#4A97FF]/20">
         <div className="absolute inset-0 bg-gradient-to-r from-[#6A3AFF]/10 via-[#00FDCF]/10 to-[#34DA9D]/10"></div>
         <div className="absolute inset-0 overflow-hidden">
-          {/* Animated Lines Background */}
+          {/* Animated Grid Background */}
           <div className="absolute inset-0 h-full w-full overflow-hidden pointer-events-none">
             <AnimatedGridPattern
               numSquares={20}
@@ -178,7 +178,7 @@ function FuturisticLandingPage({
           </div>
         </div>
 
-        {/* Blog Posts List */}
+        {/* Blog Posts Grid */}
         <div className="space-y-10">
           {blogList.length == 0 && (
             <div className="opacity-100">

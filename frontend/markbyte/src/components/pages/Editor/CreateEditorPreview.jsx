@@ -1,4 +1,5 @@
-import React from "react";
+/* This is the editor + preview component for the markdown editor. It allows users to write markdown content 
+and see a live preview of it. They can also upload this.*/
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import {
@@ -102,6 +103,7 @@ const EditorPreview = () => {
   };
   const { toast } = useToast();
 
+  // Function to handle change in markdown editor
   const handleMarkdownChange = (value) => {
     if (value === "") {
       setCurrMarkdownContent(" ");
@@ -113,6 +115,8 @@ const EditorPreview = () => {
     }
   };
 
+
+  // Function to handle tab changes to resize the panels accordingly
   useEffect(() => {
     if (editorPanelRef.current && previewPanelRef.current) {
       if (activeTab === "editor") {
@@ -128,6 +132,7 @@ const EditorPreview = () => {
     }
   }, [activeTab]);
 
+  // Function to handle the rendering of markdown content
   useEffect(() => {
     if (renderMarkdown) {
       setMarkdownContent(currMarkdownContent);
@@ -135,6 +140,7 @@ const EditorPreview = () => {
     }
   }, [renderMarkdown]);
 
+  // Function to handle the rendering of markdown content on button click
   const handleRenderClick = useCallback(() => {
     setMarkdownContent(currMarkdownContent);
     setRenderMarkdown(true);
@@ -142,6 +148,8 @@ const EditorPreview = () => {
     setTimeout(() => setSpin(false), 500);
   }, [currMarkdownContent]);
 
+  // Overrids defaut browser behavior for Ctrl + R or Cmd + R to prevent page reload
+  // and instead call the handleRenderClick function
   useEffect(() => {
     const handleKeyDown = (e) => {
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
@@ -159,6 +167,7 @@ const EditorPreview = () => {
     };
   }, [handleRenderClick]);
 
+  // Function to handle the upload of markdown content
   const handlePreviewUpload = () => {
     const blob = new Blob([currMarkdownContent], { type: "text/markdown" });
     uploadMarkdownFile(blob, postTitle)
@@ -187,6 +196,7 @@ const EditorPreview = () => {
     setActiveTab(value);
   };
 
+  // Function to load a template into the markdown editor
   const loadTemplate = (name) => {
     if (name == "header") {
       setCurrMarkdownContent(currMarkdownContent + mdtemplate[0]);
@@ -204,6 +214,8 @@ const EditorPreview = () => {
     setRenderMarkdown(true);
   };
 
+  // Function to handle the input change in the title field
+  // It checks for invalid characters and limits the title length to 100 characters
   const handleInputChange = (e) => {
     const value = e.target.value;
     const match = value.match(/[\\/:*?"<>|_]/);
@@ -241,7 +253,6 @@ const EditorPreview = () => {
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* Left section with logo */}
         <div className="flex items-center space-x-3">
           <button
             className="p-2 rounded-full bg-slate-800/50 hover:bg-slate-700/70 transition-all duration-200 transform hover:scale-105 hover:shadow-md hover:shadow-blue-900/20"
@@ -249,6 +260,7 @@ const EditorPreview = () => {
           >
             <Home className="h-5 w-5 text-blue-400" />
           </button>
+          {/* Tab buttons for switching between editor and preview modes + split mode */}
           <Tabs
             className="w-auto rounded-md"
             defaultValue="split"
@@ -331,9 +343,8 @@ const EditorPreview = () => {
           </div>
         </motion.div>
 
-        {/* Right section with auth buttons */}
+        {/* Right section with pfp, templates selection, and upload button*/}
         <div className="flex items-center gap-5">
-          {/* This button will load in a default template */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="bg-green-800 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30 hover:bg-green-900">
@@ -397,6 +408,7 @@ const EditorPreview = () => {
         </div>
       </header>
       <PanelGroup direction="horizontal">
+        {/* Editor Panel */}
         <Panel
           className="flex flex-col h-full"
           ref={editorPanelRef}
@@ -475,6 +487,7 @@ const EditorPreview = () => {
             </div>
           </div>
           <div className="w-full h-[calc(100vh-64px-48px)] bg-[#0d1117]">
+            {/* CodeMirror editor for markdown content */}
             <CodeMirror
               value={currMarkdownContent}
               height="100%"
@@ -497,6 +510,7 @@ const EditorPreview = () => {
           </div>
         </Panel>
 
+        {/* Resize Handle between editor and preview panels */}
         <PanelResizeHandle className="w-1.5 bg-gradient-to-b from-blue-900/20 to-slate-900/20 cursor-ew-resize transition-all duration-200 ease-in-out flex items-center justify-center hover:w-2">
           <div className="h-16 flex flex-col items-center justify-center space-y-1.5">
             <div className="w-1 h-1 bg-blue-400 rounded-full opacity-70"></div>
@@ -529,6 +543,7 @@ const EditorPreview = () => {
               </button>
             )}
           </div>
+          {/* Preview component to render the markdown content */}
           <Preview
             markdownContent={markdownContent}
             renderMarkdown={renderMarkdown}
@@ -536,6 +551,8 @@ const EditorPreview = () => {
           />
         </Panel>
       </PanelGroup>
+      
+      {/* Alert dialog for publishing the post */}
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
         <AlertDialogContent className="bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700/50 text-white max-w-md rounded-xl shadow-xl">
           <AlertDialogHeader className="space-y-2">

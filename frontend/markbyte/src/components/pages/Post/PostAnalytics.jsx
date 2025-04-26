@@ -1,5 +1,10 @@
-// Reused layout structure from ShadCN UI Area Chart - Interactive example:
+/* This component will fetch the analytics data for a specific post. It includes cards for
+total views, monthly growth, and weekly growth. It also includes a chart that shows the viewership
+over time. */
+
+// NOTE: Reused layout structure from ShadCN UI Area Chart - Interactive example:
 // https://ui.shadcn.com/charts
+
 import usePostAnalyticData from "@/hooks/use-postanalytics";
 import { useParams } from "react-router-dom";
 import DashboardHeader from "@/components/ui/dashboardheader";
@@ -325,6 +330,8 @@ function PostAnalytics() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Chart Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -1,3 +1,5 @@
+/* This component is a Markdown editor with a preview feature. It allows users to write and edit 
+Markdown content of posts they have already published, view a live preview, and publish the content.*/
 import React from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
@@ -58,6 +60,7 @@ const PublishEditorPreview = () => {
   const [markdownContent, setMarkdownContent] = useState("");
   const [originalMarkdownContent, setOriginalMarkdownContent] = useState("");
 
+  // Fetch the original markdown content from the backend
   const revert = () => {
     getMarkdownVersion(title, version)
       .then((response) => {
@@ -72,6 +75,7 @@ const PublishEditorPreview = () => {
   };
 
   // fetch the markdown content from the backend on page load
+  // and populate the editor with it
   useEffect(() => {
     revert();
   }, []);
@@ -190,7 +194,6 @@ const PublishEditorPreview = () => {
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* Left section with logo */}
         <div className="flex items-center space-x-3">
           <button
             className="p-2 rounded-full bg-slate-800/50 hover:bg-slate-700/70 transition-all duration-200 transform hover:scale-105 hover:shadow-md hover:shadow-blue-900/20"
@@ -278,7 +281,7 @@ const PublishEditorPreview = () => {
           </div>
         </motion.div>
 
-        {/* Right section with auth buttons */}
+        {/* Right section with dropdown, undo button, and upload */}
         <div className="flex items-center gap-5">
           <button
             className="bg-gradient-to-r from-green-800 to-green-600 hover:from-green-900 hover:to-green-700 

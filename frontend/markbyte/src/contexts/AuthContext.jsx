@@ -1,3 +1,6 @@
+/* This established global authentication context for the application. It manages user authentication state, user information, 
+and provides login and logout functionality. */
+
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { getUserInfo } from "@/services/userService";
 import { loginUser, logoutUser } from "@/services/authService";
@@ -12,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [email, setEmail] = useState(null);
   const [style, setStyle] = useState(null);
 
+  // Used to check if the user is authenticated and set the global user state
   const fetchUserInfo = async () => {
     try {
       const response = await getUserInfo();
@@ -48,10 +52,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Check if the user is authenticated when the component mounts
+  // and set the user state accordingly
   useEffect(() => {
     fetchUserInfo();
   }, []);
 
+  // Logs the user in and fetches user info, updating the global state
   const login = async (username, password) => {
     try {
       const response = await loginUser(username, password);
@@ -67,6 +74,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Logs the user out, clears local storage, and resets the global state
   const logout = () => {
     logoutUser();
     setIsAuthenticated(false);

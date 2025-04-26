@@ -69,6 +69,7 @@ const Home = React.memo(function Home() {
           </div>
         )}
 
+        {/* Hamburger Menu for Small Screens */}
         {isSmallScreen2 && (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-700/30 hover:bg-blue-700/50 transition-colors duration-200">
