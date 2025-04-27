@@ -1,3 +1,5 @@
+/* This custom hook fetches the the analytics data for a specific post, calculates the uptick in views for the current month and week, 
+and transforms it into a format suitable for display.*/
 import { useState, useEffect, useCallback } from "react";
 import { getPostAnalytics } from "@/services/analyticsService";
 

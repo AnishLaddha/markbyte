@@ -15,13 +15,16 @@ src/
 │       │   ├── CreateEditorPreview.jsx
 │       │   └── PublishEditorPreview.jsx
 │       └── ...
+|
 ├── contexts/
 │   ├── AuthContext.js                 # State management contexts
 |
 ├── hooks/                             # Custom React hooks (also includes shadcn hooks)
 │   ├── use-blogdata.js
 │   ├── use-bloglist.js
-│   └── use-profiledata.js
+|   ├── use-profiledata.js
+│   └── ...
+|
 |
 ├── services/                          # Application logic for interacting with APIs and encapsulating reusable service functions
 │   ├── authService.jsx
@@ -37,6 +40,9 @@ src/
 ├── constants/
 │   ├── blogTableStaticcols.jsx        # UI Schema Constant
 │   └── mdtemplate.jsx                 # Content Template Constant
+|
+├── utils/
+│   ├── cache.js                       # Fetches/stores in local storage (TTL of 5 minutes)
 | 
 ├── public/
 │   ├── vite.svg                       # Static assets

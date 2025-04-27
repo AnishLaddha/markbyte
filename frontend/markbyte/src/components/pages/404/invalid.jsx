@@ -1,3 +1,4 @@
+/* This is a 404 page displayed when the user tries to access a page that does not exist. */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";

@@ -15,37 +15,74 @@ const HomePageHeader = ({ pgVal, name, handlePageTabChange }) => {
     handlePageTabChange(val);
   };
   return (
-    <div className="mx-8 flex justify-between items-center gap-8">
+    <div className="mx-8 flex flex-col sm:flex-row justify-between items-center gap-8">
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="space-y-4"
       >
-        <div className="flex items-center gap-4 mb-2">
-          <div className="p-3 rounded-full bg-gradient-to-r from-[#084464] to-[#1e6188]">
-            {pgVal === "home" && <Home className="h-6 w-6 text-white min-w-6 flex-shrink-0" />}
-            {pgVal === "analytics" && (
-              <ChartArea className="h-6 w-6 text-white min-w-6 flex-shrink-0" />
-            )}
+        <div className="flex items-start gap-5">
+          <motion.div
+            className="relative p-4 rounded-2xl bg-gradient-to-br from-[#084464] to-[#1e6188] shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          >
+            <motion.div
+              initial={{ rotate: -10, scale: 0.9 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            >
+              {pgVal === "home" && <Home className="h-7 w-7 text-white" />}
+              {pgVal === "analytics" && (
+                <ChartArea className="h-7 w-7 text-white" />
+              )}
+            </motion.div>
+          </motion.div>
+
+          <div className="space-y-2">
+            <motion.h1
+              className="text-3xl font-bold text-gray-900 leading-tight"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              Welcome back,{" "}
+              <motion.span
+                className="bg-gradient-to-r from-[#084464] to-[#1A698F] text-transparent bg-clip-text"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                {name}
+              </motion.span>
+            </motion.h1>
+
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              {pgVal === "home" && (
+                <p className="text-gray-600 text-lg font-light leading-relaxed">
+                  Craft new stories and manage your existing posts with ease.
+                </p>
+              )}
+              {pgVal === "analytics" && (
+                <p className="text-gray-600 text-lg font-light leading-relaxed">
+                  Analyze your blog's performance and track your progress.
+                </p>
+              )}
+            </motion.div>
           </div>
-          <h1 className="text-3xl font-semibold text-gray-900 leading-tight">
-            Welcome back,{" "}
-            <span className="bg-gradient-to-r from-[#084464] to-[#1A698F] text-transparent bg-clip-text">
-              {name}
-            </span>
-            !
-          </h1>
         </div>
-        {pgVal === "home" && (
-          <p className="text-gray-700 text-lg leading-relaxed">
-            Craft new stories and manage your existing posts with ease.
-          </p>
-        )}
-        {pgVal === "analytics" && (
-          <p className="text-gray-700 text-lg leading-relaxed">
-            Analyze your blog's performance and track your progress.
-          </p>
-        )}
+
+        <motion.div
+          className="h-1 w-24 bg-gradient-to-r from-[#084464] to-[#1A698F] rounded-full"
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: 96, opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        />
       </motion.div>
 
       <motion.div

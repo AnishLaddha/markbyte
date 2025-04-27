@@ -1,3 +1,5 @@
+/* This custom hook fetches and transforms all public data for a given user.
+This includes all the user's posts, their profile picture, and the style of the blog.*/
 import { useState, useEffect, useCallback } from "react";
 import { fetchBlogPosts } from "@/services/blogService";
 
@@ -14,7 +16,7 @@ function useBlogList(user) {
         const profilePic = response.data?.profile_picture;
         if (posts.length === 0) {
           setData([]);
-          setProfilePicture(profilePic ? profilePic + "?t=" + Date.now() : null);
+          setProfilePicture(profilePic ? profilePic : null);
           setStyle(response.data?.style || "");
           setError(null);
           return;

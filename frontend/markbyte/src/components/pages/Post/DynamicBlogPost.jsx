@@ -1,3 +1,4 @@
+/* This component will dynamically load a blog post based on the user and post parameters in the URL. */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "../404/invalid";

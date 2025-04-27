@@ -1,3 +1,4 @@
+/* This is our site's about page.*/
 function About() {
   return (
     <div className="About relative bg-[#011A29] text-white overflow-hidden h-screen w-screen flex justify-center items-center">

@@ -68,7 +68,9 @@ func HandleGithubUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	req.Header.Set("User-Agent", "markbyte")
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", githubToken))
+	if githubToken != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", githubToken))
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

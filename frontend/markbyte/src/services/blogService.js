@@ -22,7 +22,7 @@ export const uploadMarkdownFile = (file, title = null) => {
   return axios.post(`${API_URL}/upload`, formData, { withCredentials: true });
 };
 
-export const uploadZipFile = (file, title=null) => {
+export const uploadZipFile = (file, title = null) => {
   const formData = new FormData();
   if (title) {
     formData.append("title", title);
@@ -32,6 +32,14 @@ export const uploadZipFile = (file, title=null) => {
     headers: { "Content-Type": "multipart/form-data" },
     withCredentials: true,
   });
+};
+
+export const uploadGitHubRepo = (owner, repository, branch) => {
+  return axios.post(
+    `${API_URL}/upload/github`,
+    { owner: owner, repo_name: repository, branch: branch },
+    { withCredentials: true }
+  );
 };
 
 export const getMarkdownVersion = (title, version) => {
@@ -66,4 +74,12 @@ export const fetchBlogPosts = (user) => {
       user: user,
     },
   });
+};
+
+export const fetchDiscoverNewPosts = () => {
+  return axios.get(`${API_URL}/discover/new`);
+};
+
+export const fetchDiscoverTopPosts = () => {
+  return axios.get(`${API_URL}/discover/top`);
 };

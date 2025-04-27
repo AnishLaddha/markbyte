@@ -1,3 +1,4 @@
+/* This custom hook fetches all analytics data from the server and transforms it into a format suitable for display.*/
 import { useState, useEffect, useCallback } from "react";
 import { getAllAnalytics } from "@/services/analyticsService";
 import { FRONTEND_URL } from "@/config/api";
