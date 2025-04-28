@@ -10,27 +10,7 @@ on:
       - "dev"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.23'
-        cache: true
-        cache-dependency-path: backend/go.sum
-
-    - name: Run GolangCI-Lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: v1.63.4
-        working-directory: backend
-        args: --timeout=3m
-
-  test:
-    needs: lint
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -47,11 +27,13 @@ jobs:
       with:
         path: |
           ~/.cache/go-build
-          ~/go/pkg/mod
-          backend/.cache
-        key: ${{ runner.os }}-go-${{ hashFiles('backend/go.sum') }}-${{ hashFiles('backend/go.mod') }}
+          ~/go/pkg/mod  # Caching the Go module cache directory
+        key: ${{ runner.os }}-go-${{ hashFiles('backend/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
+
+    - name: Ensure Go module cache directory exists
+      run: mkdir -p ~/go/pkg/mod
 
     - name: Download Go modules
       run: |
@@ -59,34 +41,12 @@ jobs:
         go mod tidy
         go mod download
     
-    - name: Run Tests
-      run: |
-        cd backend
-        go test -v -parallel=4 -timeout=5m ./...
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
+    - name: Run GolangCI-Lint
+      uses: golangci/golangci-lint-action@v3
       with:
-        go-version: '1.23'
-        cache: true
-        cache-dependency-path: backend/go.sum
-
-    - name: Restore Go Modules cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-          backend/.cache
-        key: ${{ runner.os }}-go-${{ hashFiles('backend/go.sum') }}-${{ hashFiles('backend/go.mod') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        version: latest  # Uses the latest stable version
+        working-directory: backend
+        args: --timeout=5m
 
     - name: Build
       run: |
@@ -98,3 +58,8 @@ jobs:
     #   with:
     #     name: backend-binary
     #     path: backend/markbyte 
+
+    - name: Test
+      run: |
+        cd backend
+        make test 

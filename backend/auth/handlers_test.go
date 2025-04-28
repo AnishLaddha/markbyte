@@ -107,7 +107,7 @@ func TestHandleSignup(t *testing.T) {
 			HandleSignup(w, req)
 
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			
+
 			if tt.expectedBody != "" {
 				assert.Equal(t, tt.expectedBody, w.Body.String())
 			}
@@ -313,4 +313,4 @@ func TestHandleLoggedInUser(t *testing.T) {
 
 func stringPtr(s string) *string {
 	return &s
-} 
+}

@@ -1,4 +1,3 @@
-// auth/auth_test.go
 package auth
 
 import (
@@ -110,14 +109,14 @@ func TestValidateJWT(t *testing.T) {
 func TestSetUserDB(t *testing.T) {
 	// Create a mock UserDB
 	mockDB := new(MockUserDB)
-	
+
 	// Call SetUserDB
 	SetUserDB(mockDB)
-	
+
 	// Verify that the global userDB is set correctly
 	// We can do this by trying to use it in a function that requires userDB
 	mockDB.On("GetUser", mock.Anything, "testuser").Return(&db.User{}, nil)
-	
+
 	_, err := userDB.GetUser(context.Background(), "testuser")
 	assert.NoError(t, err)
 	mockDB.AssertExpectations(t)
