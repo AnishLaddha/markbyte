@@ -22,15 +22,11 @@ type S3Credentials struct {
 	Region    string
 }
 
-func LoadCredentials() (S3Credentials, error) {
+var LoadCredentials = func() (S3Credentials, error) {
 
 	if os.Getenv("RUNNING_IN_DOCKER") != "true" {
 		_ = godotenv.Load() // ignore error, it may not exist
 	}
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	return S3Credentials{}, err
-	// }
 
 	bucket := os.Getenv("S3_BUCKET_NAME")
 	region := os.Getenv("S3_REGION")
@@ -103,7 +99,7 @@ func UploadMDFile(ctx context.Context, mdString string, key string, cred S3Crede
 	return url, nil
 }
 
-func ReadFilefromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
+var ReadFilefromS3 = func(ctx context.Context, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
