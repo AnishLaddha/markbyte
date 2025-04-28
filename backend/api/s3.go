@@ -23,7 +23,6 @@ type S3Credentials struct {
 }
 
 var LoadCredentials = func() (S3Credentials, error) {
-
 	if os.Getenv("RUNNING_IN_DOCKER") != "true" {
 		_ = godotenv.Load() // ignore error, it may not exist
 	}
