@@ -209,7 +209,7 @@ function Discover() {
                                   src={
                                     post.pfp
                                       ? `${post.pfp}`
-                                      : `https://api.dicebear.com/9.x/initials/svg?seed=${usersName}&backgroundType=gradientLinear`
+                                      : `https://api.dicebear.com/9.x/initials/svg?seed=${post.blog.user}&backgroundType=gradientLinear`
                                   }
                                   alt="Profile preview"
                                   className="object-cover w-full h-full"
