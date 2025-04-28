@@ -70,10 +70,10 @@ function Discover() {
   };
 
   return (
-    <div className="discover relative min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="discover flex flex-col min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100">
       {isAuthenticated ? <DashboardHeader /> : <NoAuthDashboardHeader />}
 
-      <main className="container mx-auto px-4 sm:px-4 py-8">
+      <main className="container mx-auto px-4 sm:px-4 py-8 flex-grow">
         <div className="flex flex-col sm:flex-row items-center justify-between mx-4 sm:mx-8 mb-4">
           <div className="mb-6 sm:mb-0 gap-4 items-center">
             <motion.h2
@@ -156,7 +156,7 @@ function Discover() {
             </button>
           </div>
         </div>
-        
+
         {/* Blog posts grid */}
         <AnimatePresence mode="wait">
           {blogList && blogList.length > 0 ? (
@@ -202,10 +202,7 @@ function Discover() {
                                 className="h-8 w-8 shadow-xl cursor-pointer mr-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.open(
-                                    `/${post.blog.user}`,
-                                    "_blank"
-                                  );
+                                  window.open(`/${post.blog.user}`, "_blank");
                                 }}
                               >
                                 <AvatarImage
@@ -222,10 +219,7 @@ function Discover() {
                                 className="hover:text-[#084464] hover:underline cursor-pointer text-md"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.open(
-                                    `/${post.blog.user}`,
-                                    "_blank"
-                                  );
+                                  window.open(`/${post.blog.user}`, "_blank");
                                 }}
                               >
                                 {post.blog.user}
@@ -307,6 +301,20 @@ function Discover() {
           )}
         </AnimatePresence>
       </main>
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

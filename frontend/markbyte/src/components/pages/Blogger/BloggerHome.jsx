@@ -748,7 +748,20 @@ function BloggerHome() {
           </motion.div>
         </AnimatePresence>
       </main>
-      
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
       {/* Dialog for uploading files (Markdown and ZIP) */}
       <Dialog
         open={isOpen}
@@ -982,7 +995,7 @@ function BloggerHome() {
           </Tabs>
         </DialogContent>
       </Dialog>
-      
+
       {/* Dialog for uploading GitHub repository details */}
       <Dialog
         open={isGithubOpen}
@@ -1073,7 +1086,7 @@ function BloggerHome() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Alert dialog for confirming post deletion */}
       <ConfirmDeleteDialog
         isOpen={isalertOpen}

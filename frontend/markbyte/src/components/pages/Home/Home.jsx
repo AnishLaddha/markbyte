@@ -141,7 +141,7 @@ const Home = React.memo(function Home() {
                 )}
               </div>
               <div className="tagline text-xl md:text-2xl mb-8 text-blue-100 font-light inline-block">
-                <p>The future of blogging is written in Markdown</p>
+                <p>The future is written in Markdown</p>
               </div>
               <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
                 <a
@@ -165,9 +165,17 @@ const Home = React.memo(function Home() {
           </div>
         </section>
       </main>
-      <footer className="py-4 text-center z-20">
+      <footer className="py-3 text-center z-20">
         <p className="text-gray-400 text-sm">
-          Group 1 - Rishab Pangal, Anish Laddha, Shrijan Swaminathan
+          Made with ❤️ by 
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}MarkByte's Developers
+          </a>
         </p>
       </footer>
     </div>

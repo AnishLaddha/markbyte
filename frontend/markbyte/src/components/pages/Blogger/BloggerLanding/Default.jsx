@@ -61,7 +61,7 @@ function DefaultLandingPage({
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 text-white overflow-x-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 text-white overflow-x-hidden flex flex-col">
       <div className="w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-black pointer-events-none"></div>
         <div className="container mx-auto px-8 relative z-10">
@@ -123,7 +123,7 @@ function DefaultLandingPage({
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto mt-16 px-8 mb-24">
+      <main className="container mx-auto mt-16 px-8 mb-24 flex-grow">
         <div className="flex items-center justify-between mb-16">
           <h2 className="text-4xl font-bold text-white flex items-center">
             <Globe className="h-8 w-8 mr-3 text-white" />
@@ -248,6 +248,20 @@ function DefaultLandingPage({
           </div>
         )}
       </main>
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
