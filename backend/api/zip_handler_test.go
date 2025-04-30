@@ -4,78 +4,63 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"io"
-	"mime/multipart"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/shrijan-swaminathan/markbyte/backend/auth"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleZipUpload(t *testing.T) {
-	origLoadCredentials := LoadCredentials
-	origUploadHTMLFile := UploadHTMLFile
-	origUploadMDFile := UploadMDFile
+func TestExtractZip_SingleMarkdown(t *testing.T) {
 	origUploadImages := UploadImages
-	LoadCredentials = func() (S3Credentials, error) { return S3Credentials{}, nil }
-	UploadHTMLFile = func(ctx context.Context, html, key string, cred S3Credentials) (string, error) {
-		return "https://s3.mock/zip.html", nil
-	}
-	UploadMDFile = func(ctx context.Context, md, key string, cred S3Credentials) (string, error) {
-		return "https://s3.mock/zip.md", nil
-	}
 	UploadImages = func(ctx context.Context, images map[string][]byte, cred S3Credentials) (map[string]string, error) {
 		return map[string]string{}, nil
 	}
-	defer func() {
-		LoadCredentials = origLoadCredentials
-		UploadHTMLFile = origUploadHTMLFile
-		UploadMDFile = origUploadMDFile
-		UploadImages = origUploadImages
-	}()
+	defer func() { UploadImages = origUploadImages }()
 
-	blogPostDataDB = &mockBlogPostDataDB{}
-	AnalyticsDataDB = &mockAnalyticsDataDB{}
+	cred := S3Credentials{}
+	username := "testuser"
 
-	// Create a zip file in memory with a single test.md file
-	var buf bytes.Buffer
-	zipWriter := multipart.NewWriter(&buf)
-	fw, _ := zipWriter.CreateFormFile("zipfile", "test.zip")
-	// Write a dummy zip file containing a .md file
-	zipBuf := new(bytes.Buffer)
-	zipW := NewTestZipWriter(zipBuf)
-	zipW.AddFile("test.md", "# Hello\nTest")
-	zipW.Close()
-	io.Copy(fw, zipBuf)
+	// Create an in-memory ZIP with a single .md file
+	var zipBuf bytes.Buffer
+	zipWriter := zip.NewWriter(&zipBuf)
+	f, _ := zipWriter.Create("test.md")
+	f.Write([]byte("# Hello\nTest"))
 	zipWriter.Close()
 
-	req := httptest.NewRequest("POST", "/zipupload", &buf)
-	req.Header.Set("Content-Type", zipWriter.FormDataContentType())
-	ctx := context.WithValue(req.Context(), auth.UsernameKey, "testuser")
-	req = req.WithContext(ctx)
-	rr := httptest.NewRecorder()
-
-	HandleZipUpload(rr, req)
-
-	assert.Equal(t, http.StatusOK, rr.Code)
+	zipData, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)
+	assert.NoError(t, err)
+	assert.Equal(t, "test", zipData.post_name)
+	assert.Contains(t, string(zipData.md_content), "Hello")
+	assert.Contains(t, zipData.html_content, "<h1")
 }
 
-// Helper for zip creation in tests
-type TestZipWriter struct {
-	writer *zip.Writer
+func TestExtractZip_NoMarkdown(t *testing.T) {
+	cred := S3Credentials{}
+	username := "testuser"
+
+	var zipBuf bytes.Buffer
+	zipWriter := zip.NewWriter(&zipBuf)
+	f, _ := zipWriter.Create("image.png")
+	f.Write([]byte("fakeimage"))
+	zipWriter.Close()
+
+	_, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no markdown file found")
 }
 
-func NewTestZipWriter(buf *bytes.Buffer) *TestZipWriter {
-	return &TestZipWriter{writer: zip.NewWriter(buf)}
-}
+func TestExtractZip_MultipleMarkdown(t *testing.T) {
+	cred := S3Credentials{}
+	username := "testuser"
 
-func (z *TestZipWriter) AddFile(name, content string) {
-	f, _ := z.writer.Create(name)
-	f.Write([]byte(content))
-}
+	var zipBuf bytes.Buffer
+	zipWriter := zip.NewWriter(&zipBuf)
+	f, _ := zipWriter.Create("a.md")
+	f.Write([]byte("# A"))
+	f2, _ := zipWriter.Create("b.md")
+	f2.Write([]byte("# B"))
+	zipWriter.Close()
 
-func (z *TestZipWriter) Close() {
-	z.writer.Close()
+	_, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "multiple markdown files found")
 }
