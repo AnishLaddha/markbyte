@@ -59,14 +59,21 @@ const PublishEditorPreview = () => {
   const [currMarkdownContent, setCurrMarkdownContent] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
   const [originalMarkdownContent, setOriginalMarkdownContent] = useState("");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Fetch the original markdown content from the backend
   const revert = () => {
     getMarkdownVersion(title, version)
       .then((response) => {
-        setOriginalMarkdownContent(response.data);
-        setCurrMarkdownContent(response.data);
-        setMarkdownContent(response.data);
+        // I found an edge case where if response.data contains only a number, it will be treated as a number and not a string
+        const content =
+          typeof response.data === "string"
+            ? response.data
+            : JSON.stringify(response.data);
+
+        setOriginalMarkdownContent(content);
+        setCurrMarkdownContent(content);
+        setMarkdownContent(content);
         setRenderMarkdown(true);
       })
       .catch((error) => {
@@ -180,6 +187,19 @@ const PublishEditorPreview = () => {
         navigate("/");
       });
   };
+
+  // Handles check for online status of the user
+  useEffect(() => {
+    const updateOnlineStatus = () => setIsOnline(navigator.onLine);
+  
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+  
+    return () => {
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
+    };
+  }, []);
 
   const { isAuthenticated } = useAuth();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
@@ -373,7 +393,9 @@ const PublishEditorPreview = () => {
               <div className="flex gap-1">
                 <div className="bg-slate-800/80 text-gray-300 px-2.5 py-1 rounded-lg shadow-inner flex items-center gap-1">
                   <span className="text-blue-400 font-medium">
-                    {currMarkdownContent.split(/\s+/).filter(Boolean).length}
+                    {currMarkdownContent
+                      ? currMarkdownContent.split(/\s+/).filter(Boolean).length
+                      : 0}
                   </span>
                   <span>words</span>
                 </div>
@@ -448,6 +470,24 @@ const PublishEditorPreview = () => {
           />
         </Panel>
       </PanelGroup>
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-gradient-to-r from-slate-800/90 to-slate-700/90 px-3 py-2 rounded-lg border border-slate-600/50 shadow-lg flex items-center gap-2 backdrop-blur-sm transition-all duration-300 hover:shadow-blue-900/20">
+          <div
+            className={`w-2 h-2 ${
+              isOnline ? "bg-green-500" : "bg-red-500"
+            } rounded-full ${isOnline ? "animate-pulse" : "animate-ping"}`}
+          ></div>
+          <span className="text-xs text-slate-300">
+            {isOnline ? "Editing" : "Offline"}
+          </span>
+          <span className="text-sm font-medium text-white truncate max-w-[150px]">
+            {title}
+          </span>
+          <span className="text-xs bg-blue-600/30 text-blue-200 px-2 py-0.5 rounded-full">
+            v{version}
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

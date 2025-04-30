@@ -2,10 +2,7 @@
 and see a live preview of it. They can also upload this.*/
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import {
-  markdown,
-  markdownLanguage,
-} from "@codemirror/lang-markdown";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { html } from "@codemirror/lang-html";
 import { languages } from "@codemirror/language-data";
 import { basicSetup } from "codemirror";
@@ -91,6 +88,7 @@ const EditorPreview = () => {
   const editorPanelRef = useRef(null);
   const previewPanelRef = useRef(null);
   const [currTheme, setCurrTheme] = useState("vscodeDark");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const themeOptions = {
     aura,
     andromeda,
@@ -114,7 +112,6 @@ const EditorPreview = () => {
       setCurrMarkdownContent(value);
     }
   };
-
 
   // Function to handle tab changes to resize the panels accordingly
   useEffect(() => {
@@ -237,6 +234,19 @@ const EditorPreview = () => {
       setPostTitle(value);
     }
   };
+
+  // Handles check for online status of the user
+  useEffect(() => {
+    const updateOnlineStatus = () => setIsOnline(navigator.onLine);
+
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+
+    return () => {
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
+    };
+  }, []);
 
   const { isAuthenticated, user, profilepicture, name, logout } = useAuth();
   const isSmallScreenupload = useMediaQuery("(max-width:580px)");
@@ -551,7 +561,17 @@ const EditorPreview = () => {
           />
         </Panel>
       </PanelGroup>
-      
+
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-gradient-to-r from-slate-800/90 to-slate-700/90 px-2 py-2 rounded-lg border border-slate-600/50 shadow-lg flex items-center gap-2 backdrop-blur-sm transition-all duration-300 hover:shadow-blue-900/20">
+          <div
+            className={`w-2 h-2 ${
+              isOnline ? "bg-green-500" : "bg-red-500"
+            } rounded-full ${isOnline ? "animate-pulse" : "animate-ping"}`}
+          ></div>
+        </div>
+      </div>
+
       {/* Alert dialog for publishing the post */}
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
         <AlertDialogContent className="bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700/50 text-white max-w-md rounded-xl shadow-xl">
