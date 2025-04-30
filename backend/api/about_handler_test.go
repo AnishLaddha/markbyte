@@ -36,7 +36,9 @@ func TestHandleAboutPageUpload(t *testing.T) {
 	var b bytes.Buffer
 	wr := multipart.NewWriter(&b)
 	fw, _ := wr.CreateFormFile("about_file", "about.md")
-	io.Copy(fw, strings.NewReader("# About Me\nThis is a test."))
+	if _, err := io.Copy(fw, strings.NewReader("# About Me\nThis is a test.")); err != nil {
+		t.Fatalf("io.Copy failed: %v", err)
+	}
 	wr.Close()
 
 	req := httptest.NewRequest("POST", "/about/upload", &b)

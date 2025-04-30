@@ -23,7 +23,9 @@ func TestExtractZip_SingleMarkdown(t *testing.T) {
 	var zipBuf bytes.Buffer
 	zipWriter := zip.NewWriter(&zipBuf)
 	f, _ := zipWriter.Create("test.md")
-	f.Write([]byte("# Hello\nTest"))
+	if _, err := f.Write([]byte("# Hello\nTest")); err != nil {
+		t.Fatalf("f.Write failed: %v", err)
+	}
 	zipWriter.Close()
 
 	zipData, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)
@@ -40,7 +42,9 @@ func TestExtractZip_NoMarkdown(t *testing.T) {
 	var zipBuf bytes.Buffer
 	zipWriter := zip.NewWriter(&zipBuf)
 	f, _ := zipWriter.Create("image.png")
-	f.Write([]byte("fakeimage"))
+	if _, err := f.Write([]byte("fakeimage")); err != nil {
+		t.Fatalf("f.Write failed: %v", err)
+	}
 	zipWriter.Close()
 
 	_, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)
@@ -55,9 +59,13 @@ func TestExtractZip_MultipleMarkdown(t *testing.T) {
 	var zipBuf bytes.Buffer
 	zipWriter := zip.NewWriter(&zipBuf)
 	f, _ := zipWriter.Create("a.md")
-	f.Write([]byte("# A"))
+	if _, err := f.Write([]byte("# A")); err != nil {
+		t.Fatalf("f.Write failed: %v", err)
+	}
 	f2, _ := zipWriter.Create("b.md")
-	f2.Write([]byte("# B"))
+	if _, err := f2.Write([]byte("# B")); err != nil {
+		t.Fatalf("f.Write failed: %v", err)
+	}
 	zipWriter.Close()
 
 	_, err := extractZip(context.Background(), zipBuf.Bytes(), cred, username)

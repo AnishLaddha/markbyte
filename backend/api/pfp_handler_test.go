@@ -31,7 +31,9 @@ func TestHandleUpdateUserProfilePicture(t *testing.T) {
 	var b bytes.Buffer
 	wr := multipart.NewWriter(&b)
 	fw, _ := wr.CreateFormFile("profile_picture", "testuser.png")
-	io.Copy(fw, strings.NewReader("fakeimagebytes"))
+	if _, err := io.Copy(fw, strings.NewReader("fakeimagebytes")); err != nil {
+		t.Fatalf("io.Copy failed: %v", err)
+	}
 	wr.Close()
 
 	req := httptest.NewRequest("POST", "/pfp", &b)

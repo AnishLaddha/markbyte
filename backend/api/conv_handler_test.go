@@ -37,8 +37,12 @@ func TestHandleUpload(t *testing.T) {
 	var b bytes.Buffer
 	wr := multipart.NewWriter(&b)
 	fw, _ := wr.CreateFormFile("file", "test.md")
-	io.Copy(fw, strings.NewReader("# Hello\nTest"))
-	wr.WriteField("title", "Test Title")
+	if _, err := io.Copy(fw, strings.NewReader("# Hello\nTest")); err != nil {
+		t.Fatalf("io.Copy failed: %v", err)
+	}
+	if err := wr.WriteField("title", "Test Title"); err != nil {
+		t.Fatalf("wr.WriteField failed: %v", err)
+	}
 	wr.Close()
 
 	req := httptest.NewRequest("POST", "/upload", &b)
