@@ -54,11 +54,24 @@ func SetEndpoint(ctx context.Context, endpoint string, htmlContent *string) erro
 
 func GetEndpoint(ctx context.Context, endpoint string) (string, error) {
 	val, err := client.Get(ctx, endpoint).Result()
-	if err != redis.Nil && err != nil {
-		fmt.Printf("Error getting value from redis %v", err)
+	if err == redis.Nil {
+		return "", nil
+	} else if err != redis.Nil && err != nil {
 		return "", err
 	}
 	return val, nil
+}
+
+func SetWithTTL(ctx context.Context, endpoint string, htmlContent *string, ttl time.Duration) error {
+	if htmlContent == nil {
+		return fmt.Errorf("htmlContent is nil")
+	}
+	err := client.Set(ctx, endpoint, *htmlContent, ttl).Err()
+	if err != nil {
+		fmt.Println("failed to set value (redis)")
+		return err
+	}
+	return nil
 }
 
 func DeleteEndpoint(ctx context.Context, endpoint string) error {

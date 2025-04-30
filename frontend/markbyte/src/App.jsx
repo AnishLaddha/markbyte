@@ -1,3 +1,4 @@
+/* This component handles the routing for the application. It uses React Router to define the routes and their corresponding components.*/
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -5,12 +6,16 @@ import Home from "./components/pages/Home/Home";
 import Auth from "./components/pages/Auth/Auth";
 // import Loading from "./components/pages/Loading/Loading";
 import About from "./components/pages/About/About";
-import BloggerLandingPage from "./components/pages/BloggerLanding/BloggerLanding";
-import BloggerHome from "./components/pages/BloggerHome/BloggerHome";
-import EditorPreview from "./components/pages/LivePreview/CreateEditorPreview";
-import PublishEditorPreview from "./components/pages/LivePreview/PublishEditorPreview";
+import BloggerLandingPage from "./components/pages/Blogger/BloggerLanding";
+import BloggerHome from "./components/pages/Blogger/BloggerHome";
+import EditorPreview from "./components/pages/Editor/CreateEditorPreview";
+import PublishEditorPreview from "./components/pages/Editor/PublishEditorPreview";
 import DynamicBlogPost from "./components/pages/Post/DynamicBlogPost";
-import BloggerProfile from "./components/pages/BloggerProfile/BloggerProfile";
+import BloggerProfile from "./components/pages/Blogger/BloggerProfile";
+import NotFound from "./components/pages/404/invalid";
+import PostAnalytics from "./components/pages/Post/PostAnalytics";
+import DynamicAboutPage from "./components/pages/Blogger/BloggerAbout";
+import Discover from "./components/pages/Discover/Discover";
 import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -32,7 +37,7 @@ function App() {
           path="/"
           element={
             isLoading ? (
-              console.log("Loading...") // This will simply log "Loading..." to the console
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -41,11 +46,12 @@ function App() {
           }
         />
         <Route path="/about" element={<About />} />
+        <Route path="/discover" element={<Discover />} />
         <Route
           path="/editor"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -57,7 +63,7 @@ function App() {
           path="/editor/:title/:version"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -65,13 +71,26 @@ function App() {
             )
           }
         />
+        <Route path="/:user/about" element={<DynamicAboutPage />} />
         <Route path="/:user/:post" element={<DynamicBlogPost />} />
+        <Route
+          path="/:user/:post/analytics"
+          element={
+            isLoading ? (
+              null
+            ) : !isAuthenticated ? (
+              <Home />
+            ) : (
+              <PostAnalytics />
+            )
+          }
+        />
         <Route path="/:username" element={<BloggerLandingPage />} />
         <Route
           path="/profile"
           element={
             isLoading ? (
-              console.log("Loading...")
+              null
             ) : !isAuthenticated ? (
               <Home />
             ) : (
@@ -83,6 +102,7 @@ function App() {
           path="/auth"
           element={isAuthenticated ? <BloggerHome /> : <Auth />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </Router>

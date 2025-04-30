@@ -48,8 +48,8 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/upload", api.HandleUpload)
 		protected.Post("/zipupload", api.HandleZipUpload)
 		protected.Get("/user/blog_posts", api.HandleFetchAllBlogPosts)
+		protected.Post("/upload/github", api.HandleGithubUpload)
 		protected.Post("/publish", api.HandlePublishPostVersion)
-		protected.Get("/like", api.HandleLikePost)
 		protected.Post("/render", markdown_render.HandleRender)
 		protected.Post("/markdown", api.HandleFetchMD)
 		protected.Post("/delete", api.HandleDelete)
@@ -58,12 +58,18 @@ func SetupRouter() *chi.Mux {
 		protected.Post("/user/pfp", api.HandleUpdateUserProfilePicture)
 		protected.Post("/user/name", api.HandleUpdateUserName)
 		protected.Get("/user/info", api.HandleUserInfo)
+		protected.Post("/post/analytics", api.HandleGetPostAnalytics)
+		protected.Get("/user/analytics", api.HandleAllAnalytics)
+		protected.Get("/user/analytics/timestamps", api.HandleUserActiveTimestamps)
+		protected.Post("/user/about/upload", api.HandleAboutPageUpload)
 	})
 
 	r.Get("/static/*", api.HandleStatic)
 	r.Get("/{username}/{post}", api.HandleFetchBlogPost)
-	r.Get("/get_all_posts", api.HandleFetchUserActivePosts)
-
+	r.Get("/user/posts", api.HandleFetchUserActivePosts)
+	r.Post("/user/about", api.HandleAboutPageGet)
+	r.Get("/discover/new", api.HandleDiscoverNewPosts)
+	r.Get("/discover/top", api.HandleDiscoverTopPosts)
 	fmt.Println("Server Started.")
 
 	return r
