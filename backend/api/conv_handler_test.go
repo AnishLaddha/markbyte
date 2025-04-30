@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -55,6 +56,10 @@ func TestHandleUpload(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Contains(t, rr.Body.String(), "File processed successfully")
+	// clean up
+	if err := os.RemoveAll("cmd/"); err != nil {
+		t.Fatalf("Failed to remove file: %v", err)
+	}
 }
 
 func TestHandleDelete(t *testing.T) {
