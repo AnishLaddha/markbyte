@@ -1081,7 +1081,7 @@ function BloggerHome() {
 
             <p className="mt-4 text-xs text-gray-500 text-center max-w-[360px]">
               Parsing time can take up to 20 seconds depending on the size of
-              the repository. Please keep the size of the repository under 50MB.
+              the repository. Please choose a repository with no more than <b>10</b> Markdown files.
             </p>
           </div>
         </DialogContent>
