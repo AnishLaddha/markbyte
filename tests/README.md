@@ -8,8 +8,10 @@ integration testing
 (not implemented yet)
 
 # backend
-backend testing 
-run `make test` inside backend folder
+Enter the backend directory:
+`cd backend`
+Run make test to test:
+`make test`
 
 # frontend
 frontend testing
