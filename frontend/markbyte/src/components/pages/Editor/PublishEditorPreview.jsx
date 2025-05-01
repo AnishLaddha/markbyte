@@ -212,7 +212,7 @@ const PublishEditorPreview = () => {
     };
 
     checkOnlineStatus();
-    const interval = setInterval(checkOnlineStatus, 6000);
+    const interval = setInterval(checkOnlineStatus, 25000);
     return () => clearInterval(interval);
   }, []);
 
