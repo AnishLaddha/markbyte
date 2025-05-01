@@ -62,7 +62,7 @@ function ClassicLandingPage({
   };
 
   return (
-    <div className="relative min-h-screen bg-[#f6f8fa] overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#f6f8fa] overflow-x-hidden flex flex-col">
       <div className="w-full bg-gradient-to-r from-[#084464] to-[#011522] py-20 relative overflow-hidden">
         <div className="absolute left-0 top-0 w-20 h-20 grid grid-cols-5 gap-2 opacity-60 mt-6 ml-6">
           {[...Array(25)].map((_, i) => (
@@ -124,7 +124,7 @@ function ClassicLandingPage({
         </div>
       </div>
 
-      <main className="container mx-auto mt-16 px-8 mb-24">
+      <main className="container mx-auto mt-16 px-8 mb-24 flex-grow">
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-4xl font-bold text-black flex items-center">
             <Globe className="h-8 w-8 mr-3 text-black" />
@@ -245,6 +245,20 @@ function ClassicLandingPage({
           </div>
         )}
       </main>
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

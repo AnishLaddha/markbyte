@@ -199,11 +199,11 @@ function Auth() {
       <div className="absolute left-[-15%] top-1/6 h-[450px] w-[350px] -rotate-15 rounded-[120px] bg-blue-500 opacity-10 blur-[130px] z-0"></div>
       <div className="absolute right-[-10%] bottom-1/4 h-[550px] w-[450px] rotate-40 rounded-[130px] bg-blue-500 opacity-10 blur-[140px] z-0"></div>
 
-      <div className="mb-8 z-10">
+      <div className="mb-6 z-10">
         <motion.img
           src="/assets/markbytealt.png"
           alt="Logo"
-          className="h-20 w-auto cursor-pointer"
+          className="h-24 w-auto cursor-pointer"
           onClick={() => navigate("/")}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

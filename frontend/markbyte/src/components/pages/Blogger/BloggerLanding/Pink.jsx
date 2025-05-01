@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/pagination";
 import { useNavigate } from "react-router-dom";
 
-// Add global style for scrollbar
 function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
   const nposts = 6;
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -58,7 +57,7 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#fff8f9] overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#fff8f9] overflow-x-hidden flex flex-col">
       <div className="w-full bg-gradient-to-r from-[#ff9eb3] to-[#ff7f9e] py-20 relative overflow-hidden">
         <div className="absolute left-0 top-0 w-20 h-20 grid grid-cols-5 gap-2 opacity-60 mt-6 ml-6">
           {[...Array(25)].map((_, i) => (
@@ -121,7 +120,7 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
           </motion.div>
         </div>
       </div>
-      <main className="container mx-auto mt-16 mb-24 relative">
+      <main className="container mx-auto mt-16 mb-24 relative flex-grow">
         {/* Pink border with dashes container */}
         <div className="relative p-8 rounded-lg border-[18px] border-pink-100 mx-4">
           {/* Dotted line inside border */}
@@ -256,6 +255,20 @@ function PinkLandingPage({ username, blogList, profilepicture, fetchPosts }) {
           </div>
         </div>
       </main>
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

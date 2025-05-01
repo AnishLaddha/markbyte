@@ -81,7 +81,7 @@ function FuturisticLandingPage({
   );
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#170B2B] via-[#0F2A3D] to-[#0B3B30] text-white overflow-x-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-[#170B2B] via-[#0F2A3D] to-[#0B3B30] text-white overflow-x-hidden flex flex-col">
       <div className="w-full bg-[#0A1A20]/80 py-20 relative overflow-hidden border-b border-[#4A97FF]/20">
         <div className="absolute inset-0 bg-gradient-to-r from-[#6A3AFF]/10 via-[#00FDCF]/10 to-[#34DA9D]/10"></div>
         <div className="absolute inset-0 overflow-hidden">
@@ -164,7 +164,7 @@ function FuturisticLandingPage({
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto mt-16 px-8 mb-24 relative z-10">
+      <main className="container mx-auto mt-16 px-8 mb-24 relative z-10 flex-grow">
         <div className="flex items-center justify-between mb-16">
           <h2 className="text-4xl font-bold text-white flex items-center">
             <Globe className="h-8 w-8 mr-3 text-[#00FDCF]" />
@@ -290,6 +290,20 @@ function FuturisticLandingPage({
           </div>
         )}
       </main>
+      <footer className="py-3 text-center z-20">
+        <p className="text-gray-400 text-sm">
+          Made with ❤️ by
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}
+            MarkByte's Developers
+          </a>
+        </p>
+      </footer>
       <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#6A3AFF] via-[#00FDCF] to-[#34DA9D]"></div>
     </div>
   );
