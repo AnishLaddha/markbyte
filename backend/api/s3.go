@@ -22,15 +22,10 @@ type S3Credentials struct {
 	Region    string
 }
 
-func LoadCredentials() (S3Credentials, error) {
-
+var LoadCredentials = func() (S3Credentials, error) {
 	if os.Getenv("RUNNING_IN_DOCKER") != "true" {
 		_ = godotenv.Load() // ignore error, it may not exist
 	}
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	return S3Credentials{}, err
-	// }
 
 	bucket := os.Getenv("S3_BUCKET_NAME")
 	region := os.Getenv("S3_REGION")
@@ -49,7 +44,7 @@ func LoadCredentials() (S3Credentials, error) {
 	}, nil
 }
 
-func UploadHTMLFile(ctx context.Context, htmlString string, key string, cred S3Credentials) (string, error) {
+var UploadHTMLFile = func(ctx context.Context, htmlString string, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -76,7 +71,7 @@ func UploadHTMLFile(ctx context.Context, htmlString string, key string, cred S3C
 	return url, nil
 }
 
-func UploadMDFile(ctx context.Context, mdString string, key string, cred S3Credentials) (string, error) {
+var UploadMDFile = func(ctx context.Context, mdString string, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -103,7 +98,7 @@ func UploadMDFile(ctx context.Context, mdString string, key string, cred S3Crede
 	return url, nil
 }
 
-func ReadFilefromS3(ctx context.Context, key string, cred S3Credentials) (string, error) {
+var ReadFilefromS3 = func(ctx context.Context, key string, cred S3Credentials) (string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -153,7 +148,7 @@ func ReadFilefromS3(ctx context.Context, key string, cred S3Credentials) (string
 
 // }
 
-func DeleteFile(ctx context.Context, key string, cred S3Credentials) error {
+var DeleteFile = func(ctx context.Context, key string, cred S3Credentials) error {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
@@ -174,7 +169,7 @@ func DeleteFile(ctx context.Context, key string, cred S3Credentials) error {
 	return nil
 }
 
-func UploadImages(ctx context.Context, images map[string][]byte, cred S3Credentials) (map[string]string, error) {
+var UploadImages = func(ctx context.Context, images map[string][]byte, cred S3Credentials) (map[string]string, error) {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithRegion(cred.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(cred.AccessKey, cred.SecretKey, "")))
