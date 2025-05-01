@@ -415,12 +415,19 @@ const EditorPreview = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           <button
-            className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
+            className={`bg-gradient-to-r text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg
+            ${
+              isOnline
+                ? "from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-blue-600/20 hover:shadow-blue-700/30"
+                : "from-gray-400 to-gray-500 cursor-not-allowed opacity-70 shadow-none"
+            }`}
             onClick={() => setIsOpen(true)}
+            disabled={!isOnline}
           >
             <Upload className="h-4 w-4" />
             {!isSmallScreenupload && <span className="font-bold">Publish</span>}
           </button>
+
           {isAuthenticated && (
             <UserDropdown
               userName={user.name}
