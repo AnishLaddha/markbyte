@@ -59,7 +59,7 @@ const PublishEditorPreview = () => {
   const [currMarkdownContent, setCurrMarkdownContent] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
   const [originalMarkdownContent, setOriginalMarkdownContent] = useState("");
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setOnline] = useState(true);
 
   // Fetch the original markdown content from the backend
   const revert = () => {
@@ -189,16 +189,31 @@ const PublishEditorPreview = () => {
   };
 
   // Handles check for online status of the user
+  // Used logic from https://stackoverflow.com/questions/70661203/how-to-check-online-status-in-react-js
+  const isAppOnline = async () => {
+    if (!window.navigator.onLine) return false;
+
+    const url = new URL(window.location.origin);
+    url.searchParams.set("q", new Date().toString());
+
+    try {
+      const response = await fetch(url.toString(), { method: "HEAD" });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  // Handles check for online status of the user
   useEffect(() => {
-    const updateOnlineStatus = () => setIsOnline(navigator.onLine);
-  
-    window.addEventListener("online", updateOnlineStatus);
-    window.addEventListener("offline", updateOnlineStatus);
-  
-    return () => {
-      window.removeEventListener("online", updateOnlineStatus);
-      window.removeEventListener("offline", updateOnlineStatus);
+    const checkOnlineStatus = async () => {
+      const status = await isAppOnline();
+      setOnline(status);
     };
+
+    checkOnlineStatus();
+    const interval = setInterval(checkOnlineStatus, 25000);
+    return () => clearInterval(interval);
   }, []);
 
   const { isAuthenticated } = useAuth();
@@ -318,7 +333,12 @@ const PublishEditorPreview = () => {
           </button>
 
           <button
-            className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
+            className={`bg-gradient-to-r text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 text-sm transition-all duration-300 shadow-lg
+            ${
+              isOnline
+                ? "from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-blue-600/20 hover:shadow-blue-700/30"
+                : "from-gray-400 to-gray-500 cursor-not-allowed opacity-70 shadow-none"
+            }`}
             onClick={() => handlePreviewUpload()}
           >
             <Upload className="h-4 w-4" />
@@ -470,12 +490,12 @@ const PublishEditorPreview = () => {
           />
         </Panel>
       </PanelGroup>
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 right-7 z-50">
         <div className="bg-gradient-to-r from-slate-800/90 to-slate-700/90 px-3 py-2 rounded-lg border border-slate-600/50 shadow-lg flex items-center gap-2 backdrop-blur-sm transition-all duration-300 hover:shadow-blue-900/20">
           <div
             className={`w-2 h-2 ${
               isOnline ? "bg-green-500" : "bg-red-500"
-            } rounded-full ${isOnline ? "animate-pulse" : "animate-ping"}`}
+            } rounded-full ${isOnline ? "animate-pulse" : ""}`}
           ></div>
           <span className="text-xs text-slate-300">
             {isOnline ? "Editing" : "Offline"}
