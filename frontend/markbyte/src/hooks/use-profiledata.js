@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+/* This custom hook fetches the user's profile data from the server and transforms it into a format suitable for display.*/
+import { useState, useCallback, useEffect } from "react";
+import { getUserInfo } from "@/services/userService";
 
 function useProfileData() {
   const [profileData, setProfileData] = useState(null);
@@ -8,15 +8,15 @@ function useProfileData() {
   const fetchProfileData = useCallback(async () => {
     try {
       // Create an array of promises for all the requests
-      const requests = [
-        axios.get(`${API_URL}/user/style`, { withCredentials: true }),
-      ];
-
-      const [styleResponse] = await Promise.all(requests);
-
+      const profileResponse = await getUserInfo();
       // Combine all responses into a single object
       const combinedData = {
-        style: styleResponse.data,
+        style: profileResponse.data.style || "default",
+        name: profileResponse.data.name || "User",
+        profilepicture: profileResponse.data.profile_picture
+          ? `${profileResponse.data.profile_picture}?t=${Date.now()}`
+          : null,
+        email: profileResponse.data.email || null,
       };
 
       setProfileData(combinedData);
@@ -26,7 +26,9 @@ function useProfileData() {
       return null;
     }
   }, []);
-
+  useEffect(() => {
+    fetchProfileData();
+  }, [fetchProfileData]);
   return {
     profileData,
     fetchProfileData,

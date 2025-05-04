@@ -50,23 +50,28 @@ type BlogPostDataDB interface {
 	FetchAllPostVersions(ctx context.Context, username string, title string) (BlogPostVersionsData, error)
 	FetchAllActiveBlogPosts(ctx context.Context, username string) ([]BlogPostData, error)
 	FetchActiveBlog(ctx context.Context, username string, title string) (string, error)
+	FetchFiftyNewestPosts(ctx context.Context) ([]BlogPostData, error)
+	IsPostActive(ctx context.Context, username string, title string, version string) (bool, error)
+	FetchBlogPost(ctx context.Context, username string, title string, version string) (BlogPostData, error)
 }
 
 type PostAnalytics struct {
-	Username string    `json:"username" bson:"username"`
-	Title    string    `json:"title" bson:"title"`
-	Version  string    `json:"version" bson:"version"`
-	Date     time.Time `json:"date" bson:"date"`
-	Views    int       `json:"views" bson:"views"`
-	Likes    int       `json:"likes" bson:"likes"`
+	Username  string      `json:"username" bson:"username"`
+	Title     string      `json:"title" bson:"title"`
+	Version   string      `json:"version" bson:"version"`
+	Date      time.Time   `json:"date" bson:"date"`
+	Views     []time.Time `json:"views" bson:"views"`
+	Likes     []string    `json:"likes" bson:"likes"`
+	ViewCount int         `json:"view_count" bson:"view_count"`
 }
 
 type AnalyticsDB interface {
 	CreatePostAnalytics(ctx context.Context, post *PostAnalytics) (string, error)
-	GetPostAnalytics(ctx context.Context, username string, title string, version string) (*PostAnalytics, error)
-	UpdateViewsAnalytics(ctx context.Context, username string, title string, version string, views int) error
-	UpdateLikesAnalytics(ctx context.Context, username string, title string, version string, likes int) error
+	GetPostAnalytics(ctx context.Context, username string, title string, version string) (PostAnalytics, error)
 	IncrementViews(ctx context.Context, username string, title string, version string) error
-	IncrementLikes(ctx context.Context, username string, title string, version string) error
+	ToggleLike(ctx context.Context, postUsername string, title string, version string, likingUsername string) (bool, error)
 	DeletePostAnalytics(ctx context.Context, username string, title string) (int, error)
+	GetAllPostTimeStamps(ctx context.Context, username string, active_posts []BlogPostData) ([]time.Time, error)
+	GetPostViewCount(ctx context.Context, username string, title string, version string) (int, error)
+	GetMostViewedPosts(ctx context.Context, limit int) ([]PostAnalytics, error)
 }

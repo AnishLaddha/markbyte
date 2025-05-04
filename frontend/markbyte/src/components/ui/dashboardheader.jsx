@@ -1,10 +1,8 @@
 import React from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import UserDropdown from "@/components/ui/profiledropdown";
 import { useMediaQuery } from "@mui/material";
 function DashboardHeader() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:470px)");
   return (
@@ -23,8 +21,22 @@ function DashboardHeader() {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <UserDropdown userName={user.name} logout={logout} />
+      <div className="flex items-center gap-4">
+      <a
+          href="/"
+          className="text-white text-md px-2 py-1 transition-all duration-300 relative group"
+        >
+          Home
+          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a
+          href="/discover"
+          className="text-white text-md px-2 py-1 transition-all duration-300 relative group"
+        >
+          Discover
+          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <UserDropdown />
       </div>
     </header>
   );

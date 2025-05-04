@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -48,9 +49,19 @@ func ConvertMarkdown(mdContent []byte) (string, error) {
 		fmt.Println("Error converting Markdown:", err)
 		return "", err
 	}
+	html := addTargetBlank(buf.String())
 
-	// insert converted html into template
-	// outputHTML := strings.Replace(string(templateHTML), "{{CONTENT}}", buf.String(), 1)
+	return html, nil
+}
 
-	return buf.String(), nil
+func addTargetBlank(html string) string {
+	re := regexp.MustCompile(`<a\s+[^>]*>`)
+	return re.ReplaceAllStringFunc(html, func(tag string) string {
+		// If target already exists, don't touch
+		if strings.Contains(tag, "target=") {
+			return tag
+		}
+		// Otherwise, inject target="_blank"
+		return strings.Replace(tag, "<a", `<a target="_blank"`, 1)
+	})
 }

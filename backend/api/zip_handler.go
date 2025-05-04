@@ -45,6 +45,14 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 	buf := new(bytes.Buffer)
+
+	//read title
+	title := r.FormValue("title")
+	if strings.ContainsAny(title, `\/:*?"<>|_`) {
+		http.Error(w, "Title contains invalid characters", http.StatusBadRequest)
+		return
+	}
+
 	_, err = io.Copy(buf, file)
 	if err != nil {
 		http.Error(w, "Failed to read ZIP", http.StatusInternalServerError)
@@ -61,6 +69,13 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to extract zip", http.StatusInternalServerError)
 		return
 	}
+	if title != "" {
+		zip_file_data.post_name = title
+	} else {
+		title = zip_file_data.post_name
+	}
+
+	processed_title := strings.ReplaceAll(title, " ", "_")
 
 	existingPosts, err := blogPostDataDB.FetchAllPostVersions(r.Context(), username, zip_file_data.post_name)
 	existingPostsVersions := existingPosts.Versions
@@ -90,8 +105,8 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 
 	var url string
 
-	html_keyname := fmt.Sprintf("%s_%s_%d.html", username, zip_file_data.post_name, new_version)
-	md_keyname := fmt.Sprintf("%s_%s_%d.md", username, zip_file_data.post_name, new_version)
+	html_keyname := fmt.Sprintf("%s_%s_%d.html", username, processed_title, new_version)
+	md_keyname := fmt.Sprintf("%s_%s_%d.md", username, processed_title, new_version)
 
 	if s3err == nil {
 		s3URL, err := UploadHTMLFile(r.Context(), zip_file_data.html_content, html_keyname, cred)
@@ -111,7 +126,7 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 		url = s3URL
 	}
 
-	endpoint := "/" + username + "/" + zip_file_data.post_name
+	endpoint := "/" + username + "/" + processed_title
 	post_time := time.Now()
 
 	new_post := db.BlogPostData{
@@ -131,12 +146,13 @@ func HandleZipUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newPostAnalytics := db.PostAnalytics{
-		Username: username,
-		Title:    zip_file_data.post_name,
-		Version:  fmt.Sprintf("%d", new_version),
-		Date:     post_time,
-		Views:    0,
-		Likes:    0,
+		Username:  username,
+		Title:     zip_file_data.post_name,
+		Version:   fmt.Sprintf("%d", new_version),
+		Date:      post_time,
+		Views:     []time.Time{},
+		ViewCount: 0,
+		Likes:     []string{},
 	}
 
 	_, err = AnalyticsDataDB.CreatePostAnalytics(r.Context(), &newPostAnalytics)

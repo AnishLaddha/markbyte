@@ -71,6 +71,9 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%}
+  .theme {
+    --animate-grid: grid 15s linear infinite
+  }
 }
 @layer base {
   * {
@@ -87,5 +90,22 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+body {
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@theme inline {
+  @keyframes grid {
+  0% {
+    transform: translateY(-50%);
+    }
+  100% {
+    transform: translateY(0);
+    }
   }
 }

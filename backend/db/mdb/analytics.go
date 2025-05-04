@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/db"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoAnalyticsRepository struct {
@@ -35,32 +37,22 @@ func (r *MongoAnalyticsRepository) CreatePostAnalytics(ctx context.Context, anal
 	return string(idBytes), err
 }
 
-func (r *MongoAnalyticsRepository) GetPostAnalytics(ctx context.Context, username string, title string, version string) (*db.PostAnalytics, error) {
+func (r *MongoAnalyticsRepository) GetPostAnalytics(ctx context.Context, username string, title string, version string) (db.PostAnalytics, error) {
 	filter := map[string]string{"username": username, "title": title, "version": version}
 	var analytics db.PostAnalytics
 	err := r.collection.FindOne(ctx, filter).Decode(&analytics)
 	if err != nil {
-		return nil, err
+		return db.PostAnalytics{}, err
 	}
-	return &analytics, nil
-}
-
-func (r *MongoAnalyticsRepository) UpdateViewsAnalytics(ctx context.Context, username string, title string, version string, views int) error {
-	filter := bson.M{"username": username, "title": title, "version": version}
-	update := bson.M{"$set": bson.M{"views": views}}
-	res, err := r.collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return err
-	}
-	if res.ModifiedCount == 0 {
-		return fmt.Errorf("no analytics found with the given details")
-	}
-	return nil
+	return analytics, nil
 }
 
 func (r *MongoAnalyticsRepository) IncrementViews(ctx context.Context, username string, title string, version string) error {
 	filter := bson.M{"username": username, "title": title, "version": version}
-	update := bson.M{"$inc": bson.M{"views": 1}}
+	update := bson.M{
+		"$push": bson.M{"views": time.Now()},
+		"$inc":  bson.M{"view_count": 1},
+	}
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
@@ -71,30 +63,41 @@ func (r *MongoAnalyticsRepository) IncrementViews(ctx context.Context, username 
 	return nil
 }
 
-func (r *MongoAnalyticsRepository) UpdateLikesAnalytics(ctx context.Context, username string, title string, version string, likes int) error {
-	filter := bson.M{"username": username, "title": title, "version": version}
-	update := bson.M{"$set": bson.M{"likes": likes}}
-	res, err := r.collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return err
-	}
-	if res.ModifiedCount == 0 {
-		return fmt.Errorf("no analytics found with the given details")
-	}
-	return nil
-}
+// func (r *MongoAnalyticsRepository) IncrementLikes(ctx context.Context, username string, title string, version string) error {
+// 	filter := bson.M{"username": username, "title": title, "version": version}
+// 	update := bson.M{"$inc": bson.M{"likes": 1}}
+// 	res, err := r.collection.UpdateOne(ctx, filter, update)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if res.ModifiedCount == 0 {
+// 		return fmt.Errorf("no analytics found with the given details")
+// 	}
+// 	return nil
+// }
 
-func (r *MongoAnalyticsRepository) IncrementLikes(ctx context.Context, username string, title string, version string) error {
-	filter := bson.M{"username": username, "title": title, "version": version}
-	update := bson.M{"$inc": bson.M{"likes": 1}}
+func (r *MongoAnalyticsRepository) ToggleLike(ctx context.Context, postUsername string, title string, version string, likingUsername string) (bool, error) {
+	filter := bson.M{"username": postUsername, "title": title, "version": version}
+
+	// Try to add the like first
+	update := bson.M{"$addToSet": bson.M{"likes": likingUsername}}
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return err
+		return false, err
 	}
 	if res.ModifiedCount == 0 {
-		return fmt.Errorf("no analytics found with the given details")
+		// If no document was modified, try to remove the like
+		update = bson.M{"$pull": bson.M{"likes": likingUsername}}
+		res, err = r.collection.UpdateOne(ctx, filter, update)
+		if err != nil {
+			return false, err
+		}
+		if res.ModifiedCount == 0 {
+			return false, fmt.Errorf("no analytics found with the given details")
+		}
+		return false, nil // Post was unliked
 	}
-	return nil
+	return true, nil // Post was liked
 }
 
 func (r *MongoAnalyticsRepository) DeletePostAnalytics(ctx context.Context, username string, title string) (int, error) {
@@ -104,4 +107,44 @@ func (r *MongoAnalyticsRepository) DeletePostAnalytics(ctx context.Context, user
 		return 0, err
 	}
 	return int(res.DeletedCount), nil
+}
+
+func (r *MongoAnalyticsRepository) GetAllPostTimeStamps(ctx context.Context, username string, active_posts []db.BlogPostData) ([]time.Time, error) {
+	post_timestamps := []time.Time{}
+	for _, post := range active_posts {
+		filter := bson.M{"username": username, "title": post.Title, "version": post.Version}
+		var analytics db.PostAnalytics
+		err := r.collection.FindOne(ctx, filter).Decode(&analytics)
+		if err != nil {
+			return nil, err
+		}
+		post_timestamps = append(post_timestamps, analytics.Views...)
+	}
+	return post_timestamps, nil
+}
+
+func (r *MongoAnalyticsRepository) GetPostViewCount(ctx context.Context, username string, title string, version string) (int, error) {
+	filter := bson.M{"username": username, "title": title, "version": version}
+	var analytics db.PostAnalytics
+	err := r.collection.FindOne(ctx, filter).Decode(&analytics)
+	if err != nil {
+		return 0, err
+	}
+	return analytics.ViewCount, nil
+}
+
+func (r *MongoAnalyticsRepository) GetMostViewedPosts(ctx context.Context, limit int) ([]db.PostAnalytics, error) {
+	opts := options.Find().
+		SetSort(bson.D{{Key: "view_count", Value: -1}}).
+		SetLimit(int64(limit))
+	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var posts []db.PostAnalytics
+	if err := cursor.All(ctx, &posts); err != nil {
+		return nil, err
+	}
+	return posts, nil
 }

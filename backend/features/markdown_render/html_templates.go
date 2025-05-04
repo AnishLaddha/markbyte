@@ -79,6 +79,15 @@ const default_template = `
     </nav>
     <div class="content-container">
         <article class="prose">
+            <div class="post-meta text-xs uppercase text-blueAccent dark:text-blue-400 mb-4">
+                Posted by <a
+                href="https://markbyte.xyz/{{USERNAME}}"
+                target="_blank"
+                class="font-semibold underline text-blueAccent dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 visited:text-inherit !text-blueAccent dark:!text-blue-400"
+              >
+                {{USERNAME}}
+              </a> on {{DATE}}
+            </div>
             {{CONTENT}}
         </article>
     </div>
@@ -133,17 +142,30 @@ const futuristic_template = "" +
 	"    <link rel=\"stylesheet\" href=\"https://markbyteblogfiles.s3.us-east-1.amazonaws.com/futuristic.css\">\n" +
 	"</head>\n" +
 	"<body>\n" +
+	"    <div id=\"date-banner\" style=\"\n" +
+	"        position: absolute;\n" +
+	"        top: 10px;\n" +
+	"        right: 20px;\n" +
+	"        font-size: 0.85rem;\n" +
+	"        font-family: 'Space Mono', monospace;\n" +
+	"        color: var(--neon-green);\n" +
+	"        opacity: 0.7;\n" +
+	"        z-index: 10;\n" +
+	"    \">\n" +
+	"        Date: {{DATE}}\n" +
+	"    </div>\n" +
+	"\n" +
 	"    <div class=\"bg-grid\"></div>\n" +
 	"    <div class=\"glow-circle green\"></div>\n" +
 	"    <div class=\"glow-circle purple\"></div>\n" +
 	"    <div class=\"glow-circle blue\"></div>\n" +
-	"    \n" +
-	"    <div class=\"container\">\n" +
-	"        <div class=\"content-container\">\n" +
-	"         {{CONTENT}}\n" +
+	"\n" +
+	"    <div class=\"container\" style=\"padding: 20px 20px 10px 20px;\">\n" +
+	"        <div class=\"content-container\" style=\"margin: 20px auto 0 auto;\">\n" +
+	"         {{CONTENT}}  \n" +
 	"        </div>\n" +
 	"    </div>\n" +
-	"    \n" +
+	"\n" +
 	"    <script>\n" +
 	"        document.addEventListener('DOMContentLoaded', () => {\n" +
 	"            const codeBlocks = document.querySelectorAll('pre code');\n" +
@@ -166,25 +188,39 @@ const futuristic_template = "" +
 	"                }, 300 + (index * 150));\n" +
 	"            });\n" +
 	"\n" +
-	"            // Inject dynamic ::before content for h1\n" +
 	"            const h1 = document.querySelector('h1');\n" +
-	"            const labelText = '{{USERNAME}} 🚀'; // Change this to your desired label\n" +
 	"            if (h1) {\n" +
-	"                if (!h1.id) h1.id = 'dynamic-h1';\n" +
-	"                const dynamicStyle = document.createElement('style');\n" +
-	"                dynamicStyle.textContent = `#${h1.id}::before {\n" +
-	"                    content: \"${labelText}\";\n" +
-	"                    position: absolute;\n" +
-	"                    right: 0;\n" +
-	"                    top: 0;\n" +
-	"                    font-size: 1rem;\n" +
-	"                    color: var(--neon-green);\n" +
-	"                    background: rgba(10, 255, 157, 0.1);\n" +
-	"                    padding: 5px 10px;\n" +
-	"                    border-radius: 5px;\n" +
-	"                    font-weight: normal;\n" +
-	"                }`;\n" +
-	"                document.head.appendChild(dynamicStyle);\n" +
+	"                const styleOverride = document.createElement('style');\n" +
+	"                styleOverride.textContent = `\n" +
+	"                    h1::before {\n" +
+	"                        content: none !important;\n" +
+	"                    }\n" +
+	"                `;\n" +
+	"                document.head.appendChild(styleOverride);\n" +
+	"            }\n" +
+	"\n" +
+	"            const username = '{{USERNAME}}';\n" +
+	"\n" +
+	"            if (h1) {\n" +
+	"                h1.style.position = 'relative';\n" +
+	"                const badgeLink = document.createElement('a');\n" +
+	"                badgeLink.href = `https://markbyte.xyz/${username}`;\n" +
+	"                badgeLink.target = '_blank';\n" +
+	"                badgeLink.textContent = `${username} 🚀`;\n" +
+	"                badgeLink.style.position = 'absolute';\n" +
+	"                badgeLink.style.top = '0';\n" +
+	"                badgeLink.style.right = '0';\n" +
+	"                badgeLink.style.fontSize = '1rem';\n" +
+	"                badgeLink.style.color = 'var(--neon-green)';\n" +
+	"                badgeLink.style.background = 'rgba(10, 255, 157, 0.1)';\n" +
+	"                badgeLink.style.padding = '5px 10px';\n" +
+	"                badgeLink.style.borderRadius = '5px';\n" +
+	"                badgeLink.style.fontWeight = 'normal';\n" +
+	"                badgeLink.style.textDecoration = 'underline';\n" +
+	"                badgeLink.style.whiteSpace = 'nowrap';\n" +
+	"                badgeLink.style.zIndex = '10';\n" +
+	"\n" +
+	"                h1.appendChild(badgeLink);\n" +
 	"            }\n" +
 	"\n" +
 	"            function createDots() {\n" +
@@ -213,5 +249,68 @@ const futuristic_template = "" +
 	"            createDots();\n" +
 	"        });\n" +
 	"    </script>\n" +
+	"    <footer id=\"footer\" style=\"\n" +
+	"        text-align: center;\n" +
+	"        font-size: 0.8rem;\n" +
+	"        margin-top: 20px;\n" +
+	"        margin-bottom: 10px;\n" +
+	"        color: var(--neon-green);\n" +
+	"        opacity: 0.6;\n" +
+	"        font-family: 'Space Mono', monospace;\n" +
+	"    \">\n" +
+	"        made with 🚀 and <a href=\"https://markbyte.xyz\" target=\"_blank\" style=\"color: var(--neon-green); text-decoration: underline;\">markbyte</a>\n" +
+	"    </footer>\n" +
 	"</body>\n" +
 	"</html>"
+
+const pink_template = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markbyte</title>
+    <link rel="stylesheet" href="https://markbyteblogfiles.s3.us-east-1.amazonaws.com/pinkstyle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        .title-and-date {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0px;
+            margin: 0 auto !important;
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <div class="leaf left"></div>
+            <div class="title-and-date">
+                <a href="https://markbyte.xyz/{{USERNAME}}" target="_blank" class="site-title-link">
+                    <h1 class="site-title">{{NAME}}</h1>
+                </a> <br>
+                <div class="post-meta" style="font-size: 0.75rem;">
+                    Posted on {{DATE}}
+                </div>
+            </div>
+            <div class="leaf right"></div>
+        </header>
+        
+        <main class="content">
+            <div class="markdown-content">
+                {{CONTENT}}
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer-pattern"></div>
+            <div class="footer-text">Made with 🌸 and <a href="https://markbyte.xyz" target="_blank" class="markbyte-link">markbyte</a></div>
+        </footer>
+    </div>
+</body>
+</html>
+`

@@ -1,25 +1,33 @@
-import { useEffect } from "react";
+/* This component will dynamically load a blog post based on the user and post parameters in the URL. */
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+import NotFound from "../404/invalid";
+import { getBlogPost } from "@/services/blogService";
 
 function DynamicBlogPost() {
   const { user, post } = useParams();
+  const [error, setError] = useState(false);
+  const [htmlContent, setHtmlContent] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/${user}/${post}`)
+    getBlogPost(user, post)
       .then((response) => {
-        document.open();
-        document.write(response.data);
-        document.close();
+        setHtmlContent(response.data);
       })
-      .catch((error) => {
-        console.error("Error fetching blogger's post page:", error);
+      .catch(() => {
+        setError(true);
       });
   }, [user, post]);
 
-  return null;
+  if (error) return <NotFound />;
+
+  return (
+    <iframe
+      srcDoc={htmlContent}
+      title="Blog Post"
+      className="w-full h-screen border-none"
+    />
+  );
 }
 
 export default DynamicBlogPost;

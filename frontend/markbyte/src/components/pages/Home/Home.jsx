@@ -22,7 +22,7 @@ const Home = React.memo(function Home() {
   const isSmallScreen3 = useMediaQuery("(min-width:611px)");
 
   return (
-    <div className="App min-h-screen flex flex-col bg-[#011A29] text-white overflow-hidden">
+    <div className="relative min-h-screen flex flex-col bg-[#011A29] text-white overflow-hidden">
       <ParticlesBackground id="particles" />
       <header className="header">
         <div className="logo-container" onClick={() => navigate("/")}>
@@ -39,6 +39,13 @@ const Home = React.memo(function Home() {
         </div>
         {!isSmallScreen2 && (
           <div className="flex gap-6 items-center">
+            <a
+              href="/discover"
+              className="text-white font-semibold rounded text-lg transition-all duration-300 relative group"
+            >
+              Discover
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
             <a
               href="/about"
               className="text-white font-semibold rounded text-lg transition-all duration-300 relative group"
@@ -62,6 +69,7 @@ const Home = React.memo(function Home() {
           </div>
         )}
 
+        {/* Hamburger Menu for Small Screens */}
         {isSmallScreen2 && (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-700/30 hover:bg-blue-700/50 transition-colors duration-200">
@@ -77,6 +85,12 @@ const Home = React.memo(function Home() {
                   onClick={() => navigate("/about")}
                 >
                   <span className="flex items-center gap-2">About</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="focus:bg-blue-800/50 hover:bg-blue-800/30 cursor-pointer"
+                  onClick={() => navigate("/discover")}
+                >
+                  <span className="flex items-center gap-2">Discover</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="focus:bg-blue-800/50 hover:bg-blue-800/30 cursor-pointer"
@@ -127,7 +141,7 @@ const Home = React.memo(function Home() {
                 )}
               </div>
               <div className="tagline text-xl md:text-2xl mb-8 text-blue-100 font-light inline-block">
-                <p>The future of blogging is written in Markdown</p>
+                <p>The future is written in Markdown</p>
               </div>
               <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
                 <a
@@ -138,11 +152,11 @@ const Home = React.memo(function Home() {
                   <FaArrowRight size={13} />
                 </a>
                 <a
-                  href="/about"
+                  href="/discover"
                   className="flex items-center justify-center cursor-pointer group relative py-3 px-6 border border-blue-400/30 hover:bg-blue-900/20 transition-all duration-300 rounded-full"
                 >
                   <span className="relative inline-flex items-center">
-                    Learn More
+                    Start Reading
                     <FaArrowRight size={13} className="ml-2" />
                   </span>
                 </a>
@@ -151,9 +165,17 @@ const Home = React.memo(function Home() {
           </div>
         </section>
       </main>
-      <footer className="py-4 text-center z-20">
+      <footer className="py-3 text-center z-20">
         <p className="text-gray-400 text-sm">
-          Group 1 - Rishab Pangal, Anish Laddha, Shrijan Swaminathan
+          Made with ❤️ by 
+          <a
+            href="/about"
+            className="text-blue-400 hover:text-blue-300 transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" "}MarkByte's Developers
+          </a>
         </p>
       </footer>
     </div>

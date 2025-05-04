@@ -1,6 +1,6 @@
+/* This component will take in raw markdown content, fetch the rendered HTML from the server, and display it in an iframe. */
 import React, { useRef, useEffect } from "react";
-import axios from "axios";
-import { API_URL } from "@/config/api";
+import { renderMarkdownPreview } from "@/services/blogService";
 
 function Preview({ markdownContent, renderMarkdown, setRenderMarkdown }) {
   const iframeRef = useRef(null);
@@ -8,12 +8,7 @@ function Preview({ markdownContent, renderMarkdown, setRenderMarkdown }) {
   useEffect(() => {
     // Only make the POST request when renderMarkdown is true
     if (renderMarkdown && markdownContent !== null) {
-      axios
-        .post(
-          `${API_URL}/render`,
-          { markdown_content: markdownContent },
-          { withCredentials: true }
-        )
+      renderMarkdownPreview(markdownContent)
         .then((response) => {
           const templateHTML = response.data;
           const iframe = iframeRef.current;

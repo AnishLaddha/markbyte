@@ -34,6 +34,19 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
+	//5 mb limit
+	err = r.ParseMultipartForm(5 << 20)
+	if err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
+
+	title := r.FormValue("title")
+	//check for special characters in title
+	if strings.ContainsAny(title, `\/:*?"<>|_`) {
+		http.Error(w, "Title contains invalid characters", http.StatusBadRequest)
+		return
+	}
 
 	// read md file
 	mdContent, err := io.ReadAll(file)
@@ -61,13 +74,18 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	outputFilename := fmt.Sprintf("%s.html", baseFilename)
 	outputPath := filepath.Join(StaticDir, outputFilename)
 
+	//check if title is empty/not present
+	if title == "" {
+		title = baseFilename
+	}
+
 	err = os.WriteFile(outputPath, []byte(htmlContent), 0644)
 	if err != nil {
 		http.Error(w, "Failed to save HTML file", http.StatusInternalServerError)
 		return
 	}
 
-	existingPosts, err := blogPostDataDB.FetchAllPostVersions(r.Context(), username, baseFilename)
+	existingPosts, err := blogPostDataDB.FetchAllPostVersions(r.Context(), username, title)
 	existingPostsVersions := existingPosts.Versions
 	if err != nil {
 		http.Error(w, "Failed to fetch existing blog posts", http.StatusInternalServerError)
@@ -87,18 +105,23 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 			newVersion = verNum + 1
 		}
 		if post.IsActive {
-			err = blogPostDataDB.UpdateActiveStatus(r.Context(), username, baseFilename, post.Version, false)
+			err = blogPostDataDB.UpdateActiveStatus(r.Context(), username, title, post.Version, false)
 			if err != nil {
 				http.Error(w, "Failed to deactivate prev post", http.StatusInternalServerError)
 				return
 			}
 		}
 	}
+	//replace space's in filename with underscores
+	processed_title := strings.ReplaceAll(title, " ", "_")
+
 	url := fmt.Sprintf("/static/%s", outputFilename)
 
-	keyname := fmt.Sprintf("%s_%s_%d.html", username, baseFilename, newVersion)
-	md_keyname := fmt.Sprintf("%s_%s_%d.md", username, baseFilename, newVersion)
+	keyname := fmt.Sprintf("%s_%s_%d.html", username, processed_title, newVersion)
+	md_keyname := fmt.Sprintf("%s_%s_%d.md", username, processed_title, newVersion)
 
+	fmt.Println("Keyname: ", keyname)
+	fmt.Println("MD Keyname: ", md_keyname)
 	cred, err := LoadCredentials()
 	if err != nil {
 		fmt.Println("AWS CREDENTIALS NOT SET UP")
@@ -121,13 +144,13 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		url = s3URL
 	}
 
-	endpoint := "/" + username + "/" + baseFilename
+	endpoint := "/" + username + "/" + processed_title
 
 	post_time := time.Now()
 
 	newBlogPostData := db.BlogPostData{
 		User:         username,
-		Title:        baseFilename,
+		Title:        title,
 		DateUploaded: post_time,
 		Version:      fmt.Sprintf("%d", newVersion),
 		IsActive:     true,
@@ -141,12 +164,13 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newPostAnalytics := db.PostAnalytics{
-		Username: username,
-		Title:    baseFilename,
-		Version:  fmt.Sprintf("%d", newVersion),
-		Date:     post_time,
-		Views:    0,
-		Likes:    0,
+		Username:  username,
+		Title:     title,
+		Version:   fmt.Sprintf("%d", newVersion),
+		Date:      post_time,
+		Views:     []time.Time{},
+		ViewCount: 0,
+		Likes:     []string{},
 	}
 
 	_, err = AnalyticsDataDB.CreatePostAnalytics(r.Context(), &newPostAnalytics)
@@ -216,9 +240,11 @@ func HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	processed_title := strings.ReplaceAll(req.Title, " ", "_")
+
 	for _, version := range versions {
-		html_keyname := fmt.Sprintf("%s_%s_%s.html", username, req.Title, version)
-		md_keyname := fmt.Sprintf("%s_%s_%s.md", username, req.Title, version)
+		html_keyname := fmt.Sprintf("%s_%s_%s.html", username, processed_title, version)
+		md_keyname := fmt.Sprintf("%s_%s_%s.md", username, processed_title, version)
 		err = DeleteFile(r.Context(), html_keyname, cred)
 		if err != nil {
 			http.Error(w, "Failed to delete html file", http.StatusInternalServerError)
@@ -231,7 +257,7 @@ func HandleDelete(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	endpoint := "/" + username + "/" + req.Title
+	endpoint := "/" + username + "/" + processed_title
 	if redisdb.RedisActive {
 		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
 		if err != nil {
