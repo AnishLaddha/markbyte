@@ -1025,6 +1025,7 @@ function BloggerHome() {
                 className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                 onChange={(e) => setGitOwner(e.target.value)}
                 value={gitOwner}
+                disabled={true}
               />
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
@@ -1035,6 +1036,7 @@ function BloggerHome() {
                 className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                 onChange={(e) => setGitRepo(e.target.value)}
                 value={gitRepo}
+                disabled={true}
               />
               <SiGithub className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
@@ -1045,6 +1047,7 @@ function BloggerHome() {
                 className="pl-10 py-6 border-2 border-gray-200 focus:border-[#0a5a7c] focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                 onChange={(e) => setGitBranch(e.target.value)}
                 value={gitBranch}
+                disabled={true}
               />
               <GoGitBranch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
@@ -1080,8 +1083,7 @@ function BloggerHome() {
             </Button>
 
             <p className="mt-4 text-xs text-gray-500 text-center max-w-[360px]">
-              Parsing time can take up to 20 seconds depending on the size of
-              the repository. Please choose a repository with no more than <b>10</b> Markdown files.
+              Currently being optimized for large repositories.
             </p>
           </div>
         </DialogContent>
