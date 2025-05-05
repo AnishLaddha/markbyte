@@ -42,6 +42,16 @@ For full file/folder reference, see:
 ### 🚧 Prerequisites
 - Docker & Docker Compose
 - (Optional for local development) Node.js & Go
+- .env file  in backend/ with the following
+
+```
+S3_BUCKET_NAME=
+S3_REGION=
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+MONGO_URL=
+GITHUB_TOKEN=
+```
 
 ### 🐳 Run Entire Stack with Docker
 
