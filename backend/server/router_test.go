@@ -110,7 +110,7 @@ func TestCORSMiddleware(t *testing.T) {
 			method:         http.MethodOptions,
 			expectedStatus: http.StatusNoContent,
 			checkHeaders: func(t *testing.T, w *httptest.ResponseRecorder) {
-				assert.Equal(t, "http://localhost:5173", w.Header().Get("Access-Control-Allow-Origin"))
+				assert.Equal(t, "https://markbyte.xyz", w.Header().Get("Access-Control-Allow-Origin"))
 				assert.Equal(t, "GET, POST, PUT, DELETE, OPTIONS", w.Header().Get("Access-Control-Allow-Methods"))
 				assert.Equal(t, "Content-Type, Authorization", w.Header().Get("Access-Control-Allow-Headers"))
 				assert.Equal(t, "true", w.Header().Get("Access-Control-Allow-Credentials"))
@@ -121,7 +121,7 @@ func TestCORSMiddleware(t *testing.T) {
 			method:         http.MethodGet,
 			expectedStatus: http.StatusOK,
 			checkHeaders: func(t *testing.T, w *httptest.ResponseRecorder) {
-				assert.Equal(t, "http://localhost:5173", w.Header().Get("Access-Control-Allow-Origin"))
+				assert.Equal(t, "https://markbyte.xyz", w.Header().Get("Access-Control-Allow-Origin"))
 				assert.Equal(t, "GET, POST, PUT, DELETE, OPTIONS", w.Header().Get("Access-Control-Allow-Methods"))
 				assert.Equal(t, "Content-Type, Authorization", w.Header().Get("Access-Control-Allow-Headers"))
 				assert.Equal(t, "true", w.Header().Get("Access-Control-Allow-Credentials"))
