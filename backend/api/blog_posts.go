@@ -89,6 +89,7 @@ func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
 
 	if redisdb.RedisActive {
 		endpoint := "/" + postVersionReq.Username + "/" + postVersionReq.Title
+		fmt.Println("removing", endpoint)
 		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
 		if err != nil {
 			fmt.Printf("Error removing old endpoint from redis")

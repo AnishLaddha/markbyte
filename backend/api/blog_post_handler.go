@@ -46,6 +46,7 @@ func HandleFetchBlogPost(w http.ResponseWriter, r *http.Request) {
 		htmlContent, err = redisdb.GetEndpoint(r.Context(), endpoint)
 		if err == nil && htmlContent != "" {
 			fmt.Printf("Redis cache hit\n")
+			fmt.Println("Hit at: ", endpoint)
 			cacheHit = true
 		} else if err == redis.Nil || htmlContent == "" {
 			fmt.Printf("Redis cache miss\n")
