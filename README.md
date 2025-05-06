@@ -33,7 +33,7 @@ Markbyte is designed for bloggers, developers, and technical writers who want to
 ````
 
 For full file/folder reference, see:  
-📄 [Folder Structure Documentation](https://markbyte.xyz/markbyte-devs/frontend_docs/folder-structure)
+📄 [Folder Structure Documentation](https://markbyte.xyz/markbyte-devs/frontend_folder-structure)
 
 ---
 
