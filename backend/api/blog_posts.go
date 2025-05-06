@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/shrijan-swaminathan/markbyte/backend/auth"
@@ -87,8 +88,11 @@ func HandlePublishPostVersion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	post_title := postVersionReq.Title
+	process_post_title := strings.ReplaceAll(post_title, " ", "_")
+
 	if redisdb.RedisActive {
-		endpoint := "/" + postVersionReq.Username + "/" + postVersionReq.Title
+		endpoint := "/" + postVersionReq.Username + "/" + process_post_title
 		err = redisdb.DeleteEndpoint(r.Context(), endpoint)
 		if err != nil {
 			fmt.Printf("Error removing old endpoint from redis")
